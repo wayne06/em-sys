@@ -213,10 +213,20 @@
     from course
     where term = #{term,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR}
   </select>
-  <select id="selectSubjectByTermAndTypeAndGrade" resultType="java.lang.String">
-    select distinct subject
+<!--  <select id="selectSubjectByTermAndTypeAndGrade" resultType="java.lang.String">-->
+<!--    select distinct subject-->
+<!--    from course-->
+<!--    where term = #{term,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR} and grade = #{grade,jdbcType=VARCHAR}-->
+<!--  </select>-->
+  <select id="selectSubjectByTermAndTypeAndGrade" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
     from course
     where term = #{term,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR} and grade = #{grade,jdbcType=VARCHAR}
+  </select>
+  <select id="selectId" resultType="java.lang.Integer">
+    select id
+    from course
+    where term = #{term,jdbcType=VARCHAR} and type = #{type,jdbcType=VARCHAR} and grade = #{grade,jdbcType=VARCHAR} and subject = #{subject,jdbcType=VARCHAR}
   </select>
 
 

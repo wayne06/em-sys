@@ -117,10 +117,10 @@ public class CourseServiceImpl implements CourseService {
                     item2.setValue(grade);
                     item2.setLabel(grade);
                     List<TreeItem> child2 = new ArrayList<>();
-                    for (String subject : courseDOMapper.selectSubjectByTermAndTypeAndGrade(term, type, grade)) {
+                    for (CourseDO courseDO : courseDOMapper.selectSubjectByTermAndTypeAndGrade(term, type, grade)) {
                         TreeItem item3 = new TreeItem();
-                        item3.setValue(subject);
-                        item3.setLabel(subject);
+                        item3.setValue(courseDO.getId().toString());
+                        item3.setLabel(courseDO.getSubject());
                         child2.add(item3);
                     }
                     item2.setChildren(child2);
@@ -176,6 +176,16 @@ public class CourseServiceImpl implements CourseService {
         allFilter.setSubject(subjectFilters);
 
         return allFilter;
+    }
+
+    @Override
+    public String getIdByOthers(CourseDO courseDO) {
+        String id = courseDOMapper.
+                selectId(courseDO.getTerm(),
+                        courseDO.getType(),
+                        courseDO.getGrade(),
+                        courseDO.getSubject()).toString();
+        return id;
     }
 
 

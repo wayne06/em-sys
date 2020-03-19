@@ -34,4 +34,6 @@ public interface CourseService {
     List<TreeItem> getTree();
 
     AllFilter getFiltersData();
+
+    String getIdByOthers(CourseDO courseDO);
 }

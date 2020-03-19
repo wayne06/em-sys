@@ -76,7 +76,17 @@ public interface CourseDOMapper {
     List<String> selectGradeByTermAndType(@Param("term") String term,
                                           @Param("type") String type);
 
-    List<String> selectSubjectByTermAndTypeAndGrade(@Param("term") String term,
+    //List<String> selectSubjectByTermAndTypeAndGrade(@Param("term") String term,
+    //                                                @Param("type") String type,
+    //                                                @Param("grade") String grade);
+
+    List<CourseDO> selectSubjectByTermAndTypeAndGrade(@Param("term") String term,
                                                     @Param("type") String type,
                                                     @Param("grade") String grade);
+
+
+    Integer selectId(@Param("term") String term,
+                    @Param("type") String type,
+                    @Param("grade") String grade,
+                    @Param("subject") String subject);
 }

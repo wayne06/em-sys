@@ -1,5 +1,8 @@
 package xyz.qzpx.em.service;
 
+import xyz.qzpx.em.dataObject.CourseStudentDO;
+import xyz.qzpx.em.dataObject.CourseStudentVO;
+
 import java.util.List;
 
 public interface CourseStudentService {
@@ -13,4 +16,12 @@ public interface CourseStudentService {
     List<Integer> getStudentIdsNotInCourse(Integer courseId);
 
     void rmStuToCourse(Integer id, Integer valueOf);
+
+    List<CourseStudentVO> getCoursesByStuId(Integer id);
+
+    void add(CourseStudentDO courseStudentDO);
+
+    void update(CourseStudentDO courseStudentDO);
+
+    void deleteCourseById(Integer id);
 }

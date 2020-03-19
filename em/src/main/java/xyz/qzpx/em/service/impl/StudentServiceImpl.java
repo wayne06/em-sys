@@ -16,6 +16,9 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private StudentDOMapper studentDOMapper;
 
+    @Autowired
+    private CourseStudentDOMapper courseStudentDOMapper;
+
     @Override
     public void addStudent(StudentDO studentDO) {
         studentDO.setCreatedAt(new Date());
@@ -26,6 +29,7 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public void deleteStudentById(Integer id) {
         studentDOMapper.deleteByPrimaryKey(id);
+        courseStudentDOMapper.deleteByStudentId(id);
     }
 
     @Override

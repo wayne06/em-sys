@@ -4,15 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.qzpx.em.dataObject.AllFilter;
 import xyz.qzpx.em.dataObject.CourseDO;
-import xyz.qzpx.em.dataObject.FiltersItem;
 import xyz.qzpx.em.dataObject.TreeItem;
 import xyz.qzpx.em.service.CourseService;
-import xyz.qzpx.em.service.impl.CourseServiceImpl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/course")
@@ -88,5 +83,12 @@ public class CourseController {
     public AllFilter getFilters() {
         return courseService.getFiltersData();
     }
+
+    @PostMapping("/getId")
+    public String getIdByOther(@RequestBody CourseDO courseDO) {
+        return courseService.getIdByOthers(courseDO);
+    }
+
+
 
 }
