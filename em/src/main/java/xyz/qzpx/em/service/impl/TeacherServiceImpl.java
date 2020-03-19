@@ -1,0 +1,60 @@
+package xyz.qzpx.em.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import xyz.qzpx.em.dao.TeacherDOMapper;
+import xyz.qzpx.em.dataObject.TeacherDO;
+import xyz.qzpx.em.service.TeacherService;
+
+import java.util.Date;
+import java.util.List;
+
+@Service
+public class TeacherServiceImpl implements TeacherService {
+
+    @Autowired
+    private TeacherDOMapper teacherDOMapper;
+
+    @Override
+    public void addTeacher(TeacherDO teacherDO) {
+        teacherDO.setCreatedAt(new Date());
+        teacherDO.setUpdatedAt(new Date());
+        teacherDOMapper.insertSelective(teacherDO);
+    }
+
+    @Override
+    public void deleteTeacherById(Integer id) {
+        teacherDOMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public void updateTeacher(TeacherDO teacherDO) {
+        teacherDO.setUpdatedAt(new Date());
+        teacherDOMapper.updateByPrimaryKeySelective(teacherDO);
+    }
+
+    @Override
+    public List<TeacherDO> getAllTeacher() {
+        return teacherDOMapper.selectAll();
+    }
+
+    @Override
+    public TeacherDO getTeacherById(Integer id) {
+        return teacherDOMapper.selectByPrimaryKey(id);
+    }
+
+    @Override
+    public List<TeacherDO> getTeacherByName(String name) {
+        if ("".equals(name)) {
+            return teacherDOMapper.selectAll();
+        } else {
+            return teacherDOMapper.selectByName(name);
+        }
+    }
+
+    @Override
+    public Integer getTeacherCount() {
+        return teacherDOMapper.selectCount();
+    }
+
+}
