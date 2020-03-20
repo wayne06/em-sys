@@ -1,12 +1,12 @@
 <template>
     <div>
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 教师管理
-                </el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
+<!--        <div class="crumbs">-->
+<!--            <el-breadcrumb separator="/">-->
+<!--                <el-breadcrumb-item>-->
+<!--                    <i class="el-icon-lx-cascades"></i> 教师管理-->
+<!--                </el-breadcrumb-item>-->
+<!--            </el-breadcrumb>-->
+<!--        </div>-->
         <div class="container">
             <div class="handle-box">
                 <el-button type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAdd">新增教师</el-button>
@@ -18,18 +18,16 @@
                     height="650"
                     border
                     class="table"
-                    ref="multipleTable"
                     header-cell-class-name="table-header"
             >
-                <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
                 <el-table-column prop="name" label="教师姓名"></el-table-column>
                 <el-table-column prop="gender" label="性别"></el-table-column>
                 <el-table-column prop="telephone" label="联系方式"></el-table-column>
                 <el-table-column prop="type" label="类型"></el-table-column>
                 <el-table-column prop="profession" label="专业"></el-table-column>
-                <el-table-column prop="currCourse" label="目前代班"></el-table-column>
-                <el-table-column prop="remark" label="级别"></el-table-column>
+                <el-table-column prop="level" label="级别"></el-table-column>
+                <el-table-column prop="remark" label="备注"></el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button
@@ -56,8 +54,8 @@
         </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%" @close="clear" top="3vh">
-            <el-form ref="form" :model="form" label-width="90px" label-position="left">
+        <el-dialog title="编辑" :visible.sync="editVisible" width="30%" @close="clear" top="10vh">
+            <el-form ref="form" :model="form" label-width="90px" label-position="left" size="mini">
                 <el-form-item label="教师姓名">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
@@ -75,19 +73,13 @@
                 <el-form-item label="专业">
                     <el-input v-model="form.profession"></el-input>
                 </el-form-item>
-                <el-form-item label="目前代班">
-                    <el-cascader
-                            :options="options"
-                            v-model="form.option"
-                            :props="{ expandTrigger: 'hover' }"
-                            style="width: 100%"
-                            @change="expandChange"
-                    ></el-cascader>
-                </el-form-item>
                 <el-form-item label="级别">
-                    <el-radio v-model="form.remark" label="A">A</el-radio>
-                    <el-radio v-model="form.remark" label="B">B</el-radio>
-                    <el-radio v-model="form.remark" label="C">C</el-radio>
+                    <el-radio v-model="form.level" label="A">A</el-radio>
+                    <el-radio v-model="form.level" label="B">B</el-radio>
+                    <el-radio v-model="form.level" label="C">C</el-radio>
+                </el-form-item>
+                <el-form-item label="备注">
+                    <el-input v-model="form.remark"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -97,8 +89,8 @@
         </el-dialog>
 
         <!-- 新增弹出框 -->
-        <el-dialog title="新增" :visible.sync="addVisible" width="30%" @close="clear" top="3vh" :close-on-click-modal="false">
-            <el-form ref="form" :model="form" label-width="90px" label-position="left">
+        <el-dialog title="新增" :visible.sync="addVisible" width="30%" @close="clear" top="10vh" :close-on-click-modal="false">
+            <el-form ref="form" :model="form" label-width="90px" label-position="left" size="mini">
                 <el-form-item label="教师姓名">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
@@ -116,19 +108,13 @@
                 <el-form-item label="专业">
                     <el-input v-model="form.profession"></el-input>
                 </el-form-item>
-                <el-form-item label="目前代班">
-                    <el-cascader
-                            :options="options"
-                            v-model="form.option"
-                            :props="{ expandTrigger: 'hover' }"
-                            style="width: 100%"
-                            @change="expandChange"
-                    ></el-cascader>
-                </el-form-item>
                 <el-form-item label="级别">
                     <el-radio v-model="form.remark" label="A">A</el-radio>
                     <el-radio v-model="form.remark" label="B">B</el-radio>
                     <el-radio v-model="form.remark" label="C">C</el-radio>
+                </el-form-item>
+                <el-form-item label="备注">
+                    <el-input v-model="form.remark"></el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -154,7 +140,7 @@
                     telephone: '',
                     type: '',
                     profession: '',
-                    currCourse: '',
+                    level: '',
                     remark: ''
                 },
                 idx: -1,
@@ -205,19 +191,12 @@
             handleEdit(index, row) {
                 this.idx = index;
                 this.form = row;
-                this.$axios.get('/course/tree').then(resp => {
-                    if (resp && resp.status === 200) {
-                        this.options = resp.data;
-                        this.form.option = this.form.currCourse.split(',');
-                        this.editVisible = true;
-                    }
-                })
+                this.editVisible = true;
             },
             // 保存编辑
             saveEdit() {
                 let _this = this;
                 let id = _this.tableData[this.idx].id;
-                let curr_course = _this.form.option[0]+','+_this.form.option[1]+','+_this.form.option[2];
                 this.$axios.post('/teacher/update', {
                     id: id,
                     name: _this.form.name,
@@ -225,7 +204,7 @@
                     telephone: _this.form.telephone,
                     type: _this.form.type,
                     profession: _this.form.profession,
-                    currCourse: curr_course,
+                    level: _this.form.level,
                     remark: _this.form.remark
                 }).then(resp => {
                     if (resp && resp.status === 200) {
@@ -243,37 +222,26 @@
                     telephone: '',
                     type: '',
                     profession: '',
-                    currCourse: '',
+                    level: '',
                     remark: ''
                 }
                 this.getData();
             },
             // 新增操作
             handleAdd() {
-                this.$axios.get('/course/tree').then(resp => {
-                    if (resp && resp.status === 200) {
-                        this.options = resp.data;
-                        this.form.options = resp.data;
-                        this.addVisible = true;
-                    }
-                })
+                this.addVisible = true;
             },
 
             // 保存新增
             save() {
                 let _this = this;
-                let curr_course = '';
-                if (typeof _this.form.option != "undefined") {
-                    console.log("aaaa")
-                    curr_course = this.form.option[0]+','+this.form.option[1]+','+this.form.option[2];
-                }
                 this.$axios.post('/teacher/add', {
                     name: _this.form.name,
                     gender: _this.form.gender,
                     telephone: _this.form.telephone,
                     type: _this.form.type,
                     profession: _this.form.profession,
-                    currCourse: curr_course,
+                    level: _this.form.level,
                     remark: _this.form.remark
                 }).then(resp => {
                     if (resp && resp.status === 200) {
