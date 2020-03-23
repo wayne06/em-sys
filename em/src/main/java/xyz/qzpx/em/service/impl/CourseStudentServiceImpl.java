@@ -97,6 +97,7 @@ public class CourseStudentServiceImpl implements CourseStudentService {
 
     @Override
     public void update(CourseStudentDO courseStudentDO) {
+        courseStudentDO.setUpdatedAt(new Date());
         courseStudentDOMapper.updateByPrimaryKeySelective(courseStudentDO);
     }
 

@@ -1,6 +1,7 @@
 package xyz.qzpx.em.service;
 
 import xyz.qzpx.em.dataObject.TeacherDO;
+import xyz.qzpx.em.dataObject.Selection;
 
 import java.util.List;
 
@@ -20,4 +21,5 @@ public interface TeacherService {
 
     Integer getTeacherCount();
 
+    List<Selection> getTeachers();
 }

@@ -1,9 +1,6 @@
 package xyz.qzpx.em.service;
 
-import xyz.qzpx.em.dataObject.AllFilter;
-import xyz.qzpx.em.dataObject.CourseDO;
-import xyz.qzpx.em.dataObject.FiltersItem;
-import xyz.qzpx.em.dataObject.TreeItem;
+import xyz.qzpx.em.dataObject.*;
 
 import java.util.List;
 import java.util.Map;
@@ -36,4 +33,8 @@ public interface CourseService {
     AllFilter getFiltersData();
 
     String getIdByOthers(CourseDO courseDO);
+
+    List<CourseDO> getSignUpCourse();
+
+    List<Selection> getCoursesByTeacherId(Integer id);
 }

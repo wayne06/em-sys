@@ -126,6 +126,21 @@ export default new Router({
                     path: '/teacher',
                     component: () => import(/* webpackChunkName: "table" */ '../components/page/Teacher.vue'),
                     meta: { title: '教师管理' }
+                },
+                {
+                    path: '/cts',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/CTS.vue'),
+                    meta: { title: '课程安排' }
+                },
+                {
+                    path: '/record',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/Record.vue'),
+                    meta: { title: '课堂记录' }
+                },
+                {
+                    path: '/score',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/Score.vue'),
+                    meta: { title: '成绩管理' }
                 }
             ]
         },

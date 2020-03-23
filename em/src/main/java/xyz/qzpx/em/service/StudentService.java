@@ -22,4 +22,6 @@ public interface StudentService {
     void deleteStudentsByIds(Integer[] ids);
 
     Integer getStudentCount();
+
+    List<StudentDO> getStudentByCourseId(Integer courseId);
 }

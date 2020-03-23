@@ -3,10 +3,9 @@ package xyz.qzpx.em.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.qzpx.em.dao.CourseDOMapper;
-import xyz.qzpx.em.dataObject.AllFilter;
-import xyz.qzpx.em.dataObject.CourseDO;
-import xyz.qzpx.em.dataObject.FiltersItem;
-import xyz.qzpx.em.dataObject.TreeItem;
+import xyz.qzpx.em.dao.CourseStudentDOMapper;
+import xyz.qzpx.em.dao.TeacherCourseDOMapper;
+import xyz.qzpx.em.dataObject.*;
 import xyz.qzpx.em.service.CourseService;
 
 import java.util.*;
@@ -16,6 +15,12 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     private CourseDOMapper courseDOMapper;
+
+    @Autowired
+    private CourseStudentDOMapper courseStudentDOMapper;
+
+    @Autowired
+    private TeacherCourseDOMapper teacherCourseDOMapper;
 
     @Override
     public void addCourse(CourseDO courseDO) {
@@ -186,6 +191,32 @@ public class CourseServiceImpl implements CourseService {
                         courseDO.getGrade(),
                         courseDO.getSubject()).toString();
         return id;
+    }
+
+    @Override
+    public List<CourseDO> getSignUpCourse() {
+        List<Integer> courseIds = courseStudentDOMapper.selectCourseIds();
+        List<CourseDO> courseDOS = new ArrayList<>();
+        for (Integer courseId : courseIds) {
+            CourseDO courseDO = courseDOMapper.selectByPrimaryKey(courseId);
+            courseDOS.add(courseDO);
+        }
+        return courseDOS;
+    }
+
+    @Override
+    public List<Selection> getCoursesByTeacherId(Integer id) {
+        List<Integer> courseIds = teacherCourseDOMapper.selectCourseIdsByTeacherId(id);
+        Collections.sort(courseIds);
+        List<Selection> selections = new ArrayList<>();
+        for (Integer courseId : courseIds) {
+            CourseDO courseDO = courseDOMapper.selectByPrimaryKey(courseId);
+            Selection selection = new Selection();
+            selection.setLabel(courseDO.getTerm() + "/" + courseDO.getType() + "/" + courseDO.getGrade() + "/" + courseDO.getSubject());
+            selection.setValue(courseId.toString());
+            selections.add(selection);
+        }
+        return selections;
     }
 
 

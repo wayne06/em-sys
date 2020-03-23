@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.qzpx.em.dao.TeacherDOMapper;
 import xyz.qzpx.em.dataObject.TeacherDO;
+import xyz.qzpx.em.dataObject.Selection;
 import xyz.qzpx.em.service.TeacherService;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +57,19 @@ public class TeacherServiceImpl implements TeacherService {
     @Override
     public Integer getTeacherCount() {
         return teacherDOMapper.selectCount();
+    }
+
+    @Override
+    public List<Selection> getTeachers() {
+        List<Selection> selections = new ArrayList<>();
+
+        for (TeacherDO teacherDO : teacherDOMapper.selectAll()) {
+            Selection selection = new Selection();
+            selection.setLabel(teacherDO.getName() + " , " + teacherDO.getTelephone());
+            selection.setValue(teacherDO.getId().toString());
+            selections.add(selection);
+        }
+        return selections;
     }
 
 }

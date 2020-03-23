@@ -7,6 +7,7 @@ import xyz.qzpx.em.dao.StudentDOMapper;
 import xyz.qzpx.em.dataObject.StudentDO;
 import xyz.qzpx.em.service.StudentService;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -67,6 +68,17 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Integer getStudentCount() {
         return studentDOMapper.selectCount();
+    }
+
+    @Override
+    public List<StudentDO> getStudentByCourseId(Integer courseId) {
+        List<Integer> stuIds = courseStudentDOMapper.selectByCourseId(courseId);
+        List<StudentDO> studentDOS = new ArrayList<>();
+        for (Integer stuId : stuIds) {
+            StudentDO studentDO = studentDOMapper.selectByPrimaryKey(stuId);
+            studentDOS.add(studentDO);
+        }
+        return studentDOS;
     }
 
 

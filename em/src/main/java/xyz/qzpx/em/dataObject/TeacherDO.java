@@ -365,4 +365,5 @@ public class TeacherDO {
     public void setRemark(String remark) {
         this.remark = remark == null ? null : remark.trim();
     }
+
 }

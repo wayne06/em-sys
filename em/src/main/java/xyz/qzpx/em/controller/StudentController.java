@@ -2,6 +2,7 @@ package xyz.qzpx.em.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import xyz.qzpx.em.dataObject.CourseDO;
 import xyz.qzpx.em.dataObject.StudentDO;
 import xyz.qzpx.em.service.StudentService;
 
@@ -60,6 +61,11 @@ public class StudentController {
     @GetMapping("/count")
     public Integer getCount() {
         return studentService.getStudentCount();
+    }
+
+    @PostMapping("/getStuByCourse")
+    public List<StudentDO> getStuByCourse(@RequestBody CourseDO courseDO) {
+        return studentService.getStudentByCourseId(courseDO.getId());
     }
 
 

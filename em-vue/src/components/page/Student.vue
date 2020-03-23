@@ -12,6 +12,7 @@
                 <el-button type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAdd">新增学生</el-button>
                 <el-input v-model="keyword" placeholder="学生姓名 或 手机号码" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                <el-button type="success" icon="el-icon-s-promotion" @click="submitCourseStu" style="float:right">提交</el-button>
             </div>
             <el-table
                     :data="tableData"
@@ -193,7 +194,7 @@
                             style="width: 100%"
                     ></el-date-picker>
                 </el-form-item>
-                <el-form-item label="预计日期">
+                <el-form-item label="预计结束日期">
                     <el-date-picker
                             v-model="form.endAt"
                             type="date"
@@ -244,7 +245,7 @@
                             style="width: 100%"
                     ></el-date-picker>
                 </el-form-item>
-                <el-form-item label="预计日期">
+                <el-form-item label="预计结束日期">
                     <el-date-picker
                             v-model="form.endAt"
                             type="date"
@@ -541,6 +542,15 @@
                         type: 'info',
                         message: '已取消删除'
                     })
+                });
+            },
+            submitCourseStu () {
+                this.$axios.post('/teachercourse/initial', {
+
+                }).then(resp => {
+                    if (resp && resp.status === 200) {
+                        this.$message.success('提交成功');
+                    }
                 });
             }
         }

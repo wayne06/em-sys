@@ -3,6 +3,7 @@ package xyz.qzpx.em.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.qzpx.em.dataObject.TeacherDO;
+import xyz.qzpx.em.dataObject.Selection;
 import xyz.qzpx.em.service.TeacherService;
 
 import java.util.List;
@@ -49,6 +50,11 @@ public class TeacherController {
     @GetMapping("/count")
     public Integer getCount() {
         return teacherService.getTeacherCount();
+    }
+
+    @GetMapping("/selection")
+    public List<Selection> getTeachers() {
+        return teacherService.getTeachers();
     }
 
 }

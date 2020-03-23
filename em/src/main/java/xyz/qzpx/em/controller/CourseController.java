@@ -2,9 +2,7 @@ package xyz.qzpx.em.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import xyz.qzpx.em.dataObject.AllFilter;
-import xyz.qzpx.em.dataObject.CourseDO;
-import xyz.qzpx.em.dataObject.TreeItem;
+import xyz.qzpx.em.dataObject.*;
 import xyz.qzpx.em.service.CourseService;
 
 import java.util.List;
@@ -89,6 +87,15 @@ public class CourseController {
         return courseService.getIdByOthers(courseDO);
     }
 
+    @GetMapping("/getSignUpCourse")
+    public List<CourseDO> getSignUpCourse() {
+        return courseService.getSignUpCourse();
+    }
+
+    @PostMapping("/selection")
+    public List<Selection> getCoursesByTeacher(@RequestBody TeacherDO teacherDO) {
+        return courseService.getCoursesByTeacherId(teacherDO.getId());
+    }
 
 
 }

@@ -57,4 +57,9 @@ public interface CourseStudentDOMapper {
     List<CourseStudentDO> selectByStuId(Integer id);
 
     void deleteByStudentId(Integer id);
+
+    List<Integer> selectCourseIds();
+
+    List<Integer> selectByCourseId(Integer courseId);
+
 }
