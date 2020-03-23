@@ -100,11 +100,11 @@ export default {
                 //         }
                 //     ]
                 // },
-                // {
-                //     icon: 'el-icon-lx-emoji',
-                //     index: 'icon',
-                //     title: '自定义图标'
-                // },
+                {
+                    icon: 'el-icon-lx-emoji',
+                    index: 'icon',
+                    title: '自定义图标'
+                },
                 {
                     icon: 'el-icon-pie-chart',
                     index: 'charts',
@@ -151,22 +151,22 @@ export default {
                 //     title: '支持作者'
                 // },
                 {
-                    icon: 'el-icon-lx-cascades',
+                    icon: 'el-icon-folder-opened',
                     index: 'course',
                     title: '课程管理'
                 },
                 {
-                    icon: 'el-icon-lx-cascades',
+                    icon: 'el-icon-user',
                     index: 'teacher',
                     title: '教师管理'
                 },
                 {
-                    icon: 'el-icon-lx-cascades',
+                    icon: 'el-icon-s-check',
                     index: 'student',
                     title: '报名信息'
                 },
                 {
-                    icon: 'el-icon-lx-cascades',
+                    icon: 'el-icon-timer',
                     index: 'cts',
                     title: '课程安排'
                 },
@@ -184,6 +184,11 @@ export default {
                             title: '成绩管理'
                         }
                     ]
+                },
+                {
+                    icon: 'el-icon-data-line',
+                    index: 'financialstatement',
+                    title: '财务报表'
                 },
 
 

@@ -141,6 +141,11 @@ export default new Router({
                     path: '/score',
                     component: () => import(/* webpackChunkName: "table" */ '../components/page/Score.vue'),
                     meta: { title: '成绩管理' }
+                },
+                {
+                    path: '/financialstatement',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/FinancialStatement.vue'),
+                    meta: { title: '财务报表' }
                 }
             ]
         },
