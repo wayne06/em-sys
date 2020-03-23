@@ -10,4 +10,6 @@ public interface RecordService {
     void update(RecordDO recordDO);
 
     void delete(RecordDO recordDO);
+
+    void add(RecordDO recordDO);
 }

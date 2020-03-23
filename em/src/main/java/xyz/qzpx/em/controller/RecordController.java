@@ -1,6 +1,5 @@
 package xyz.qzpx.em.controller;
 
-import org.apache.catalina.LifecycleState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +19,13 @@ public class RecordController {
 
     @PostMapping("/getByCourseId")
     public List<RecordDO> getByCourseId(@RequestBody RecordDO recordDO) {
-        return recordService.getByCourseId(recordDO.getCourseId());
+        List<RecordDO> recordDOS = recordService.getByCourseId(recordDO.getCourseId());
+        return recordDOS;
+    }
+
+    @PostMapping("/add")
+    public void add(@RequestBody RecordDO recordDO) {
+        recordService.add(recordDO);
     }
 
     @PostMapping("/update")

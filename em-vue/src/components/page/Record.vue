@@ -31,7 +31,8 @@
                     border
                     class="table"
                     header-cell-class-name="table-header">
-                <el-table-column prop="time" label="上课时间"></el-table-column>
+                <el-table-column prop="atDate" label="上课日期"></el-table-column>
+                <el-table-column prop="atTime" label="上课时间"></el-table-column>
                 <el-table-column prop="outline" label="内容提纲"></el-table-column>
                 <el-table-column prop="feedback" label="学生反馈"></el-table-column>
                 <el-table-column prop="nextOutline" label="下节提纲"></el-table-column>
@@ -60,7 +61,24 @@
         <el-dialog title=添加记录 :visible.sync="addVisible" width="50%" @close="clear" top="3vh">
             <el-form ref="form" :model="form" label-width="90px" label-position="left" size="mini">
                 <el-form-item label="上课时间">
-                    <el-input v-model="form.time"></el-input>
+                    <el-date-picker
+                            v-model="form.atDate"
+                            type="date"
+                            placeholder="选择日期"
+                            value-format="yyyy-MM-dd"
+                            style="width: 38%; margin-right: 20px;"
+                    ></el-date-picker>
+                    <el-time-picker
+                            is-range
+                            v-model="form.period"
+                            range-separator="至"
+                            start-placeholder="开始时间"
+                            end-placeholder="结束时间"
+                            placeholder="选择时间范围"
+                            value-format="HH:mm"
+                            format="HH:mm"
+                            style="width: 58%">
+                    </el-time-picker>
                 </el-form-item>
                 <el-form-item label="内容提纲">
                     <el-input type="textarea" rows="5" v-model="form.outline"></el-input>
@@ -130,11 +148,38 @@
                 this.addVisible = true;
             },
             save () {
-
+                console.log(this.tempCourseId);
+                this.$axios.post('/record/add', {
+                    courseId: this.tempCourseId,
+                    atDate: this.form.atDate,
+                    atTime: this.form.period[0] + "," + this.form.period[1],
+                    outline: this.form.outline,
+                    feedback: this.form.feedback,
+                    nextOutline: this.form.outline,
+                    requirement: this.form.requirement,
+                    homework: this.form.homework,
+                    remark: this.form.remark
+                }).then(resp => {
+                    if (resp && resp.status === 200) {
+                        this.$message.success('添加成功');
+                        this.addVisible = false;
+                        this.getTableData(this.tempCourseId);
+                    }
+                })
             },
             select_status (val) {
-                console.log(val)
                 this.tempCourseId = val;
+                this.getTableData(val);
+            },
+            getTableData (courseId) {
+                this.$axios.post('/record/getByCourseId', {
+                    courseId: courseId
+                }).then(resp => {
+                    if (resp && resp.status === 200) {
+                        this.tableData = resp.data;
+                        console.log(this.tableData)
+                    }
+                })
             },
             clear () {
 
