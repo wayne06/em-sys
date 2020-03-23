@@ -173,7 +173,7 @@
 
         <!-- 新增报名信息弹出框 -->
         <el-dialog title="新增报名信息" :visible.sync="addSignUpVisible" width="30%" @close="clearInner" top="10vh">
-            <el-form ref="form" :model="form" label-width="90px" label-position="left" size="mini">
+            <el-form ref="form" :model="form" label-width="105px" label-position="left" size="mini">
                 <el-form-item label="报名科目">
                     <el-cascader
                             :options="options"
@@ -224,7 +224,7 @@
 
         <!-- 编辑报名信息弹出框 -->
         <el-dialog title="更新报名信息" :visible.sync="editSignUpVisible" width="30%" @close="clearInner" top="10vh">
-            <el-form ref="form" :model="form" label-width="90px" label-position="left" size="mini">
+            <el-form ref="form" :model="form" label-width="105px" label-position="left" size="mini">
                 <el-form-item label="报名科目">
                     <el-cascader
                             :options="options"
@@ -549,7 +549,14 @@
 
                 }).then(resp => {
                     if (resp && resp.status === 200) {
-                        this.$message.success('提交成功');
+
+                        this.$axios.post('/score/initial', {
+
+                        }).then(resp => {
+                            if (resp && resp.status === 200) {
+                                this.$message.success('提交成功');
+                            }
+                        });
                     }
                 });
             }

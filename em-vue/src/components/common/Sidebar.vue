@@ -105,11 +105,11 @@ export default {
                 //     index: 'icon',
                 //     title: '自定义图标'
                 // },
-                // {
-                //     icon: 'el-icon-pie-chart',
-                //     index: 'charts',
-                //     title: 'schart图表'
-                // },
+                {
+                    icon: 'el-icon-pie-chart',
+                    index: 'charts',
+                    title: 'schart图表'
+                },
                 // {
                 //     icon: 'el-icon-rank',
                 //     index: '6',

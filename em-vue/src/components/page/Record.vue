@@ -130,7 +130,7 @@
         methods: {
             getData () {
                 this.$axios.post('/course/selection', {
-                    id: 3
+                    id: 4
                 }).then(resp => {
                     if (resp && resp.status === 200) {
                         this.options = resp.data;

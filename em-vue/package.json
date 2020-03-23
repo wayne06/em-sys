@@ -18,7 +18,9 @@
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.0.3",
     "vue-schart": "^2.0.0",
-    "vuedraggable": "^2.17.0"
+    "vuedraggable": "^2.17.0",
+    "vxe-table": "^2.8.30",
+    "xe-utils": "^2.4.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.9.0",

@@ -184,3 +184,11 @@ a {
 /*.el-cascader-menu__wrap {*/
 /*    height: 600px*/
 /*}*/
+
+.vxe-icon--edit-outline:before {
+    border-style: none;
+}
+
+.vxe-icon--edit-outline:after {
+    border-style: hidden;
+}

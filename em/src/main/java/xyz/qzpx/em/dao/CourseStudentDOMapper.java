@@ -62,4 +62,5 @@ public interface CourseStudentDOMapper {
 
     List<Integer> selectByCourseId(Integer courseId);
 
+    List<CourseStudentDO> selectAll();
 }

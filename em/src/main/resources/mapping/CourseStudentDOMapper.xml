@@ -237,4 +237,9 @@
     where course_id = #{courseId,jdbcType=INTEGER}
   </select>
 
+  <select id="selectAll" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" />
+    from course_student
+  </select>
+
 </mapper>

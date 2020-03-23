@@ -65,7 +65,8 @@ public class StudentController {
 
     @PostMapping("/getStuByCourse")
     public List<StudentDO> getStuByCourse(@RequestBody CourseDO courseDO) {
-        return studentService.getStudentByCourseId(courseDO.getId());
+        List<StudentDO> studentDOS = studentService.getStudentByCourseId(courseDO.getId());
+        return studentDOS;
     }
 
 

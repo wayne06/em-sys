@@ -10,6 +10,10 @@ import './assets/css/icon.css';
 import './components/common/directives';
 import 'babel-polyfill';
 
+import 'xe-utils'
+import VXETable from "vxe-table";
+import 'vxe-table/lib/index.css'
+
 ElementUI.Dialog.props.closeOnClickModal.default = false;
 
 // 设置反向代理：前端请求默认发送到http://localhost:8443/api
@@ -24,6 +28,7 @@ Vue.use(VueI18n);
 Vue.use(ElementUI, {
     size: 'small'
 });
+Vue.use(VXETable);
 const i18n = new VueI18n({
     locale: 'zh',
     messages
