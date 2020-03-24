@@ -128,43 +128,45 @@ public class CourseStudentServiceImpl implements CourseStudentService {
     public Map<String, GraphDO> getGraph() {
         Map<String, GraphDO> graphMap = new HashMap<>();
 
-
         GraphDO incomeGraph = new GraphDO();
+        GraphDO countGraph = new GraphDO();
+
         List<String> weeksToNow = new ArrayList<>();
         int currentWeek = Calendar.getInstance().get(Calendar.WEEK_OF_YEAR);
         for (int i = 1; i <= currentWeek; i++) {
             weeksToNow.add("第"+i+"周");
         }
         incomeGraph.setLabels(weeksToNow);
+        countGraph.setLabels(weeksToNow);
 
         String label1 = "收入";
         List<Integer> dataList1 = new ArrayList<>(currentWeek);
         for (int i = 0; i < currentWeek; i++) {
             dataList1.add(0);
         }
-        System.out.println(dataList1);
         String label2 = "减免";
         List<Integer> dataList2 = new ArrayList<>(currentWeek);
         for (int i = 0; i < currentWeek; i++) {
             dataList2.add(0);
         }
-        System.out.println(dataList2);
         String label3 = "退费";
         List<Integer> dataList3 = new ArrayList<>(currentWeek);
         for (int i = 0; i < currentWeek; i++) {
             dataList3.add(0);
         }
-        System.out.println(dataList3);
+        String label4 = "报名人数";
+        List<Integer> dataList4 = new ArrayList<>(currentWeek);
+        for (int i = 0; i < currentWeek; i++) {
+            dataList4.add(0);
+        }
 
         List<StatisticsDO> statisticsDOS = courseStudentDOMapper.selectWeekData();
         for (StatisticsDO statisticsDO : statisticsDOS) {
             Integer index = Integer.parseInt(statisticsDO.getPeriod().substring(5)) - 1;
             dataList1.set(index, statisticsDO.getIncome());
-            System.out.println(dataList1);
             dataList2.set(index, statisticsDO.getDiscount());
-            System.out.println(dataList2);
             dataList3.set(index, statisticsDO.getRefund());
-            System.out.println(dataList3);
+            dataList4.set(index, statisticsDO.getStuCount());
         }
 
         Map<String, Object> dataset1 = new HashMap<>();
@@ -177,15 +179,23 @@ public class CourseStudentServiceImpl implements CourseStudentService {
         dataset3.put("label", label3);
         dataset3.put("data", dataList3);
 
-        List<Map<String, Object>> datasets = new ArrayList<>(3);
-        datasets.add(dataset1);
-        datasets.add(dataset2);
-        datasets.add(dataset3);
+        Map<String, Object> dataset4 = new HashMap<>();
+        dataset4.put("label", label4);
+        dataset4.put("data", dataList4);
 
-        incomeGraph.setDatasets(datasets);
+        List<Map<String, Object>> incomeDatasets = new ArrayList<>();
+        incomeDatasets.add(dataset1);
+        incomeDatasets.add(dataset2);
+        incomeDatasets.add(dataset3);
+
+        List<Map<String, Object>> countDatasets = new ArrayList<>();
+        countDatasets.add(dataset4);
+
+        incomeGraph.setDatasets(incomeDatasets);
+        countGraph.setDatasets(countDatasets);
 
         graphMap.put("income", incomeGraph);
-        //graphMap.put("stuCount", );
+        graphMap.put("stuCount", countGraph);
 
         return graphMap;
     }

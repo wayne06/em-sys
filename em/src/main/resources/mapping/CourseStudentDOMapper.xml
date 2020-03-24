@@ -250,7 +250,7 @@
     ORDER BY registered_at asc;
   </select>
   <select id="selectWeekData" resultType="xyz.qzpx.em.dataObject.StatisticsDO">
-    SELECT date_format(a.registered_at, '%x-%v') as period, SUM(a.expense) as income, sum(discount) as discount, sum(refund) as refund
+    SELECT date_format(a.registered_at, '%x-%v') as period, SUM(a.expense) as income, sum(discount) as discount, sum(refund) as refund, count(expense) as stuCount
     FROM course_student AS a
     GROUP BY period;
   </select>

@@ -10,7 +10,15 @@ public class StatisticsDO {
 
     private Integer refund;
 
-    private String allWeekIndex;
+    private Integer stuCount;
+
+    public Integer getStuCount() {
+        return stuCount;
+    }
+
+    public void setStuCount(Integer stuCount) {
+        this.stuCount = stuCount;
+    }
 
     public String getPeriod() {
         return period;
@@ -44,11 +52,4 @@ public class StatisticsDO {
         this.refund = refund;
     }
 
-    public String getAllWeekIndex() {
-        return allWeekIndex;
-    }
-
-    public void setAllWeekIndex(String allWeekIndex) {
-        this.allWeekIndex = allWeekIndex;
-    }
 }

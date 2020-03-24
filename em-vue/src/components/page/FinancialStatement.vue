@@ -87,28 +87,15 @@ export default {
             monthData: [],
             yearData: [],
             options1: {
-                type: 'bar',
+                type: 'line',
                 title: {
                     text: '报名人数周次图'
                 },
-                labels: ['周一', '周二', '周三', '周四', '周五'],
-                datasets: [
-                    {
-                        label: '家电',
-                        data: [234, 278, 270, 190, 230]
-                    },
-                    {
-                        label: '百货',
-                        data: [164, 178, 190, 135, 160]
-                    },
-                    {
-                        label: '食品',
-                        data: [144, 198, 150, 235, 120]
-                    }
-                ]
+                labels: [],
+                datasets: []
             },
             options2: {
-                type: 'line',
+                type: 'bar',
                 title: {
                     text: '报名缴费周次图'
                 },
@@ -133,6 +120,8 @@ export default {
             this.$axios.get('/statistics/graph').then(resp => {
                 if (resp && resp.status === 200) {
                     console.log(resp.data)
+                    this.options1.labels = resp.data.stuCount.labels;
+                    this.options1.datasets = resp.data.stuCount.datasets;
                     this.options2.labels = resp.data.income.labels;
                     this.options2.datasets = resp.data.income.datasets;
                 }
