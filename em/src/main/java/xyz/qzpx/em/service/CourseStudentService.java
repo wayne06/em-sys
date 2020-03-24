@@ -2,8 +2,11 @@ package xyz.qzpx.em.service;
 
 import xyz.qzpx.em.dataObject.CourseStudentDO;
 import xyz.qzpx.em.dataObject.CourseStudentVO;
+import xyz.qzpx.em.dataObject.GraphDO;
+import xyz.qzpx.em.dataObject.StatisticsDO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CourseStudentService {
 
@@ -24,4 +27,8 @@ public interface CourseStudentService {
     void update(CourseStudentDO courseStudentDO);
 
     void deleteCourseById(Integer id);
+
+    Map<String, List<StatisticsDO>> getStatistics();
+
+    Map<String, GraphDO> getGraph();
 }

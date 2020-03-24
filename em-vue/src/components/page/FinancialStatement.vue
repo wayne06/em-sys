@@ -1,37 +1,73 @@
 <template>
     <div>
-        <div class="crumbs">
-            <el-breadcrumb separator="/">
-                <el-breadcrumb-item>
-                    <i class="el-icon-pie-chart"></i> schart图表
-                </el-breadcrumb-item>
-            </el-breadcrumb>
-        </div>
         <div class="container">
-            <div class="plugins-tips">
-                vue-schart：vue.js封装sChart.js的图表组件。
-                访问地址：
-                <a
-                    href="https://github.com/lin-xin/vue-schart"
-                    target="_blank"
-                >vue-schart</a>
-            </div>
-            <div class="schart-box">
-                <div class="content-title">柱状图</div>
-                <schart class="schart" canvasId="bar" :options="options1"></schart>
-            </div>
-            <div class="schart-box">
-                <div class="content-title">折线图</div>
-                <schart class="schart" canvasId="line" :options="options2"></schart>
-            </div>
-            <div class="schart-box">
-                <div class="content-title">饼状图</div>
-                <schart class="schart" canvasId="pie" :options="options3"></schart>
-            </div>
-            <div class="schart-box">
-                <div class="content-title">环形图</div>
-                <schart class="schart" canvasId="ring" :options="options4"></schart>
-            </div>
+            <el-tabs v-model="message">
+                <el-tab-pane :label="`数据`" name="rawdata">
+                    <div class="schart-box">
+                        <el-table
+                                :data="dayData"
+                                height="600"
+                                border
+                                class="table"
+                                header-cell-class-name="table-header">
+                            <el-table-column min-width="100px" prop="period" label="日期"></el-table-column>
+                            <el-table-column prop="income" label="收费"></el-table-column>
+                            <el-table-column prop="discount" label="减免"></el-table-column>
+                            <el-table-column prop="refund" label="退费"></el-table-column>
+                        </el-table>
+                    </div>
+                    <div class="schart-box">
+                        <el-table
+                                :data="weekData"
+                                height="600"
+                                border
+                                class="table"
+                                header-cell-class-name="table-header">
+                            <el-table-column prop="period" label="周次"></el-table-column>
+                            <el-table-column prop="income" label="收费"></el-table-column>
+                            <el-table-column prop="discount" label="减免"></el-table-column>
+                            <el-table-column prop="refund" label="退费"></el-table-column>
+                        </el-table>
+                    </div>
+                    <div class="schart-box">
+                        <el-table
+                                :data="monthData"
+                                height="600"
+                                border
+                                class="table"
+                                header-cell-class-name="table-header">
+                            <el-table-column prop="period" label="月份"></el-table-column>
+                            <el-table-column prop="income" label="收费"></el-table-column>
+                            <el-table-column prop="discount" label="减免"></el-table-column>
+                            <el-table-column prop="refund" label="退费"></el-table-column>
+                        </el-table>
+                    </div>
+                    <div class="schart-box">
+                        <el-table
+                                :data="yearData"
+                                height="600"
+                                border
+                                class="table"
+                                header-cell-class-name="table-header">
+                            <el-table-column prop="period" label="年份"></el-table-column>
+                            <el-table-column prop="income" label="收费"></el-table-column>
+                            <el-table-column prop="discount" label="减免"></el-table-column>
+                            <el-table-column prop="refund" label="退费"></el-table-column>
+                        </el-table>
+                    </div>
+                </el-tab-pane>
+                <el-tab-pane :label="`图表`" name="graph">
+                    <template v-if="message === 'graph'">
+                        <div class="schart-box">
+                            <schart class="schart" canvasId="bar" :options="options1"></schart>
+                        </div>
+                        <div class="schart-box">
+                            <schart class="schart" canvasId="line" :options="options2"></schart>
+                        </div>
+                    </template>
+                </el-tab-pane>
+            </el-tabs>
+
         </div>
     </div>
 </template>
@@ -45,17 +81,20 @@ export default {
     },
     data() {
         return {
+            message: 'rawdata',
+            dayData: [],
+            weekData: [],
+            monthData: [],
+            yearData: [],
             options1: {
                 type: 'bar',
                 title: {
-                    text: '最近一周各品类销售图'
+                    text: '报名人数周次图'
                 },
-                bgColor: '#fbfbfb',
                 labels: ['周一', '周二', '周三', '周四', '周五'],
                 datasets: [
                     {
                         label: '家电',
-                        fillColor: 'rgba(241, 49, 74, 0.5)',
                         data: [234, 278, 270, 190, 230]
                     },
                     {
@@ -71,60 +110,34 @@ export default {
             options2: {
                 type: 'line',
                 title: {
-                    text: '最近几个月各品类销售趋势图'
+                    text: '报名缴费周次图'
                 },
-                bgColor: '#fbfbfb',
-                labels: ['6月', '7月', '8月', '9月', '10月'],
-                datasets: [
-                    {
-                        label: '家电',
-                        data: [234, 278, 270, 190, 230]
-                    },
-                    {
-                        label: '百货',
-                        data: [164, 178, 150, 135, 160]
-                    },
-                    {
-                        label: '食品',
-                        data: [114, 138, 200, 235, 190]
-                    }
-                ]
-            },
-            options3: {
-                type: 'pie',
-                title: {
-                    text: '服装品类销售饼状图'
-                },
-                legend: {
-                    position: 'left'
-                },
-                bgColor: '#fbfbfb',
-                labels: ['T恤', '牛仔裤', '连衣裙', '毛衣', '七分裤', '短裙', '羽绒服'],
-                datasets: [
-                    {
-                        data: [334, 278, 190, 235, 260, 200, 141]
-                    }
-                ]
-            },
-            options4: {
-                type: 'ring',
-                title: {
-                    text: '环形三等分'
-                },
-                showValue: false,
-                legend: {
-                    position: 'bottom',
-                    bottom: 40
-                },
-                bgColor: '#fbfbfb',
-                labels: ['vue', 'react', 'angular'],
-                datasets: [
-                    {
-                        data: [500, 500, 500]
-                    }
-                ]
+                labels: [],
+                datasets: []
             }
         };
+    },
+    created() {
+        this.getTableData();
+    },
+    methods: {
+        getTableData () {
+            this.$axios.get('/statistics/data').then(resp => {
+                if (resp && resp.status === 200) {
+                    this.dayData = resp.data.dayData;
+                    this.weekData = resp.data.weekData;
+                    this.monthData = resp.data.monthData;
+                    this.yearData = resp.data.yearData;
+                }
+            });
+            this.$axios.get('/statistics/graph').then(resp => {
+                if (resp && resp.status === 200) {
+                    console.log(resp.data)
+                    this.options2.labels = resp.data.income.labels;
+                    this.options2.datasets = resp.data.income.datasets;
+                }
+            });
+        }
     }
 };
 </script>
@@ -132,11 +145,11 @@ export default {
 <style scoped>
 .schart-box {
     display: inline-block;
-    margin: 20px;
+    margin: 40px 20px 20px 20px;
 }
 .schart {
     width: 600px;
-    height: 400px;
+    height: 600px;
 }
 .content-title {
     clear: both;
@@ -145,5 +158,37 @@ export default {
     margin: 10px 0;
     font-size: 22px;
     color: #1f2f3d;
+}
+.handle-box {
+    margin-bottom: 20px;
+}
+
+.handle-select {
+    width: 120px;
+}
+
+.handle-input {
+    width: 300px;
+    display: inline-block;
+}
+
+.table {
+    width: 100%;
+    font-size: 14px;
+}
+
+.red {
+    color: #ff0000;
+}
+
+.mr10 {
+    margin-right: 10px;
+}
+
+.table-td-thumb {
+    display: block;
+    margin: auto;
+    width: 40px;
+    height: 40px;
 }
 </style>

@@ -6,9 +6,7 @@ import org.springframework.stereotype.Service;
 import xyz.qzpx.em.dao.CourseDOMapper;
 import xyz.qzpx.em.dao.CourseStudentDOMapper;
 import xyz.qzpx.em.dao.StudentDOMapper;
-import xyz.qzpx.em.dataObject.CourseDO;
-import xyz.qzpx.em.dataObject.CourseStudentDO;
-import xyz.qzpx.em.dataObject.CourseStudentVO;
+import xyz.qzpx.em.dataObject.*;
 import xyz.qzpx.em.service.CourseStudentService;
 
 import java.util.*;
@@ -104,6 +102,92 @@ public class CourseStudentServiceImpl implements CourseStudentService {
     @Override
     public void deleteCourseById(Integer id) {
         courseStudentDOMapper.deleteByPrimaryKey(id);
+    }
+
+    @Override
+    public Map<String, List<StatisticsDO>> getStatistics() {
+        Map<String, List<StatisticsDO>> statisticsMap = new HashMap<>();
+        statisticsMap.put("dayData", courseStudentDOMapper.selectDayData());
+        statisticsMap.put("weekData", courseStudentDOMapper.selectWeekData());
+        statisticsMap.put("monthData", courseStudentDOMapper.selectMonthData());
+        statisticsMap.put("yearData", courseStudentDOMapper.selectYearData());
+        return statisticsMap;
+    }
+
+    //public static void main(String[] args) {
+    //    List<Integer> dataList1 = new ArrayList<>(13);
+    //    for (int i = 0; i < 12; i++) {
+    //        dataList1.add(0);
+    //    }
+    //    System.out.println(dataList1);
+    //    dataList1.set(1, 100);
+    //    System.out.println(dataList1);
+    //}
+
+    @Override
+    public Map<String, GraphDO> getGraph() {
+        Map<String, GraphDO> graphMap = new HashMap<>();
+
+
+        GraphDO incomeGraph = new GraphDO();
+        List<String> weeksToNow = new ArrayList<>();
+        int currentWeek = Calendar.getInstance().get(Calendar.WEEK_OF_YEAR);
+        for (int i = 1; i <= currentWeek; i++) {
+            weeksToNow.add("第"+i+"周");
+        }
+        incomeGraph.setLabels(weeksToNow);
+
+        String label1 = "收入";
+        List<Integer> dataList1 = new ArrayList<>(currentWeek);
+        for (int i = 0; i < currentWeek; i++) {
+            dataList1.add(0);
+        }
+        System.out.println(dataList1);
+        String label2 = "减免";
+        List<Integer> dataList2 = new ArrayList<>(currentWeek);
+        for (int i = 0; i < currentWeek; i++) {
+            dataList2.add(0);
+        }
+        System.out.println(dataList2);
+        String label3 = "退费";
+        List<Integer> dataList3 = new ArrayList<>(currentWeek);
+        for (int i = 0; i < currentWeek; i++) {
+            dataList3.add(0);
+        }
+        System.out.println(dataList3);
+
+        List<StatisticsDO> statisticsDOS = courseStudentDOMapper.selectWeekData();
+        for (StatisticsDO statisticsDO : statisticsDOS) {
+            Integer index = Integer.parseInt(statisticsDO.getPeriod().substring(5)) - 1;
+            dataList1.set(index, statisticsDO.getIncome());
+            System.out.println(dataList1);
+            dataList2.set(index, statisticsDO.getDiscount());
+            System.out.println(dataList2);
+            dataList3.set(index, statisticsDO.getRefund());
+            System.out.println(dataList3);
+        }
+
+        Map<String, Object> dataset1 = new HashMap<>();
+        dataset1.put("label", label1);
+        dataset1.put("data", dataList1);
+        Map<String, Object> dataset2 = new HashMap<>();
+        dataset2.put("label", label2);
+        dataset2.put("data", dataList2);
+        Map<String, Object> dataset3 = new HashMap<>();
+        dataset3.put("label", label3);
+        dataset3.put("data", dataList3);
+
+        List<Map<String, Object>> datasets = new ArrayList<>(3);
+        datasets.add(dataset1);
+        datasets.add(dataset2);
+        datasets.add(dataset3);
+
+        incomeGraph.setDatasets(datasets);
+
+        graphMap.put("income", incomeGraph);
+        //graphMap.put("stuCount", );
+
+        return graphMap;
     }
 
     private String getCourseNameById(Integer courseId) {

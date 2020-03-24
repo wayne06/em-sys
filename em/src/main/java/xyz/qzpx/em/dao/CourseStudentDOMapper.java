@@ -2,6 +2,7 @@ package xyz.qzpx.em.dao;
 
 import org.apache.ibatis.annotations.Mapper;
 import xyz.qzpx.em.dataObject.CourseStudentDO;
+import xyz.qzpx.em.dataObject.StatisticsDO;
 
 import java.util.List;
 
@@ -63,4 +64,12 @@ public interface CourseStudentDOMapper {
     List<Integer> selectByCourseId(Integer courseId);
 
     List<CourseStudentDO> selectAll();
+
+    List<StatisticsDO> selectDayData();
+
+    List<StatisticsDO> selectWeekData();
+
+    List<StatisticsDO> selectMonthData();
+
+    List<StatisticsDO> selectYearData();
 }

@@ -20,6 +20,7 @@
     <result column="refund" jdbcType="INTEGER" property="refund" />
     <result column="remark" jdbcType="VARCHAR" property="remark" />
   </resultMap>
+
   <sql id="Base_Column_List">
     <!--
       WARNING - @mbg.generated
@@ -240,6 +241,28 @@
   <select id="selectAll" resultMap="BaseResultMap">
     select <include refid="Base_Column_List" />
     from course_student
+  </select>
+
+  <select id="selectDayData" resultType="xyz.qzpx.em.dataObject.StatisticsDO">
+    select registered_at as period, sum(expense) as income, sum(discount) as discount, sum(refund) as refund
+    from course_student
+    GROUP BY registered_at
+    ORDER BY registered_at asc;
+  </select>
+  <select id="selectWeekData" resultType="xyz.qzpx.em.dataObject.StatisticsDO">
+    SELECT date_format(a.registered_at, '%x-%v') as period, SUM(a.expense) as income, sum(discount) as discount, sum(refund) as refund
+    FROM course_student AS a
+    GROUP BY period;
+  </select>
+  <select id="selectMonthData" resultType="xyz.qzpx.em.dataObject.StatisticsDO">
+    SELECT date_format(a.registered_at, '%Y-%m') as period, SUM(a.expense) as income, sum(discount) as discount, sum(refund) as refund
+    FROM course_student AS a
+    GROUP BY period;
+  </select>
+  <select id="selectYearData" resultType="xyz.qzpx.em.dataObject.StatisticsDO">
+    SELECT date_format(a.registered_at, '%Y') as period, SUM(a.expense) as income, sum(discount) as discount, sum(refund) as refund
+    FROM course_student AS a
+    GROUP BY period;
   </select>
 
 </mapper>
