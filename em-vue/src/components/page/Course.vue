@@ -19,6 +19,10 @@
                 <el-button type="primary" @click="clearFilter">清除筛选条件</el-button>
             </div>
             <el-table
+                    v-loading="loading"
+                    element-loading-text="拼命加载中"
+                    element-loading-spinner="el-icon-loading"
+                    element-loading-background="rgba(0, 0, 0, 0.6)"
                     :data="tableData"
                     height="560"
                     border
@@ -131,7 +135,8 @@
                 idx: -1,
                 keyword: '',
                 pageTotal: 0,
-                filters: {}
+                filters: {},
+                loading: true
             };
         },
         created () {
@@ -143,6 +148,7 @@
                 this.$axios.get('/course/all').then(resp => {
                     if (resp && resp.status === 200) {
                         this.tableData = resp.data;
+                        this.loading = false;
                     }
                 });
                 this.$axios.get('/course/count').then(resp => {

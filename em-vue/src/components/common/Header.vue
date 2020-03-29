@@ -50,18 +50,22 @@
 </template>
 <script>
 import bus from '../common/bus';
+import {createRouter} from '../../router'
 export default {
     data() {
         return {
             collapse: false,
             fullscreen: false,
-            name: 'linxin',
+            name: 'unknown',
             message: 2
         };
     },
     computed: {
         username() {
-            let username = localStorage.getItem('ms_username');
+            // let username = localStorage.getItem('ms_username');
+            // return username ? username : this.name;
+
+            let username = this.$store.state.username;
             return username ? username : this.name;
         }
     },
@@ -69,8 +73,16 @@ export default {
         // 用户名下拉菜单选择事件
         handleCommand(command) {
             if (command == 'loginout') {
-                localStorage.removeItem('ms_username');
-                this.$router.push('/login');
+                let _this = this
+                this.$axios.get('/user/logout').then(resp => {
+                    if (resp && resp.status === 200) {
+                        _this.$store.commit('logout')
+                        _this.$router.replace('/login')
+                        const newRouter = createRouter()
+                        _this.$router.matcher = newRouter.matcher
+                        // console.log(this.$store.state)
+                    }
+                }).catch(failResponse => {})
             }
         },
         // 侧边栏折叠

@@ -192,3 +192,7 @@ a {
 .vxe-icon--edit-outline:after {
     border-style: hidden;
 }
+
+.el-icon-loading {
+    font-size: 50px;
+}

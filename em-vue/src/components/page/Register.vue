@@ -2,24 +2,19 @@
     <div class="login-wrap">
         <div class="ms-login">
             <div class="ms-title">启智培训中心</div>
-            <el-form :model="loginForm" :rules="rules" ref="login" label-width="0px" class="ms-content">
+            <el-form :model="registerForm" :rules="rules" ref="login" label-width="0px" class="ms-content">
                 <el-form-item prop="username">
-                    <el-input v-model="loginForm.username" placeholder="请输入用户名">
+                    <el-input v-model="registerForm.username" placeholder="请输入用户名">
                         <el-button slot="prepend" icon="el-icon-lx-people"></el-button>
                     </el-input>
                 </el-form-item>
                 <el-form-item prop="password">
-                    <el-input
-                        type="password"
-                        placeholder="请输入密码"
-                        v-model="loginForm.password"
-                        @keyup.enter.native="submitForm()"
-                    >
+                    <el-input type="password" placeholder="请输入密码" v-model="registerForm.password" @keyup.enter.native="submitForm()">
                         <el-button slot="prepend" icon="el-icon-lx-lock"></el-button>
                     </el-input>
                 </el-form-item>
                 <div class="login-btn">
-                    <el-button type="primary" @click="login">登录</el-button>
+                    <el-button type="primary" @click="register">注册</el-button>
                 </div>
                 <p class="login-tips">Tips : 用户名和密码随便填。</p>
             </el-form>
@@ -29,9 +24,11 @@
 
 <script>
 export default {
+    name: 'Register',
     data: function() {
         return {
-            loginForm: {
+            checked: true,
+            registerForm: {
                 username: '',
                 password: ''
             },
@@ -39,30 +36,27 @@ export default {
                 username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
                 password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
             },
-            responseResult: []
-        }
+            loading: false
+        };
     },
     methods: {
-        login () {
+        register () {
             let _this = this
-            console.log(this.$store)
-            this.$axios
-                .post('/user/login', {
-                    username: this.loginForm.username,
-                    password: this.loginForm.password
-                })
-                .then(resp => {
-                    if (resp && resp.status === 200) {
-                        console.log('mark')
-                        _this.$store.commit('login', _this.loginForm.username)
-                        let path = this.$route.query.redirect
-                        this.$router.replace({path: path === '/' || path === undefined ? '/' : path})
-                        console.log(path)
-                        console.log(this.$store)
-                    }
-                })
-                .catch(failResponse => {
-                })
+            this.$axios.post('/user/register', {
+                username: this.registerForm.username,
+                password: this.registerForm.password
+            }).then(resp => {
+                if (resp && resp.status === 200) {
+                    this.$alert('注册成功', '提示', {
+                        confirmButtonText: '确定'
+                    })
+                    _this.$router.replace('/login')
+                } else {
+                    this.$alert(resp.data.message, '提示', {
+                        confirmButtonText: '确定'
+                    })
+                }
+            }).catch(failResponse => {})
         }
     },
 };
