@@ -2,7 +2,10 @@
     <div>
         <el-row :gutter="20">
             <el-col :span="8">
-                <el-card shadow="hover" class="mgb20" style="height:252px;">
+                <el-card shadow="hover" class="mgb20" style="height:400px;">
+                    <div slot="header" class="clearfix">
+                        <span>欢迎回来</span>
+                    </div>
                     <div class="user-info">
                         <img src="../../assets/img/img.jpg" class="user-avator" alt />
                         <div class="user-info-cont">
@@ -10,104 +13,66 @@
                             <div>{{role}}</div>
                         </div>
                     </div>
-                    <div class="user-info-list">
-                        上次登录时间：
-                        <span>2019-11-01</span>
-                    </div>
-                    <div class="user-info-list">
-                        上次登录地点：
-                        <span>东莞</span>
-                    </div>
+                    <div class="user-info-list">{{one}}</div>
                 </el-card>
-                <el-card shadow="hover" style="height:252px;">
+
+                <el-card shadow="hover" style="height:325px;">
                     <div slot="header" class="clearfix">
-                        <span>语言详情</span>
-                    </div>Vue
+                        <span>登录情况</span>
+                    </div>
+                    Vue
                     <el-progress :percentage="71.3" color="#42b983"></el-progress>JavaScript
                     <el-progress :percentage="24.1" color="#f1e05a"></el-progress>CSS
                     <el-progress :percentage="13.7"></el-progress>HTML
                     <el-progress :percentage="5.9" color="#f56c6c"></el-progress>
                 </el-card>
             </el-col>
-            <el-col :span="16">
-                <el-row :gutter="20" class="mgb20">
-                    <el-col :span="8">
-                        <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-1">
-                                <i class="el-icon-lx-people grid-con-icon"></i>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">1234</div>
-                                    <div>用户访问量</div>
-                                </div>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-2">
-                                <i class="el-icon-lx-notice grid-con-icon"></i>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">321</div>
-                                    <div>系统消息</div>
-                                </div>
-                            </div>
-                        </el-card>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-card shadow="hover" :body-style="{padding: '0px'}">
-                            <div class="grid-content grid-con-3">
-                                <i class="el-icon-lx-goods grid-con-icon"></i>
-                                <div class="grid-cont-right">
-                                    <div class="grid-num">5000</div>
-                                    <div>数量</div>
-                                </div>
-                            </div>
-                        </el-card>
-                    </el-col>
-                </el-row>
-                <el-card shadow="hover" style="height:403px;">
+            <el-col :span="8">
+                <el-card shadow="hover" class="mgb20" style="height:750px;">
+                    <el-calendar v-model="value"/>
+                </el-card>
+            </el-col>
+            <el-col :span="8">
+                <el-card shadow="hover" class="mgb20" style="height:195px;">
+                    <div id="he-plugin-standard"></div>
+                </el-card>
+
+                <el-card shadow="hover" style="height:535px;">
                     <div slot="header" class="clearfix">
-                        <span>待办事项</span>
-                        <el-button style="float: right; padding: 3px 0" type="text">添加</el-button>
+                        <span>新闻通知</span>
                     </div>
-                    <el-table :show-header="false" :data="todoList" style="width:100%;">
-                        <el-table-column width="40">
-                            <template slot-scope="scope">
-                                <el-checkbox v-model="scope.row.status"></el-checkbox>
-                            </template>
-                        </el-table-column>
+                    <el-table :data="unread" :show-header="false" style="width: 100%">
                         <el-table-column>
                             <template slot-scope="scope">
-                                <div
-                                    class="todo-item"
-                                    :class="{'todo-item-del': scope.row.status}"
-                                >{{scope.row.title}}</div>
-                            </template>
-                        </el-table-column>
-                        <el-table-column width="60">
-                            <template>
-                                <i class="el-icon-edit"></i>
-                                <i class="el-icon-delete"></i>
+<!--                                <span class="message-title">{{scope.row.title}}</span>-->
+                                <el-link class="message-title"
+                                         target="_blank"
+                                         href="https://mp.weixin.qq.com/s/nSW9AfNa0YkAEyF5NiFDfw">疫情“打破”家庭教育舒适区：你如何履行责任，直接决定孩子的成长空间！</el-link>
                             </template>
                         </el-table-column>
                     </el-table>
                 </el-card>
             </el-col>
         </el-row>
-        <el-row :gutter="20">
-            <el-col :span="12">
-                <el-card shadow="hover">
-                    <schart ref="bar" class="schart" canvasId="bar" :options="options"></schart>
-                </el-card>
-            </el-col>
-            <el-col :span="12">
-                <el-card shadow="hover">
-                    <schart ref="line" class="schart" canvasId="line" :options="options2"></schart>
-                </el-card>
-            </el-col>
-        </el-row>
+
     </div>
 </template>
+
+<script>
+    WIDGET = {
+        CONFIG: {
+            "layout": 1,
+            "width": "550",
+            "height": "150",
+            "background": 1,
+            "dataColor": "FFFFFF",
+            "language": "zh",
+            "borderRadius": 5,
+            "key": "3658ef0a7d2145d396eb59eb6d549664"
+        }
+    }
+</script>
+<script src="https://widget.heweather.net/standard/static/js/he-standard-common.js?v=1.1"></script>
 
 <script>
 import Schart from 'vue-schart';
@@ -116,120 +81,58 @@ export default {
     name: 'dashboard',
     data() {
         return {
-            name: localStorage.getItem('ms_username'),
-            todoList: [
-                {
-                    title: '今天要修复100个bug',
-                    status: false
-                },
-                {
-                    title: '今天要修复100个bug',
-                    status: false
-                },
-                {
-                    title: '今天要写100行代码加几个bug吧',
-                    status: false
-                },
-                {
-                    title: '今天要修复100个bug',
-                    status: false
-                },
-                {
-                    title: '今天要修复100个bug',
-                    status: true
-                },
-                {
-                    title: '今天要写100行代码加几个bug吧',
-                    status: true
-                }
-            ],
-            data: [
-                {
-                    name: '2018/09/04',
-                    value: 1083
-                },
-                {
-                    name: '2018/09/05',
-                    value: 941
-                },
-                {
-                    name: '2018/09/06',
-                    value: 1139
-                },
-                {
-                    name: '2018/09/07',
-                    value: 816
-                },
-                {
-                    name: '2018/09/08',
-                    value: 327
-                },
-                {
-                    name: '2018/09/09',
-                    value: 228
-                },
-                {
-                    name: '2018/09/10',
-                    value: 1065
-                }
-            ],
-            options: {
-                type: 'bar',
-                title: {
-                    text: '最近一周各品类销售图'
-                },
-                xRorate: 25,
-                labels: ['周一', '周二', '周三', '周四', '周五'],
-                datasets: [
-                    {
-                        label: '家电',
-                        data: [234, 278, 270, 190, 230]
-                    },
-                    {
-                        label: '百货',
-                        data: [164, 178, 190, 135, 160]
-                    },
-                    {
-                        label: '食品',
-                        data: [144, 198, 150, 235, 120]
-                    }
-                ]
-            },
-            options2: {
-                type: 'line',
-                title: {
-                    text: '最近几个月各品类销售趋势图'
-                },
-                labels: ['6月', '7月', '8月', '9月', '10月'],
-                datasets: [
-                    {
-                        label: '家电',
-                        data: [234, 278, 270, 190, 230]
-                    },
-                    {
-                        label: '百货',
-                        data: [164, 178, 150, 135, 160]
-                    },
-                    {
-                        label: '食品',
-                        data: [74, 118, 200, 235, 90]
-                    }
-                ]
-            }
+            value: new Date(),
+            name: this.$store.state.username,
+            one: '',
+            message: 'first',
+            showHeader: false,
+            unread: [{
+                date: '2018-04-19 20:00:00',
+                title: '',
+            }]
         };
     },
     components: {
         Schart
     },
+    mounted() {
+        window.WIDGET = {
+            CONFIG: {
+                "layout": 1,
+                "width": "490",
+                "height": "155",
+                "background": 1,
+                "dataColor": "FFFFFF",
+                "language": "zh",
+                "borderRadius": 5,
+                "key": "3658ef0a7d2145d396eb59eb6d549664"
+            }
+        },
+        (function (d) {
+            var c = d.createElement('link')
+            c.rel = 'stylesheet'
+            c.href = 'https://widget.heweather.net/standard/static/css/he-standard.css?v=1.3'
+            var s = d.createElement('script')
+            s.src = 'https://widget.heweather.net/standard/static/js/he-standard.js?v=1.3'
+            var sn = d.getElementsByTagName('script')[0]
+            sn.parentNode.insertBefore(c, sn)
+            sn.parentNode.insertBefore(s, sn)
+        })(document)
+    },
     computed: {
         role() {
-            return this.name === 'admin' ? '超级管理员' : '普通用户';
+            return this.name === 'admin' ? '管理员' : '普通用户';
         }
     },
-    // created() {
-    //     this.handleListener();
-    //     this.changeDate();
-    // },
+    created() {
+        // this.handleListener();
+        // this.changeDate();
+        this.$axios.get('/user/one').then(resp => {
+            if (resp && resp.status === 200) {
+                this.one = resp.data
+            }
+        })
+    },
     // activated() {
     //     this.handleListener();
     // },
@@ -347,9 +250,10 @@ export default {
 }
 
 .user-info-list {
+    padding-top: 10px;
     font-size: 14px;
     color: #999;
-    line-height: 25px;
+    line-height: 30px;
 }
 
 .user-info-list span {
@@ -373,4 +277,12 @@ export default {
     width: 100%;
     height: 300px;
 }
+
+/*#he-plugin-standard {*/
+/*    width: 150%;*/
+/*}*/
+
+
+
+
 </style>

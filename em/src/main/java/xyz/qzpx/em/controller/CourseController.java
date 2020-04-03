@@ -97,5 +97,10 @@ public class CourseController {
         return courseService.getCoursesByTeacherId(teacherDO.getId());
     }
 
+    @GetMapping("/selection")
+    public List<Selection> getCoursesByTeacher() {
+        return courseService.getCoursesByTeacherId();
+    }
+
 
 }

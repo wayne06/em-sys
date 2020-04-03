@@ -1,10 +1,9 @@
 package xyz.qzpx.em.service.impl;
 
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import xyz.qzpx.em.dao.CourseDOMapper;
-import xyz.qzpx.em.dao.CourseStudentDOMapper;
-import xyz.qzpx.em.dao.TeacherCourseDOMapper;
+import xyz.qzpx.em.dao.*;
 import xyz.qzpx.em.dataObject.*;
 import xyz.qzpx.em.service.CourseService;
 
@@ -21,6 +20,12 @@ public class CourseServiceImpl implements CourseService {
 
     @Autowired
     private TeacherCourseDOMapper teacherCourseDOMapper;
+
+    @Autowired
+    private UserDOMapper userDOMapper;
+
+    @Autowired
+    private TeacherDOMapper teacherDOMapper;
 
     @Override
     public void addCourse(CourseDO courseDO) {
@@ -151,7 +156,7 @@ public class CourseServiceImpl implements CourseService {
             filtersItem.setValue(type);
             termFilters.add(filtersItem);
         }
-        allFilter.setType(termFilters);
+        allFilter.setTerm(termFilters);
 
         List<FiltersItem> typeFilters = new ArrayList<>();
         for (String type : courseDOMapper.selectAllType()) {
@@ -217,6 +222,13 @@ public class CourseServiceImpl implements CourseService {
             selections.add(selection);
         }
         return selections;
+    }
+
+    @Override
+    public List<Selection> getCoursesByTeacherId() {
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        TeacherDO teacherDO = teacherDOMapper.selectByUname(username);
+        return getCoursesByTeacherId(teacherDO.getId());
     }
 
 

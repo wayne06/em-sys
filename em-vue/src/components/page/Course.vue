@@ -159,6 +159,7 @@
                 this.$axios.get('/course/filters').then(resp => {
                     if (resp && resp.status === 200) {
                         _this.filters = resp.data;
+                        console.log(resp.data)
                     }
                 });
             },

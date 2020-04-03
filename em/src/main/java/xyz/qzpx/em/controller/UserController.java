@@ -6,6 +6,10 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
@@ -13,6 +17,7 @@ import xyz.qzpx.em.dataObject.UserDO;
 import xyz.qzpx.em.service.UserService;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/user")
@@ -66,6 +71,20 @@ public class UserController {
     @GetMapping("/authentication")
     public String authentication() {
         return "Authenticated.";
+    }
+
+    @GetMapping("/one")
+    public String one() {
+        String result = "欢迎回来";
+        try {
+            Document document = Jsoup.connect("http://wufazhuce.com/").get();
+            Elements elements = document.getElementsByClass("fp-one-cita");
+            Element element = elements.get(0);
+            result = element.text();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }

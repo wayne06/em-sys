@@ -54,9 +54,7 @@
         },
         methods: {
             getData () {
-                this.$axios.post('/course/selection', {
-                    id: 4
-                }).then(resp => {
+                this.$axios.get('/course/selection').then(resp => {
                     if (resp && resp.status === 200) {
                         this.options = resp.data;
                     }

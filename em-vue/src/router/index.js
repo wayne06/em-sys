@@ -153,7 +153,15 @@ export default new Router({
                     path: '/financialstatement',
                     component: () => import(/* webpackChunkName: "table" */ '../components/page/FinancialStatement.vue'),
                     meta: { title: '财务报表' }
-                }
+                },
+                {
+                    path: '/messagecenter',
+                    component: () => import(/* webpackChunkName: "login" */ '../components/page/MessageCenter.vue'),
+                    meta: {
+                        title: '消息中心',
+                        requireAuth: true
+                    }
+                },
             ]
         },
         {
@@ -178,7 +186,8 @@ export const createRouter = routes => new Router({
     routes: [
         {
             path: '/',
-            redirect: '/dashboard'
+            redirect: '/dashboard',
+            requireAuth: true
         },
         {
             path: '/',
@@ -323,7 +332,15 @@ export const createRouter = routes => new Router({
                     path: '/financialstatement',
                     component: () => import(/* webpackChunkName: "table" */ '../components/page/FinancialStatement.vue'),
                     meta: { title: '财务报表' }
-                }
+                },
+                {
+                    path: '/messagecenter',
+                    component: () => import(/* webpackChunkName: "login" */ '../components/page/MessageCenter.vue'),
+                    meta: {
+                        title: '消息中心',
+                        requireAuth: true
+                    }
+                },
             ]
         },
         {

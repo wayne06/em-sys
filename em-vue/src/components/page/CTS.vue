@@ -8,6 +8,15 @@
         <div class="container">
             <el-tabs v-model="message">
                 <el-tab-pane :label="`待处理`" name="first">
+
+                    <el-steps :active="active"  finish-status="success" style="padding-top: 15px; padding-bottom: 15px">
+                        <el-step title="报名信息提交"></el-step>
+                        <el-step title="审批"></el-step>
+                        <el-step title="课程安排提交"></el-step>
+                        <el-step title="审批"></el-step>
+                        <el-step title="完成"></el-step>
+                    </el-steps>
+
                     <el-table
                             :data="tableData1"
                             :show-header="true"
@@ -127,7 +136,8 @@
                 form: {},
                 options: [],
                 value: '',
-                idx: -1
+                idx: -1,
+                active: 0
             }
         },
         created() {
@@ -168,7 +178,7 @@
 
 
 
-                this.$axios.get('/teacher/selection').then(resp => {
+                    this.$axios.get('/teacher/selection').then(resp => {
                     if (resp && resp.status === 200) {
                         this.options = resp.data;
                         this.form.options = resp.data;

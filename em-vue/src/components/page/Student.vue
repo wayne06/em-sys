@@ -8,11 +8,20 @@
 <!--            </el-breadcrumb>-->
 <!--        </div>-->
         <div class="container">
+
+            <el-steps :active="active"  finish-status="success" style="padding-top: 15px; padding-bottom: 15px">
+                <el-step title="报名信息提交"></el-step>
+                <el-step title="审批"></el-step>
+                <el-step title="课程安排提交"></el-step>
+                <el-step title="审批"></el-step>
+                <el-step title="完成"></el-step>
+            </el-steps>
+
             <div class="handle-box">
                 <el-button type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAdd">新增学生</el-button>
                 <el-input v-model="keyword" placeholder="学生姓名 或 手机号码" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-                <el-button type="success" icon="el-icon-s-promotion" @click="submitCourseStu" style="float:right">提交</el-button>
+                <el-button type="success" icon="el-icon-s-promotion" @click="submitCourseStu" style="float:right" v-loading.fullscreen.lock="fullscreenLoading">提交</el-button>
             </div>
             <el-table
                     :data="tableData"
@@ -296,7 +305,9 @@
                 expands: [],
                 getRowKeys (row) {
                     return row.id;
-                }
+                },
+                active: 0,
+                fullscreenLoading: false
             };
         },
         created () {
@@ -545,6 +556,7 @@
                 });
             },
             submitCourseStu () {
+                this.fullscreenLoading = true;
                 this.$axios.post('/teachercourse/initial', {
 
                 }).then(resp => {
@@ -554,11 +566,19 @@
 
                         }).then(resp => {
                             if (resp && resp.status === 200) {
-                                this.$message.success('提交成功');
+                                // this.$message.success('提交成功');
+                                this.$message.success({
+                                    message: '提交成功',
+                                    offset: 116,
+                                    duration: 3000
+                                });
+                                this.fullscreenLoading = false;
+                                this.active = 1;
                             }
                         });
                     }
                 });
+
             }
         }
     };

@@ -21,7 +21,11 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="login">登录</el-button>
                 </div>
-                <p class="login-tips">Tips : 用户名和密码随便填。</p>
+                <p class="login-tips">Tips : 用户名和密码随便填。
+                    <el-link href="/register" style="float: right">点我注册</el-link>
+                </p>
+
+
             </el-form>
         </div>
     </div>
@@ -52,13 +56,16 @@ export default {
                     password: this.loginForm.password
                 })
                 .then(resp => {
-                    if (resp && resp.status === 200) {
+                    if (resp && resp.data === 'Login success') {
                         console.log('mark')
                         _this.$store.commit('login', _this.loginForm.username)
                         let path = this.$route.query.redirect
                         this.$router.replace({path: path === '/' || path === undefined ? '/' : path})
                         console.log(path)
                         console.log(this.$store)
+                    } else {
+                        console.log()
+                        this.$message('用户名或密码错误')
                     }
                 })
                 .catch(failResponse => {

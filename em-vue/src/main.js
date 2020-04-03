@@ -39,18 +39,19 @@ const i18n = new VueI18n({
 
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
+    console.log(1111)
+    console.log(to)
     document.title = `${to.meta.title} | 启智培训中心`;
-    // if (store.state.user.username && to.path.startsWith('/admin')) {
-    //     console.log(111)
-    //     initAdminMenu(router, store)
-    // }
+    if (store.state.username) {
+        initAdminMenu(router, store)
+    }
     if (to.meta.requireAuth) {
-        // console.log(to.meta.requireAuth)
+        console.log(to.meta.requireAuth)
         if (store.state.username) {
-            // console.log(store.state.user)
+            console.log(store.state.username)
             axios.get('/user/authentication').then(resp => {
                 if (resp.data) next()
-                // console.log(resp)
+                console.log(resp)
             })
         } else {
             console.log(333)
@@ -65,9 +66,50 @@ router.beforeEach((to, from, next) => {
     }
 });
 
+const initAdminMenu = (router, store) => {
+    // 防止重复触发加载菜单操作
+    if (store.state.adminMenus.length > 0) {
+        return
+    }
+    axios.get('/menu/byCurrentUser').then(resp => {
+        if (resp && resp.status === 200) {
+            let fmtRoutes = formatRoutes(resp.data)
+            router.addRoutes(fmtRoutes)
+            store.commit('initAdminMenu', fmtRoutes)
+            // console.log(router)
+            console.log(store.state.adminMenus)
+        }
+    })
+}
+
+const formatRoutes = (routes) => {
+    let fmtRoutes = []
+    routes.forEach(route => {
+        if (route.children) {
+            route.children = formatRoutes(route.children)
+        }
+
+        let fmtRoute = {
+            path: route.path,
+            // component: resolve => {
+            //     require(['./components/page/' + route.component + '.vue'], resolve)
+            // },
+            component: require('./components/page/' + route.component + '.vue'),
+            name: route.name,
+            nameZh: route.nameZh,
+            iconCls: route.iconCls,
+            children: route.children
+        }
+        // console.log(fmtRoute)
+        fmtRoutes.push(fmtRoute)
+    })
+    return fmtRoutes
+}
+
 new Vue({
     router,
     store,
+    components: {App},
     i18n,
     render: h => h(App)
 }).$mount('#app');

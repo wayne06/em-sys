@@ -37,4 +37,6 @@ public interface CourseService {
     List<CourseDO> getSignUpCourse();
 
     List<Selection> getCoursesByTeacherId(Integer id);
+
+    List<Selection> getCoursesByTeacherId();
 }

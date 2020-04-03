@@ -177,12 +177,12 @@ a {
 }
 
 
-.el-cascader-menu {
-    height: 190px;
-}
+/*.el-cascader-menu {*/
+/*    height: 190px;*/
+/*}*/
 
 /*.el-cascader-menu__wrap {*/
-/*    height: 600px*/
+/*    height: 1600px*/
 /*}*/
 
 .vxe-icon--edit-outline:before {
@@ -195,4 +195,11 @@ a {
 
 .el-icon-loading {
     font-size: 50px;
+}
+
+.el-calendar-table .el-calendar-day {
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 8px;
+    height: 5px;
 }
