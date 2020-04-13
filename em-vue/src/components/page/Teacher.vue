@@ -176,15 +176,20 @@
                 }).then(() => {
                     this.$axios.post('/teacher/del', {id: this.tableData[index].id}).then(resp => {
                         if (resp && resp.status === 200) {
-                            this.$message.success('删除成功');
+                            this.$notify({
+                                title: '删除成功',
+                                type: 'success',
+                                offset: 100
+                            });
                             this.getData()
                         }
                     })
                 }).catch(() => {
-                    this.$message({
+                    this.$notify({
+                        title: '已取消删除',
                         type: 'info',
-                        message: '已取消删除'
-                    })
+                        offset: 100
+                    });
                 });
             },
             // 编辑操作
@@ -245,7 +250,12 @@
                     remark: _this.form.remark
                 }).then(resp => {
                     if (resp && resp.status === 200) {
-                        this.$message.success('新增成功');
+                        this.$notify({
+                            title: '添加成功',
+                            type: 'success',
+                            offset: 100
+                        });
+                        // this.$message.success('新增成功');
                         this.addVisible = false;
                         this.getData();
                     }

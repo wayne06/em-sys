@@ -119,7 +119,6 @@ export default {
             });
             this.$axios.get('/statistics/graph').then(resp => {
                 if (resp && resp.status === 200) {
-                    console.log(resp.data)
                     this.options1.labels = resp.data.stuCount.labels;
                     this.options1.datasets = resp.data.stuCount.datasets;
                     this.options2.labels = resp.data.income.labels;

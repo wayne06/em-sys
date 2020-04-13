@@ -13,4 +13,6 @@ public interface TeacherCourseService {
     void initial();
 
     List<TeacherCourseVO> getAll();
+
+    List<TeacherCourseVO> getByMid(Integer signupId);
 }

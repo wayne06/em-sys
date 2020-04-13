@@ -25,6 +25,11 @@ public class CourseStudentController {
         return courseStudentService.getCoursesByStuId(studentDO.getId());
     }
 
+    @PostMapping("/getCoursesByStuAndSignUpId")
+    public List<CourseStudentVO> getCoursesByStuAndSignUpId(@RequestBody CourseStudentDO courseStudentDO) {
+        return courseStudentService.getCoursesByStuAndSignUpId(courseStudentDO.getStudentId(), courseStudentDO.getSignupId());
+    }
+
     @PostMapping("/add")
     public CourseStudentDO add(@RequestBody CourseStudentDO courseStudentDO) {
         courseStudentService.add(courseStudentDO);

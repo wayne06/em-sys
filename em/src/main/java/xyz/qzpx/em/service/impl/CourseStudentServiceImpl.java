@@ -200,9 +200,23 @@ public class CourseStudentServiceImpl implements CourseStudentService {
         return graphMap;
     }
 
+    @Override
+    public List<CourseStudentVO> getCoursesByStuAndSignUpId(Integer studentId, Integer signupId) {
+        List<CourseStudentDO> courseStudentDOs = courseStudentDOMapper.selectByStuIdAndSignupId(studentId, signupId);
+        List<CourseStudentVO> courseStudentVOS = new ArrayList<>();
+        for (CourseStudentDO courseStudentDO : courseStudentDOs) {
+            CourseStudentVO courseStudentVO = new CourseStudentVO();
+            BeanUtils.copyProperties(courseStudentDO, courseStudentVO);
+            courseStudentVO.setCourseName(getCourseNameById(courseStudentDO.getCourseId()));
+            courseStudentVOS.add(courseStudentVO);
+        }
+        return courseStudentVOS;
+    }
+
     private String getCourseNameById(Integer courseId) {
         CourseDO courseDO = courseDOMapper.selectByPrimaryKey(courseId);
         String courseName = courseDO.getTerm() + "/" + courseDO.getType() + "/" + courseDO.getGrade() + "/" + courseDO.getSubject();
         return courseName;
     }
+
 }

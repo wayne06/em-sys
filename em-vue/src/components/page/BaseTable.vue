@@ -129,7 +129,6 @@ export default {
         // 获取 easy-mock 的模拟数据
         getData() {
             fetchData(this.query).then(res => {
-                console.log(res);
                 this.tableData = res.list;
                 this.pageTotal = res.pageTotal || 50;
             });

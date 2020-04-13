@@ -80,7 +80,6 @@ export default {
                         _this.$router.replace('/login')
                         const newRouter = createRouter()
                         _this.$router.matcher = newRouter.matcher
-                        // console.log(this.$store.state)
                     }
                 }).catch(failResponse => {})
             }

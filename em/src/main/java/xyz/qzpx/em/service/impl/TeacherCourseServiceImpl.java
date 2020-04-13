@@ -82,4 +82,30 @@ public class TeacherCourseServiceImpl implements TeacherCourseService {
         }
         return teacherCourseVOS;
     }
+
+    @Override
+    public List<TeacherCourseVO> getByMid(Integer signupId) {
+        List<TeacherCourseDO> teacherCourseDOS = teacherCourseDOMapper.selectBySignupId(signupId);
+        List<TeacherCourseVO> teacherCourseVOS = new ArrayList<>();
+        for (TeacherCourseDO teacherCourseDO : teacherCourseDOS) {
+            TeacherCourseVO teacherCourseVO = new TeacherCourseVO();
+            BeanUtils.copyProperties(teacherCourseDO, teacherCourseVO);
+
+            CourseDO courseDO = courseDOMapper.selectByPrimaryKey(teacherCourseDO.getCourseId());
+            String courseName = courseDO.getTerm() + "/" + courseDO.getType() + "/" + courseDO.getGrade() + "/" + courseDO.getSubject();
+            teacherCourseVO.setCourseName(courseName);
+
+            if (teacherCourseDO.getTeacherId() != 0) {
+                TeacherDO teacherDO = teacherDOMapper.selectByPrimaryKey(teacherCourseDO.getTeacherId());
+                teacherCourseVO.setTeacherName(teacherDO.getName());
+                teacherCourseVO.setTelephone(teacherDO.getTelephone());
+            } else {
+                teacherCourseVO.setTeacherName("");
+                teacherCourseVO.setTelephone("");
+            }
+
+            teacherCourseVOS.add(teacherCourseVO);
+        }
+        return teacherCourseVOS;
+    }
 }

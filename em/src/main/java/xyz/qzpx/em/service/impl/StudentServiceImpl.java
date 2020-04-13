@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.qzpx.em.dao.CourseStudentDOMapper;
 import xyz.qzpx.em.dao.StudentDOMapper;
+import xyz.qzpx.em.dao.TeacherCourseDOMapper;
 import xyz.qzpx.em.dataObject.StudentDO;
 import xyz.qzpx.em.service.StudentService;
 
@@ -19,6 +20,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Autowired
     private CourseStudentDOMapper courseStudentDOMapper;
+
+    @Autowired
+    private TeacherCourseDOMapper teacherCourseDOMapper;
 
     @Override
     public void addStudent(StudentDO studentDO) {
@@ -73,6 +77,31 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public List<StudentDO> getStudentByCourseId(Integer courseId) {
         List<Integer> stuIds = courseStudentDOMapper.selectByCourseId(courseId);
+        List<StudentDO> studentDOS = new ArrayList<>();
+        for (Integer stuId : stuIds) {
+            StudentDO studentDO = studentDOMapper.selectByPrimaryKey(stuId);
+            studentDOS.add(studentDO);
+        }
+        return studentDOS;
+    }
+
+    @Override
+    public List<StudentDO> getByMid(Integer signupId) {
+        List<Integer> stuIds = courseStudentDOMapper.selectStuIdBySignupId(signupId);
+        List<StudentDO> studentDOS = new ArrayList<>();
+        if (stuIds.size() == 0) {
+            return studentDOS;
+        }
+        for (Integer stuId : stuIds) {
+            StudentDO studentDO = studentDOMapper.selectByPrimaryKey(stuId);
+            studentDOS.add(studentDO);
+        }
+        return studentDOS;
+    }
+
+    @Override
+    public List<StudentDO> getStudentByCourseIdAndSignupId(Integer signupId, Integer courseId) {
+        List<Integer> stuIds = courseStudentDOMapper.selectBySignupIdAndCourseId(signupId, courseId);
         List<StudentDO> studentDOS = new ArrayList<>();
         for (Integer stuId : stuIds) {
             StudentDO studentDO = studentDOMapper.selectByPrimaryKey(stuId);

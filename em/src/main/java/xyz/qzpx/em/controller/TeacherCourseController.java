@@ -2,8 +2,7 @@ package xyz.qzpx.em.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import xyz.qzpx.em.dataObject.TeacherCourseDO;
-import xyz.qzpx.em.dataObject.TeacherCourseVO;
+import xyz.qzpx.em.dataObject.*;
 import xyz.qzpx.em.service.TeacherCourseService;
 
 import java.util.List;
@@ -36,4 +35,10 @@ public class TeacherCourseController {
     public List<TeacherCourseVO> getAll() {
         return teacherCourseService.getAll();
     }
+
+    @PostMapping("/byMid")
+    public List<TeacherCourseVO> listByMid(@RequestBody TeacherCourseDO teacherCourseDO) {
+        return teacherCourseService.getByMid(teacherCourseDO.getSignupId());
+    }
+
 }

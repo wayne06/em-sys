@@ -159,7 +159,6 @@
                 this.$axios.get('/course/filters').then(resp => {
                     if (resp && resp.status === 200) {
                         _this.filters = resp.data;
-                        console.log(resp.data)
                     }
                 });
             },
@@ -194,7 +193,6 @@
             handleDelete (index, row) {
             },
             handleChange (value) {
-                console.log(value)
             },
             filterHandler (value, row, column) {
                 const property = column['property'];

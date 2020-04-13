@@ -279,7 +279,6 @@
             // 保存编辑
             saveEdit() {
                 var id = this.tableData[this.idx].id;
-                console.log(id);
                 this.$axios.post('/course/update', {
                     id: id,
                     courseName: this.form.courseName,
@@ -315,7 +314,6 @@
 
             // 保存新增
             save() {
-                console.log(this.period);
                 this.$axios.post('/course/add', {
                     courseName: this.form.courseName,
                     teacherName: this.form.teacherName,
@@ -333,7 +331,6 @@
                 })
             },
             handleSearch () {
-                console.log(this.keyword);
                 var _this = this;
                 this.$axios.post('/course/byname', {remark: this.keyword}).then(resp => {
                     if (resp && resp.status === 200) {
@@ -343,7 +340,6 @@
 
             },
             handleDelete (index, row) {
-                console.log(this.tableData[index].id)
                 // 二次确认删除
                 this.$confirm('确定要删除该课程吗？', '提示', {
                     confirmButtonText: '确定',
@@ -384,7 +380,6 @@
             handleAddStu () {
                 let _this = this;
                 this.addStuVisible = true;
-                // console.log(this.tempRowId);
                 this.$axios.post('/course/getStuNoInCourse', {id: this.tempRowId}).then(resp => {
                     if (resp && resp.status === 200) {
                         _this.studentData = resp.data;
@@ -392,9 +387,6 @@
                 })
             },
             handleAddSingle (index, row) {
-                console.log(this.tempRowId);
-                console.log(row.id);
-
                 this.$axios.post('/course/addStuToCourse',
                     {
                         id: this.tempRowId,
@@ -428,7 +420,6 @@
                 });
             },
             handleSearchInStuAdd () {
-                console.log(this.keyword2);
                 var _this = this;
                 this.$axios.post('/course/searchStuNoInCourse',
                     {
@@ -459,9 +450,6 @@
                     str += ' ' + this.multipleSelection[i].name + ' ';
                     ids.push(this.multipleSelection[i].id);
                 }
-
-                console.log(length);
-                console.log(ids.toString());
 
                 this.$confirm(`确定要删除${str}吗？`, '提示', {
                     confirmButtonText: '确定',

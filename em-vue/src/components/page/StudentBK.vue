@@ -9,9 +9,18 @@
 <!--        </div>-->
         <div class="container">
 
+            <el-steps :active="active"  finish-status="success" style="padding-top: 15px; padding-bottom: 15px">
+                <el-step title="报名信息提交"></el-step>
+                <el-step title="审批"></el-step>
+                <el-step title="课程安排提交"></el-step>
+                <el-step title="审批完成"></el-step>
+            </el-steps>
+
             <div class="handle-box">
+                <el-button type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAdd">新增学生</el-button>
                 <el-input v-model="keyword" placeholder="学生姓名 或 手机号码" class="handle-input mr10"></el-input>
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                <el-button type="success" icon="el-icon-s-promotion" @click="submitCourseStu" style="float:right" v-loading.fullscreen.lock="fullscreenLoading">提交</el-button>
             </div>
             <el-table
                     :data="tableData"
@@ -26,9 +35,9 @@
             >
                 <el-table-column type="expand" width="55" align="center">
                     <template slot-scope="props">
-<!--                        <div class="handle-box">-->
-<!--                            <el-button type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAddSignInfo" plain>添加报名信息</el-button>-->
-<!--                        </div>-->
+                        <div class="handle-box">
+                            <el-button type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAddSignInfo" plain>添加报名信息</el-button>
+                        </div>
                         <el-table
                                 :data="innerTableData"
                                 height="200"
@@ -44,21 +53,21 @@
                             <el-table-column prop="discount" label="减免"></el-table-column>
                             <el-table-column prop="refund" label="退费"></el-table-column>
                             <el-table-column prop="remark" label="备注"></el-table-column>
-<!--                            <el-table-column label="操作" width="180" align="center">-->
-<!--                                <template slot-scope="scope">-->
-<!--                                    <el-button-->
-<!--                                            type="text"-->
-<!--                                            icon="el-icon-edit"-->
-<!--                                            @click="handleEditSignInfo(scope.$index, scope.row)"-->
-<!--                                    >编辑</el-button>-->
-<!--                                    <el-button-->
-<!--                                            type="text"-->
-<!--                                            icon="el-icon-delete"-->
-<!--                                            class="red"-->
-<!--                                            @click="handleDelSignInfo(scope.$index, scope.row)"-->
-<!--                                    >删除</el-button>-->
-<!--                                </template>-->
-<!--                            </el-table-column>-->
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button
+                                            type="text"
+                                            icon="el-icon-edit"
+                                            @click="handleEditSignInfo(scope.$index, scope.row)"
+                                    >编辑</el-button>
+                                    <el-button
+                                            type="text"
+                                            icon="el-icon-delete"
+                                            class="red"
+                                            @click="handleDelSignInfo(scope.$index, scope.row)"
+                                    >删除</el-button>
+                                </template>
+                            </el-table-column>
                         </el-table>
                     </template>
 
@@ -75,21 +84,21 @@
                 <el-table-column prop="telephone" label="联系方式"></el-table-column>
                 <el-table-column prop="address" label="家庭住址"></el-table-column>
                 <el-table-column prop="remark" label="备注"></el-table-column>
-<!--                <el-table-column label="操作" width="180" align="center">-->
-<!--                    <template slot-scope="scope">-->
-<!--                        <el-button-->
-<!--                                type="text"-->
-<!--                                icon="el-icon-edit"-->
-<!--                                @click="handleEdit(scope.$index, scope.row)"-->
-<!--                        >编辑</el-button>-->
-<!--                        <el-button-->
-<!--                                type="text"-->
-<!--                                icon="el-icon-delete"-->
-<!--                                class="red"-->
-<!--                                @click="handleDelete(scope.$index, scope.row)"-->
-<!--                        >删除</el-button>-->
-<!--                    </template>-->
-<!--                </el-table-column>-->
+                <el-table-column label="操作" width="180" align="center">
+                    <template slot-scope="scope">
+                        <el-button
+                                type="text"
+                                icon="el-icon-edit"
+                                @click="handleEdit(scope.$index, scope.row)"
+                        >编辑</el-button>
+                        <el-button
+                                type="text"
+                                icon="el-icon-delete"
+                                class="red"
+                                @click="handleDelete(scope.$index, scope.row)"
+                        >删除</el-button>
+                    </template>
+                </el-table-column>
             </el-table>
             <div class="pagination">
                 <el-pagination

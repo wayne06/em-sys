@@ -49,7 +49,6 @@ export default {
     methods: {
         login () {
             let _this = this
-            console.log(this.$store)
             this.$axios
                 .post('/user/login', {
                     username: this.loginForm.username,
@@ -57,14 +56,10 @@ export default {
                 })
                 .then(resp => {
                     if (resp && resp.data === 'Login success') {
-                        console.log('mark')
                         _this.$store.commit('login', _this.loginForm.username)
                         let path = this.$route.query.redirect
                         this.$router.replace({path: path === '/' || path === undefined ? '/' : path})
-                        console.log(path)
-                        console.log(this.$store)
                     } else {
-                        console.log()
                         this.$message('用户名或密码错误')
                     }
                 })

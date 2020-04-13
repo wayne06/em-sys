@@ -162,6 +162,30 @@ export default new Router({
                         requireAuth: true
                     }
                 },
+                {
+                    path: '/signupmessage',
+                    component: () => import(/* webpackChunkName: "login" */ '../components/page/SignUpMessage.vue'),
+                    meta: {
+                        title: '报名中心',
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/approval',
+                    component: () => import(/* webpackChunkName: "login" */ '../components/page/Approval.vue'),
+                    meta: {
+                        title: '审批中心',
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/schedule',
+                    component: () => import(/* webpackChunkName: "login" */ '../components/page/Schedule.vue'),
+                    meta: {
+                        title: '排课中心',
+                        requireAuth: true
+                    }
+                },
             ]
         },
         {
@@ -187,7 +211,7 @@ export const createRouter = routes => new Router({
         {
             path: '/',
             redirect: '/dashboard',
-            requireAuth: true
+            // requireAuth: true
         },
         {
             path: '/',
@@ -338,6 +362,30 @@ export const createRouter = routes => new Router({
                     component: () => import(/* webpackChunkName: "login" */ '../components/page/MessageCenter.vue'),
                     meta: {
                         title: '消息中心',
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/signupmessage',
+                    component: () => import(/* webpackChunkName: "login" */ '../components/page/SignUpMessage.vue'),
+                    meta: {
+                        title: '报名中心',
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/approval',
+                    component: () => import(/* webpackChunkName: "login" */ '../components/page/Approval.vue'),
+                    meta: {
+                        title: '审批中心',
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/schedule',
+                    component: () => import(/* webpackChunkName: "login" */ '../components/page/Schedule.vue'),
+                    meta: {
+                        title: '排课中心',
                         requireAuth: true
                     }
                 },

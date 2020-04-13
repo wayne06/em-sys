@@ -6,73 +6,55 @@
 <!--            </el-breadcrumb>-->
 <!--        </div>-->
         <div class="container">
-            <el-tabs v-model="message">
-                <el-tab-pane :label="`待处理`" name="first">
-
-                    <el-steps :active="active"  finish-status="success" style="padding-top: 15px; padding-bottom: 15px">
-                        <el-step title="报名信息提交"></el-step>
-                        <el-step title="审批"></el-step>
-                        <el-step title="课程安排提交"></el-step>
-                        <el-step title="审批"></el-step>
-                        <el-step title="完成"></el-step>
-                    </el-steps>
-
-                    <el-table
-                            :data="tableData1"
-                            :show-header="true"
-                            height="666"
-                            border
-                            class="table"
-                            header-cell-class-name="table-header"
-                            :row-key="getRowKeys"
-                            :expand-row-keys="expands"
-                            @expand-change="expandChange"
-                    >
-                        <el-table-column type="expand" width="55" align="center">
-                            <template slot-scope="props">
-                                <el-table
-                                        :data="innerTableData1"
-                                        height="400"
-                                        border
-                                        class="table"
-                                        header-cell-class-name="table-header"
-                                >
-                                    <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                                    <el-table-column prop="name" label="姓名"></el-table-column>
-                                    <el-table-column prop="gender" label="性别"></el-table-column>
-                                    <el-table-column prop="school" label="学校"></el-table-column>
-                                    <el-table-column prop="gradeAndClass" label="年级班级"></el-table-column>
-                                    <el-table-column prop="parentName" label="家长姓名"></el-table-column>
-                                    <el-table-column prop="telephone" label="联系方式"></el-table-column>
-                                    <el-table-column prop="address" label="家庭住址"></el-table-column>
-                                    <el-table-column prop="remark" label="备注"></el-table-column>
-                                </el-table>
-                            </template>
-                        </el-table-column>
-
-                        <el-table-column prop="courseName" label="课程名称"></el-table-column>
-                        <el-table-column prop="teacherName" label="教师姓名"></el-table-column>
-                        <el-table-column prop="telephone" label="联系电话"></el-table-column>
-                        <el-table-column prop="lessonCount" label="课时安排"></el-table-column>
-                        <el-table-column prop="period" label="上课日期区间"></el-table-column>
-                        <el-table-column prop="remark" label="备注"></el-table-column>
-                        <el-table-column label="操作" width="180" align="center">
-                            <template slot-scope="scope">
-                                <el-button
-                                        type="text"
-                                        icon="el-icon-edit"
-                                        @click="handleEdit(scope.$index, scope.row)"
-                                >编辑</el-button>
-                            </template>
-                        </el-table-column>
-                    </el-table>
-                </el-tab-pane>
-                <el-tab-pane :label="`已处理`" name="second">
-                    <template v-if="message === 'second'">
-
+            <el-table
+                    :data="tableData1"
+                    :show-header="true"
+                    height="666"
+                    border
+                    class="table"
+                    header-cell-class-name="table-header"
+                    :row-key="getRowKeys"
+                    :expand-row-keys="expands"
+                    @expand-change="expandChange"
+            >
+                <el-table-column type="expand" width="55" align="center">
+                    <template slot-scope="props">
+                        <el-table
+                                :data="innerTableData1"
+                                height="400"
+                                border
+                                class="table"
+                                header-cell-class-name="table-header"
+                        >
+                            <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
+                            <el-table-column prop="name" label="姓名"></el-table-column>
+                            <el-table-column prop="gender" label="性别"></el-table-column>
+                            <el-table-column prop="school" label="学校"></el-table-column>
+                            <el-table-column prop="gradeAndClass" label="年级班级"></el-table-column>
+                            <el-table-column prop="parentName" label="家长姓名"></el-table-column>
+                            <el-table-column prop="telephone" label="联系方式"></el-table-column>
+                            <el-table-column prop="address" label="家庭住址"></el-table-column>
+                            <el-table-column prop="remark" label="备注"></el-table-column>
+                        </el-table>
                     </template>
-                </el-tab-pane>
-            </el-tabs>
+                </el-table-column>
+
+                <el-table-column prop="courseName" label="课程名称"></el-table-column>
+                <el-table-column prop="teacherName" label="教师姓名"></el-table-column>
+                <el-table-column prop="telephone" label="联系电话"></el-table-column>
+                <el-table-column prop="lessonCount" label="课时安排"></el-table-column>
+                <el-table-column prop="period" label="上课日期区间"></el-table-column>
+                <el-table-column prop="remark" label="备注"></el-table-column>
+                <el-table-column label="操作" width="180" align="center">
+                    <template slot-scope="scope">
+                        <el-button
+                                type="text"
+                                icon="el-icon-edit"
+                                @click="handleEdit(scope.$index, scope.row)"
+                        >编辑</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
         </div>
 
         <el-dialog title="编辑" :visible.sync="editVisible" width="40%" @close="clear" top="20vh">
@@ -153,7 +135,6 @@
                 });
             },
             expandChange (row) {
-                console.log(row)
                 this.tempRowId = row.id;
                 this.tempCourseId = row.courseId;
                 let _this = this;
@@ -194,8 +175,6 @@
                 this.$forceUpdate();
             },
             save () {
-                console.log(this.tempRowId);
-                console.log(this.tempCourseId);
                 this.$axios.post('/teachercourse/update', {
                     id: this.tempRowId,
                     teacherId: this.form.option,

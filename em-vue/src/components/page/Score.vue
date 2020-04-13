@@ -61,28 +61,23 @@
                 });
             },
             editActivedEvent ({ row, column }, event) {
-                console.log(`打开 ${column.title} 列编辑`)
             },
             editClosedEvent ({ row, column }, event) {
-                console.log(`关闭 ${column.title} 列编辑`)
             },
             select_status (val) {
                 this.tempCourseId = val;
                 this.getTableData(val);
             },
             getTableData (courseId) {
-                console.log(courseId)
                 this.$axios.post('/score/getByCourseId', {
                     courseId: courseId
                 }).then(resp => {
                     if (resp && resp.status === 200) {
                         this.tableData = resp.data;
-                        console.log(this.tableData)
                     }
                 })
             },
             saveScore () {
-                console.log(this.tableData)
                 this.tableData.forEach(data => {
                    this.$axios.post('/score/update', {
                        id: data.id,

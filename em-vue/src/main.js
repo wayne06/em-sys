@@ -39,29 +39,22 @@ const i18n = new VueI18n({
 
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
-    console.log(1111)
-    console.log(to)
     document.title = `${to.meta.title} | 启智培训中心`;
     if (store.state.username) {
         initAdminMenu(router, store)
     }
     if (to.meta.requireAuth) {
-        console.log(to.meta.requireAuth)
         if (store.state.username) {
-            console.log(store.state.username)
             axios.get('/user/authentication').then(resp => {
                 if (resp.data) next()
-                console.log(resp)
             })
         } else {
-            console.log(333)
             next({
                 path: 'login',
                 query: {redirect: to.fullPath}
             })
         }
     } else {
-        console.log(222)
         next()
     }
 });
@@ -76,8 +69,6 @@ const initAdminMenu = (router, store) => {
             let fmtRoutes = formatRoutes(resp.data)
             router.addRoutes(fmtRoutes)
             store.commit('initAdminMenu', fmtRoutes)
-            // console.log(router)
-            console.log(store.state.adminMenus)
         }
     })
 }
@@ -100,7 +91,6 @@ const formatRoutes = (routes) => {
             iconCls: route.iconCls,
             children: route.children
         }
-        // console.log(fmtRoute)
         fmtRoutes.push(fmtRoute)
     })
     return fmtRoutes

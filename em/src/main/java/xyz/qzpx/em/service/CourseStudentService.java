@@ -31,4 +31,6 @@ public interface CourseStudentService {
     Map<String, List<StatisticsDO>> getStatistics();
 
     Map<String, GraphDO> getGraph();
+
+    List<CourseStudentVO> getCoursesByStuAndSignUpId(Integer studentId, Integer signupId);
 }

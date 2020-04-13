@@ -132,7 +132,6 @@
                 this.$axios.get('/course/selection').then(resp => {
                     if (resp && resp.status === 200) {
                         this.options = resp.data;
-                        // console.log(this.options)
                     }
                 });
             },
@@ -146,7 +145,6 @@
                 this.addVisible = true;
             },
             save () {
-                console.log(this.tempCourseId);
                 this.$axios.post('/record/add', {
                     courseId: this.tempCourseId,
                     atDate: this.form.atDate,
@@ -175,7 +173,6 @@
                 }).then(resp => {
                     if (resp && resp.status === 200) {
                         this.tableData = resp.data;
-                        console.log(this.tableData)
                     }
                 })
             },

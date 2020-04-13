@@ -24,4 +24,8 @@ public interface StudentService {
     Integer getStudentCount();
 
     List<StudentDO> getStudentByCourseId(Integer courseId);
+
+    List<StudentDO> getByMid(Integer signupId);
+
+    List<StudentDO> getStudentByCourseIdAndSignupId(Integer signupId, Integer courseId);
 }

@@ -3,7 +3,9 @@ package xyz.qzpx.em.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import xyz.qzpx.em.dataObject.CourseDO;
+import xyz.qzpx.em.dataObject.CourseStudentDO;
 import xyz.qzpx.em.dataObject.StudentDO;
+import xyz.qzpx.em.dataObject.TeacherCourseDO;
 import xyz.qzpx.em.service.StudentService;
 
 import java.util.List;
@@ -66,6 +68,17 @@ public class StudentController {
     @PostMapping("/getStuByCourse")
     public List<StudentDO> getStuByCourse(@RequestBody CourseDO courseDO) {
         List<StudentDO> studentDOS = studentService.getStudentByCourseId(courseDO.getId());
+        return studentDOS;
+    }
+
+    @PostMapping("/byMid")
+    public List<StudentDO> listByMid(@RequestBody CourseStudentDO courseStudentDO) {
+        return studentService.getByMid(courseStudentDO.getSignupId());
+    }
+
+    @PostMapping("/getStuByCourseIdAndSignUpId")
+    public List<StudentDO> getStuByCourseIdAndSignUpId(@RequestBody TeacherCourseDO teacherCourseDO) {
+        List<StudentDO> studentDOS = studentService.getStudentByCourseIdAndSignupId(teacherCourseDO.getSignupId(), teacherCourseDO.getCourseId());
         return studentDOS;
     }
 
