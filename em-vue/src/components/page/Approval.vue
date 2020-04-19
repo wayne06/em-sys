@@ -8,7 +8,7 @@
 
                         <el-table-column  @click="toMessageData">
                             <template slot-scope="scope">
-                                <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.title}}</span>
+                                <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="createdAt" width="180"></el-table-column>
@@ -21,7 +21,7 @@
 
                             <el-table-column  @click="toMessageData2">
                                 <template slot-scope="scope">
-                                    <span class="message-title" @click="toMessageData2(scope.$index, scope.row)">{{scope.row.title}}</span>
+                                    <span class="message-title" @click="toMessageData2(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="createdAt" width="180"></el-table-column>
@@ -639,7 +639,10 @@
             },
             handleSearch () {
                 var _this = this;
-                this.$axios.post('/student/bynameorphone', {name: this.keyword}).then(resp => {
+                this.$axios.post('/student/bymidandnameorphone', {
+                    remark: this.keyword,
+                    signupId: this.mid
+                }).then(resp => {
                     if (resp && resp.status === 200) {
                         _this.tableData = resp.data
                     }

@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface StudentService {
 
-    void addStudent(StudentDO studentDO);
+    StudentDO addStudent(StudentDO studentDO);
 
     void deleteStudentById(Integer id);
 
@@ -28,4 +28,8 @@ public interface StudentService {
     List<StudentDO> getByMid(Integer signupId);
 
     List<StudentDO> getStudentByCourseIdAndSignupId(Integer signupId, Integer courseId);
+
+    void rmCourseStudent(Integer signupId, Integer studentId);
+
+    List<StudentDO> getStudentByMidAndNameOrPhone(Integer signupId, String search);
 }

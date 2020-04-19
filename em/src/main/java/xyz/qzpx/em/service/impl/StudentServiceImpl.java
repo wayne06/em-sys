@@ -10,6 +10,7 @@ import xyz.qzpx.em.service.StudentService;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @Service
@@ -25,10 +26,11 @@ public class StudentServiceImpl implements StudentService {
     private TeacherCourseDOMapper teacherCourseDOMapper;
 
     @Override
-    public void addStudent(StudentDO studentDO) {
+    public StudentDO addStudent(StudentDO studentDO) {
         studentDO.setCreatedAt(new Date());
         studentDO.setUpdatedAt(new Date());
         studentDOMapper.insertSelective(studentDO);
+        return studentDO;
     }
 
     @Override
@@ -106,6 +108,32 @@ public class StudentServiceImpl implements StudentService {
         for (Integer stuId : stuIds) {
             StudentDO studentDO = studentDOMapper.selectByPrimaryKey(stuId);
             studentDOS.add(studentDO);
+        }
+        return studentDOS;
+    }
+
+    @Override
+    public void rmCourseStudent(Integer signupId, Integer studentId) {
+        courseStudentDOMapper.deleteBySignupIdAndStuId(signupId, studentId);
+    }
+
+    @Override
+    public List<StudentDO> getStudentByMidAndNameOrPhone(Integer signupId, String search) {
+        List<Integer> stuIds = courseStudentDOMapper.selectStuIdBySignupId(signupId);
+        List<StudentDO> studentDOS = new ArrayList<>();
+        if (stuIds.size() == 0) {
+            return studentDOS;
+        }
+        for (Integer stuId : stuIds) {
+            StudentDO studentDO = studentDOMapper.selectByPrimaryKey(stuId);
+            studentDOS.add(studentDO);
+        }
+        Iterator<StudentDO> iterator = studentDOS.iterator();
+        while (iterator.hasNext()) {
+            StudentDO studentDO = iterator.next();
+            if (!search.equals(studentDO.getName()) && !search.equals(studentDO.getTelephone())) {
+                iterator.remove();
+            }
         }
         return studentDOS;
     }

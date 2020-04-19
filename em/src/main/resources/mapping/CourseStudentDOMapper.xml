@@ -261,23 +261,23 @@
 
   <select id="selectDayData" resultType="xyz.qzpx.em.dataObject.StatisticsDO">
     select registered_at as period, sum(expense) as income, sum(discount) as discount, sum(refund) as refund
-    from course_student
+    from course_student where course_id != 0
     GROUP BY registered_at
     ORDER BY registered_at asc;
   </select>
   <select id="selectWeekData" resultType="xyz.qzpx.em.dataObject.StatisticsDO">
-    SELECT date_format(a.registered_at, '%x-%v') as period, SUM(a.expense) as income, sum(discount) as discount, sum(refund) as refund, count(expense) as stuCount
-    FROM course_student AS a
+    SELECT date_format(a.registered_at, '%x-%v') as period, sum(a.expense) as income, sum(discount) as discount, sum(refund) as refund, count(expense) as stuCount
+    FROM course_student AS a where course_id != 0
     GROUP BY period;
   </select>
   <select id="selectMonthData" resultType="xyz.qzpx.em.dataObject.StatisticsDO">
-    SELECT date_format(a.registered_at, '%Y-%m') as period, SUM(a.expense) as income, sum(discount) as discount, sum(refund) as refund
-    FROM course_student AS a
+    SELECT date_format(a.registered_at, '%Y-%m') as period, sum(a.expense) as income, sum(discount) as discount, sum(refund) as refund
+    FROM course_student AS a where course_id != 0
     GROUP BY period;
   </select>
   <select id="selectYearData" resultType="xyz.qzpx.em.dataObject.StatisticsDO">
-    SELECT date_format(a.registered_at, '%Y') as period, SUM(a.expense) as income, sum(discount) as discount, sum(refund) as refund
-    FROM course_student AS a
+    SELECT date_format(a.registered_at, '%Y') as period, sum(a.expense) as income, sum(discount) as discount, sum(refund) as refund
+    FROM course_student AS a where course_id != 0
     GROUP BY period;
   </select>
 
@@ -304,4 +304,9 @@
     from course_student
     where signup_id = #{id,jdbcType=INTEGER}
   </select>
+
+  <delete id="deleteBySignupIdAndStuId" parameterType="java.lang.Integer">
+    delete from course_student
+    where signup_id = #{signupId,jdbcType=INTEGER} and student_id = #{studentId,jdbcType=INTEGER}
+  </delete>
 </mapper>

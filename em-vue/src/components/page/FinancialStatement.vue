@@ -4,56 +4,64 @@
             <el-tabs v-model="message">
                 <el-tab-pane :label="`数据`" name="rawdata">
                     <div class="schart-box">
-                        <el-table
-                                :data="dayData"
-                                height="600"
-                                border
-                                class="table"
-                                header-cell-class-name="table-header">
-                            <el-table-column min-width="100px" prop="period" label="日期"></el-table-column>
-                            <el-table-column prop="income" label="收费"></el-table-column>
-                            <el-table-column prop="discount" label="减免"></el-table-column>
-                            <el-table-column prop="refund" label="退费"></el-table-column>
-                        </el-table>
+                        <el-card shadow="hover" class="mgb20" style="height:650px;">
+                            <el-table
+                                    :data="dayData"
+                                    height="600"
+                                    border
+                                    class="table"
+                                    header-cell-class-name="table-header">
+                                <el-table-column min-width="100px" prop="period" label="日期"></el-table-column>
+                                <el-table-column prop="income" label="收费"></el-table-column>
+                                <el-table-column prop="discount" label="减免"></el-table-column>
+                                <el-table-column prop="refund" label="退费"></el-table-column>
+                            </el-table>
+                        </el-card>
                     </div>
                     <div class="schart-box">
-                        <el-table
-                                :data="weekData"
-                                height="600"
-                                border
-                                class="table"
-                                header-cell-class-name="table-header">
-                            <el-table-column prop="period" label="周次"></el-table-column>
-                            <el-table-column prop="income" label="收费"></el-table-column>
-                            <el-table-column prop="discount" label="减免"></el-table-column>
-                            <el-table-column prop="refund" label="退费"></el-table-column>
-                        </el-table>
+                        <el-card shadow="hover" class="mgb20" style="height:650px;">
+                            <el-table
+                                    :data="weekData"
+                                    height="600"
+                                    border
+                                    class="table"
+                                    header-cell-class-name="table-header">
+                                <el-table-column prop="period" label="周次"></el-table-column>
+                                <el-table-column prop="income" label="收费"></el-table-column>
+                                <el-table-column prop="discount" label="减免"></el-table-column>
+                                <el-table-column prop="refund" label="退费"></el-table-column>
+                            </el-table>
+                        </el-card>
                     </div>
                     <div class="schart-box">
-                        <el-table
-                                :data="monthData"
-                                height="600"
-                                border
-                                class="table"
-                                header-cell-class-name="table-header">
-                            <el-table-column prop="period" label="月份"></el-table-column>
-                            <el-table-column prop="income" label="收费"></el-table-column>
-                            <el-table-column prop="discount" label="减免"></el-table-column>
-                            <el-table-column prop="refund" label="退费"></el-table-column>
-                        </el-table>
+                        <el-card shadow="hover" class="mgb20" style="height:650px;">
+                            <el-table
+                                    :data="monthData"
+                                    height="600"
+                                    border
+                                    class="table"
+                                    header-cell-class-name="table-header">
+                                <el-table-column prop="period" label="月份"></el-table-column>
+                                <el-table-column prop="income" label="收费"></el-table-column>
+                                <el-table-column prop="discount" label="减免"></el-table-column>
+                                <el-table-column prop="refund" label="退费"></el-table-column>
+                            </el-table>
+                        </el-card>
                     </div>
                     <div class="schart-box">
-                        <el-table
-                                :data="yearData"
-                                height="600"
-                                border
-                                class="table"
-                                header-cell-class-name="table-header">
-                            <el-table-column prop="period" label="年份"></el-table-column>
-                            <el-table-column prop="income" label="收费"></el-table-column>
-                            <el-table-column prop="discount" label="减免"></el-table-column>
-                            <el-table-column prop="refund" label="退费"></el-table-column>
-                        </el-table>
+                        <el-card shadow="hover" class="mgb20" style="height:650px;">
+                            <el-table
+                                    :data="yearData"
+                                    height="600"
+                                    border
+                                    class="table"
+                                    header-cell-class-name="table-header">
+                                <el-table-column prop="period" label="年份"></el-table-column>
+                                <el-table-column prop="income" label="收费"></el-table-column>
+                                <el-table-column prop="discount" label="减免"></el-table-column>
+                                <el-table-column prop="refund" label="退费"></el-table-column>
+                            </el-table>
+                        </el-card>
                     </div>
                 </el-tab-pane>
                 <el-tab-pane :label="`图表`" name="graph">
@@ -178,5 +186,9 @@ export default {
     margin: auto;
     width: 40px;
     height: 40px;
+}
+
+.mgb20 {
+    margin-bottom: 20px;
 }
 </style>

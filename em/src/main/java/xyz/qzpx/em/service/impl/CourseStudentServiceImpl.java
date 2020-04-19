@@ -80,6 +80,9 @@ public class CourseStudentServiceImpl implements CourseStudentService {
         for (CourseStudentDO courseStudentDO : courseStudentDOs) {
             CourseStudentVO courseStudentVO = new CourseStudentVO();
             BeanUtils.copyProperties(courseStudentDO, courseStudentVO);
+            if (courseStudentDO.getCourseId() == 0) {
+                continue;
+            }
             courseStudentVO.setCourseName(getCourseNameById(courseStudentDO.getCourseId()));
             courseStudentVOS.add(courseStudentVO);
         }
@@ -113,16 +116,6 @@ public class CourseStudentServiceImpl implements CourseStudentService {
         statisticsMap.put("yearData", courseStudentDOMapper.selectYearData());
         return statisticsMap;
     }
-
-    //public static void main(String[] args) {
-    //    List<Integer> dataList1 = new ArrayList<>(13);
-    //    for (int i = 0; i < 12; i++) {
-    //        dataList1.add(0);
-    //    }
-    //    System.out.println(dataList1);
-    //    dataList1.set(1, 100);
-    //    System.out.println(dataList1);
-    //}
 
     @Override
     public Map<String, GraphDO> getGraph() {
@@ -205,6 +198,9 @@ public class CourseStudentServiceImpl implements CourseStudentService {
         List<CourseStudentDO> courseStudentDOs = courseStudentDOMapper.selectByStuIdAndSignupId(studentId, signupId);
         List<CourseStudentVO> courseStudentVOS = new ArrayList<>();
         for (CourseStudentDO courseStudentDO : courseStudentDOs) {
+            if (courseStudentDO.getCourseId() == 0) {
+                continue;
+            }
             CourseStudentVO courseStudentVO = new CourseStudentVO();
             BeanUtils.copyProperties(courseStudentDO, courseStudentVO);
             courseStudentVO.setCourseName(getCourseNameById(courseStudentDO.getCourseId()));

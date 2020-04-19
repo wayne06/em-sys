@@ -9,10 +9,7 @@ import xyz.qzpx.em.dataObject.*;
 import xyz.qzpx.em.service.SignUpService;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class SignUpServiceImpl implements SignUpService {
@@ -53,21 +50,53 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     @Override
-    public void submit(Integer id) {
-        SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
-        signUpDO.setStatus(1);
-        signUpDO.setSubmit1At(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
-        signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
+    public List<Integer> submit(Integer id) {
+        // 提交前检查是否有学生还未添加报名信息
+        List<CourseStudentDO> courseStudentDOS = courseStudentDOMapper.selectBySignupId(id);
+        Map<Integer, List<Integer>> studentCourseMap = new HashMap<>();
+        for (CourseStudentDO courseStudentDO : courseStudentDOS) {
+            if (!studentCourseMap.containsKey(courseStudentDO.getStudentId())) {
+                List<Integer> courseIds = new ArrayList<>();
+                courseIds.add(courseStudentDO.getCourseId());
+                studentCourseMap.put(courseStudentDO.getStudentId(), courseIds);
+            } else {
+                studentCourseMap.get(courseStudentDO.getStudentId()).add(courseStudentDO.getCourseId());
+            }
+        }
+        List<Integer> noCourseList = new ArrayList<>();
+        for (Map.Entry<Integer, List<Integer>> entry : studentCourseMap.entrySet()) {
+            if (entry.getValue().size() == 1) {
+                noCourseList.add(entry.getKey());
+            }
+        }
+        if (noCourseList.size() == 0) {
+            // 提交
+            SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+            signUpDO.setStatus(1);
+            signUpDO.setSubmit1At(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
+            signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
+        }
+        return noCourseList;
     }
 
     @Override
     public Map<String, List<SignUpDO>> collectByStatus() {
         Map<String, List<SignUpDO>> result = new HashMap<>();
-        result.put("data0", getByStatus(0));
-        result.put("data1", getByStatus(1));
-        result.put("data2", getByStatus(2));
-        result.put("data3", getByStatus(3));
-        result.put("data4", getByStatus(4));
+        List<SignUpDO> signUpDo0 = getByStatus(0);
+        List<SignUpDO> signUpDo1 = getByStatus(1);
+        List<SignUpDO> signUpDo2 = getByStatus(2);
+        List<SignUpDO> signUpDo3 = getByStatus(3);
+        List<SignUpDO> signUpDo4 = getByStatus(4);
+        List<SignUpDO> signUpDo5 = new ArrayList<>();
+        signUpDo5.addAll(signUpDo1);
+        signUpDo5.addAll(signUpDo2);
+        signUpDo5.addAll(signUpDo3);
+        result.put("data0", signUpDo0);
+        result.put("data1", signUpDo1);
+        result.put("data2", signUpDo2);
+        result.put("data3", signUpDo3);
+        result.put("data4", signUpDo4);
+        result.put("data5", signUpDo5);
         return result;
     }
 

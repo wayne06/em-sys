@@ -39,8 +39,9 @@ public class SignUpController {
     }
 
     @PostMapping("/submit")
-    public void submit(@RequestBody SignUpDO signUpDO) {
-        signUpService.submit(signUpDO.getId());
+    public List<Integer> submit(@RequestBody SignUpDO signUpDO) {
+        List<Integer> result = signUpService.submit(signUpDO.getId());
+        return result;
     }
 
     @PostMapping("/submit2")

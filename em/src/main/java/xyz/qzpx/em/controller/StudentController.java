@@ -19,13 +19,18 @@ public class StudentController {
 
     @PostMapping("/add")
     public StudentDO add(@RequestBody StudentDO studentDO) {
-        studentService.addStudent(studentDO);
-        return studentDO;
+        StudentDO res = studentService.addStudent(studentDO);
+        return res;
     }
 
     @PostMapping("/del")
     public void delete(@RequestBody StudentDO studentDO) {
         studentService.deleteStudentById(studentDO.getId());
+    }
+
+    @PostMapping("/rm")
+    public void remove(@RequestBody CourseStudentDO courseStudentDO) {
+        studentService.rmCourseStudent(courseStudentDO.getSignupId(), courseStudentDO.getStudentId());
     }
 
     @PostMapping("/delbatch")
@@ -50,9 +55,32 @@ public class StudentController {
         return studentService.getAllStudent();
     }
 
+    /**
+     * 搜索学生：从当前报名message中的学生中所搜
+     * 用于：1. 已提交的报名信息
+     * @param courseStudentDO
+     * @return
+     */
+    @PostMapping("/bymidandnameorphone")
+    public List<StudentDO> bymidandnameorphone(@RequestBody CourseStudentDO courseStudentDO) {
+        if ("".equals(courseStudentDO.getRemark())) {
+            return studentService.getByMid(courseStudentDO.getSignupId());
+        }
+        return studentService.getStudentByMidAndNameOrPhone(courseStudentDO.getSignupId(), courseStudentDO.getRemark());
+    }
+
+    /**
+     * 搜索学生：有关键字则从所有学生中搜索，无关键字则展示当前报名message中的学生
+     * 用于：1. 处理中的报名信息
+     * @param courseStudentDO
+     * @return
+     */
     @PostMapping("/bynameorphone")
-    public List<StudentDO> getByNameOrPhone(@RequestBody StudentDO studentDO) {
-        return studentService.getStudentByName(studentDO.getName());
+    public List<StudentDO> getByNameOrPhone(@RequestBody CourseStudentDO courseStudentDO) {
+        if ("".equals(courseStudentDO.getRemark())) {
+            return studentService.getByMid(courseStudentDO.getSignupId());
+        }
+        return studentService.getStudentByName(courseStudentDO.getRemark());
     }
 
     @GetMapping("/byid")

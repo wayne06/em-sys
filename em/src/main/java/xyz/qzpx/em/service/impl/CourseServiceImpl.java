@@ -107,7 +107,6 @@ public class CourseServiceImpl implements CourseService {
         return res;
     }
 
-
     @Override
     public List<TreeItem> getTree() {
         List<TreeItem> treeItems = new ArrayList<>();

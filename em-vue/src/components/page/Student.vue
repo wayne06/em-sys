@@ -44,21 +44,21 @@
                             <el-table-column prop="discount" label="减免"></el-table-column>
                             <el-table-column prop="refund" label="退费"></el-table-column>
                             <el-table-column prop="remark" label="备注"></el-table-column>
-<!--                            <el-table-column label="操作" width="180" align="center">-->
-<!--                                <template slot-scope="scope">-->
-<!--                                    <el-button-->
-<!--                                            type="text"-->
-<!--                                            icon="el-icon-edit"-->
-<!--                                            @click="handleEditSignInfo(scope.$index, scope.row)"-->
-<!--                                    >编辑</el-button>-->
-<!--                                    <el-button-->
-<!--                                            type="text"-->
-<!--                                            icon="el-icon-delete"-->
-<!--                                            class="red"-->
-<!--                                            @click="handleDelSignInfo(scope.$index, scope.row)"-->
-<!--                                    >删除</el-button>-->
-<!--                                </template>-->
-<!--                            </el-table-column>-->
+                            <el-table-column label="操作" width="180" align="center">
+                                <template slot-scope="scope">
+                                    <el-button
+                                            type="text"
+                                            icon="el-icon-edit"
+                                            @click="handleEditSignInfo(scope.$index, scope.row)"
+                                    >编辑</el-button>
+                                    <el-button
+                                            type="text"
+                                            icon="el-icon-delete"
+                                            class="red"
+                                            @click="handleDelSignInfo(scope.$index, scope.row)"
+                                    >删除</el-button>
+                                </template>
+                            </el-table-column>
                         </el-table>
                     </template>
 

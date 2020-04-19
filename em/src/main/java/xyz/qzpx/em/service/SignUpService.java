@@ -10,7 +10,7 @@ public interface SignUpService {
 
     List<SignUpDO> getByStatus(Integer status);
 
-    void submit(Integer id);
+    List<Integer> submit(Integer id);
 
     Map<String, List<SignUpDO>> collectByStatus();
 

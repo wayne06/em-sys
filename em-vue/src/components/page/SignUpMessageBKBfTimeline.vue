@@ -59,105 +59,50 @@
                 </el-tab-pane>
 
                 <el-dialog :title="this.dTitle" :visible.sync="messageVisible" width="90%" @close="clear" top="3vh">
-<!--                    <el-row :gutter="20">-->
-<!--                        <el-col :span="24">-->
-<!--                            <el-steps :active="active"  finish-status="success" style="padding-top: 0px; padding-bottom: 25px">-->
-<!--                                <el-step title="报名信息提交"></el-step>-->
-<!--                                <el-step title="审批"></el-step>-->
-<!--                                <el-step title="课程安排提交"></el-step>-->
-<!--                                <el-step title="审批完成1"></el-step>-->
-<!--                            </el-steps>-->
-<!--                        </el-col>-->
-<!--                    </el-row>-->
+                    <el-steps :active="active"  finish-status="success" style="padding-top: 0px; padding-bottom: 25px">
+                        <el-step title="报名信息提交"></el-step>
+                        <el-step title="审批"></el-step>
+                        <el-step title="课程安排提交"></el-step>
+                        <el-step title="审批完成"></el-step>
+                    </el-steps>
 
-                    <el-row :gutter="10">
-                        <el-col :span="4">
-                            <el-card shadow="hover" class="mgb20" style="height:750px;">
-                                <el-timeline :reverse=true>
-                                    <el-timeline-item
-                                            v-for="(activity, index) in activities"
-                                            :key="index"
-                                            :timestamp="activity.timestamp"
-                                            color="rgba(8, 151, 255, 1)">
-                                        <p class="timeline-content">{{activity.content}}</p>
-                                        <p class="timeline-name">操作者：{{activity.name}}</p>
-                                        <p class="timeline-name" v-if="activity.feedback">
-                                            <span>意见：{{activity.feedback}}</span>
-                                        </p>
-                                    </el-timeline-item>
-                                </el-timeline>
-                            </el-card>
-                        </el-col>
+                    <div class="handle-box">
+                        <el-button :disabled="active==0?false:true" type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAdd">新增学生</el-button>
+                        <el-input v-model="keyword" placeholder="学生姓名 或 手机号码" class="handle-input mr10"></el-input>
+                        <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
+                        <el-button :disabled="active==0?false:true" type="success" icon="el-icon-s-promotion" @click="submitCourseStu" style="float:right" v-loading.fullscreen.lock="fullscreenLoading">提交</el-button>
+                    </div>
 
-                        <el-col :span="20">
-                            <el-card shadow="hover" class="mgb20" style="height:750px;">
+                    <el-table
+                            :data="tableData"
+                            height="550"
+                            border
+                            class="table"
+                            ref="moviesTable"
+                            header-cell-class-name="table-header"
+                            :row-key="getRowKeys"
+                            :expand-row-keys="expands"
+                            @expand-change="expandChange"
+                    >
+                        <el-table-column type="expand" width="55" align="center">
+                            <template slot-scope="props">
                                 <div class="handle-box">
-                                    <el-button :disabled="active==0?false:true" type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAdd">新增学生</el-button>
-                                    <el-input v-model="keyword" placeholder="学生姓名 或 手机号码" class="handle-input mr10"></el-input>
-                                    <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-                                    <el-button :disabled="active==0?false:true" type="success" icon="el-icon-s-promotion" @click="submitCourseStu" style="float:right" v-loading.fullscreen.lock="fullscreenLoading">提交</el-button>
+                                    <el-button :disabled="active==0?false:true" type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAddSignInfo" plain>添加报名信息</el-button>
                                 </div>
-
                                 <el-table
-                                        :data="tableData"
-                                        height="666"
+                                        :data="innerTableData"
+                                        height="200"
                                         border
                                         class="table"
-                                        ref="moviesTable"
                                         header-cell-class-name="table-header"
-                                        :row-key="getRowKeys"
-                                        :expand-row-keys="expands"
-                                        @expand-change="expandChange"
                                 >
-                                    <el-table-column type="expand" width="55" align="center">
-                                        <template slot-scope="props">
-                                            <div class="handle-box">
-                                                <el-button :disabled="active==0?false:true" type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAddSignInfo" plain>添加报名信息</el-button>
-                                            </div>
-                                            <el-table
-                                                    :data="innerTableData"
-                                                    height="200"
-                                                    border
-                                                    class="table"
-                                                    header-cell-class-name="table-header"
-                                            >
-                                                <el-table-column prop="courseName" label="报名课程"></el-table-column>
-                                                <el-table-column prop="lessonCount" label="总课时"></el-table-column>
-                                                <el-table-column prop="registeredAt" label="报名日期"></el-table-column>
-                                                <el-table-column prop="endAt" label="预计结束日期"></el-table-column>
-                                                <el-table-column prop="expense" label="学费"></el-table-column>
-                                                <el-table-column prop="discount" label="减免"></el-table-column>
-                                                <el-table-column prop="refund" label="退费"></el-table-column>
-                                                <el-table-column prop="remark" label="备注"></el-table-column>
-                                                <el-table-column label="操作" width="180" align="center">
-                                                    <template slot-scope="scope">
-                                                        <el-button
-                                                                :disabled="active==0?false:true"
-                                                                type="text"
-                                                                icon="el-icon-edit"
-                                                                @click="handleEditSignInfo(scope.$index, scope.row)"
-                                                        >编辑</el-button>
-                                                        <el-button
-                                                                :disabled="active==0?false:true"
-                                                                type="text"
-                                                                icon="el-icon-delete"
-                                                                class="red"
-                                                                @click="handleDelSignInfo(scope.$index, scope.row)"
-                                                        >删除</el-button>
-                                                    </template>
-                                                </el-table-column>
-                                            </el-table>
-                                        </template>
-                                    </el-table-column>
-
-                                    <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                                    <el-table-column prop="name" label="姓名"></el-table-column>
-                                    <el-table-column prop="gender" label="性别"></el-table-column>
-                                    <el-table-column prop="school" label="学校"></el-table-column>
-                                    <el-table-column prop="gradeAndClass" label="年级班级"></el-table-column>
-                                    <el-table-column prop="parentName" label="家长姓名"></el-table-column>
-                                    <el-table-column prop="telephone" label="联系方式"></el-table-column>
-                                    <el-table-column prop="address" label="家庭住址"></el-table-column>
+                                    <el-table-column prop="courseName" label="报名课程"></el-table-column>
+                                    <el-table-column prop="lessonCount" label="总课时"></el-table-column>
+                                    <el-table-column prop="registeredAt" label="报名日期"></el-table-column>
+                                    <el-table-column prop="endAt" label="预计结束日期"></el-table-column>
+                                    <el-table-column prop="expense" label="学费"></el-table-column>
+                                    <el-table-column prop="discount" label="减免"></el-table-column>
+                                    <el-table-column prop="refund" label="退费"></el-table-column>
                                     <el-table-column prop="remark" label="备注"></el-table-column>
                                     <el-table-column label="操作" width="180" align="center">
                                         <template slot-scope="scope">
@@ -165,205 +110,237 @@
                                                     :disabled="active==0?false:true"
                                                     type="text"
                                                     icon="el-icon-edit"
-                                                    @click="handleEdit(scope.$index, scope.row)"
+                                                    @click="handleEditSignInfo(scope.$index, scope.row)"
                                             >编辑</el-button>
                                             <el-button
                                                     :disabled="active==0?false:true"
                                                     type="text"
                                                     icon="el-icon-delete"
                                                     class="red"
-                                                    @click="handleDelete(scope.$index, scope.row)"
-                                            >移除</el-button>
+                                                    @click="handleDelSignInfo(scope.$index, scope.row)"
+                                            >删除</el-button>
                                         </template>
                                     </el-table-column>
                                 </el-table>
+                            </template>
 
-                                <!-- 新增弹出框 -->
-                                <el-dialog title="新增学生" :visible.sync="addVisible" width="30%" @close="clear1" top="10vh" append-to-body>
-                                    <el-form ref="form1" :model="form1" label-width="90px" label-position="left" size="mini" :rules="rules1">
-                                        <el-form-item label="学生姓名" prop="name">
-                                            <el-input v-model="form1.name" placeholder="请输入学生姓名"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="性别" prop="gender">
-                                            <el-radio v-model="form1.gender" label="男">男</el-radio>
-                                            <el-radio v-model="form1.gender" label="女">女</el-radio>
-                                        </el-form-item>
-                                        <el-form-item label="学校">
-                                            <el-input v-model="form1.school" placeholder="请输入学校名称"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="年级班级">
-                                            <el-input v-model="form1.gradeAndClass" placeholder="请输入年级班级"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="家长姓名">
-                                            <el-input v-model="form1.parentName" placeholder="请输入家长姓名"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="联系方式" prop="telephone">
-                                            <el-input v-model="form1.telephone" placeholder="请输入手机号码"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="家庭住址">
-                                            <el-input v-model="form1.address" placeholder="请输入家庭住址"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="备注">
-                                            <el-input v-model="form1.remark" placeholder="请输入备注信息"></el-input>
-                                        </el-form-item>
-                                    </el-form>
-                                    <span slot="footer" class="dialog-footer">
-                                    <el-button @click="addVisible = false">取 消</el-button>
-                                    <el-button type="primary" @click="save">确 定</el-button>
-                                </span>
-                                </el-dialog>
 
-                                <!-- 编辑弹出框 -->
-                                <el-dialog title="编辑" :visible.sync="editVisible" width="30%" @close="clear1" top="10vh" append-to-body>
-                                    <el-form ref="form1" :model="form1" label-width="90px" label-position="left"  size="mini" :rules="rules1">
-                                        <el-form-item label="学生姓名" prop="name">
-                                            <el-input v-model="form1.name" placeholder="请输入学生姓名"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="性别" prop="gender">
-                                            <el-radio v-model="form1.gender" label="男">男</el-radio>
-                                            <el-radio v-model="form1.gender" label="女">女</el-radio>
-                                        </el-form-item>
-                                        <el-form-item label="学校">
-                                            <el-input v-model="form1.school" placeholder="请输入学校名称"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="年级班级">
-                                            <el-input v-model="form1.gradeAndClass" placeholder="请输入年级班级"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="家长姓名">
-                                            <el-input v-model="form1.parentName" placeholder="请输入家长姓名"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="联系方式" prop="telephone">
-                                            <el-input v-model="form1.telephone" placeholder="请输入手机号码"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="家庭住址">
-                                            <el-input v-model="form1.address" placeholder="请输入家庭住址"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="备注">
-                                            <el-input v-model="form1.remark" placeholder="请输入备注信息"></el-input>
-                                        </el-form-item>
-                                    </el-form>
-                                    <span slot="footer" class="dialog-footer">
-                                    <el-button @click="editVisible = false">取 消</el-button>
-                                    <el-button type="primary" @click="saveEdit">确 定</el-button>
-                                </span>
-                                </el-dialog>
+                        </el-table-column>
 
-                                <!-- 新增报名信息弹出框 -->
-                                <el-dialog title="新增报名信息" :visible.sync="addSignUpVisible" width="30%" @close="clear2" top="10vh" append-to-body>
-                                    <el-form ref="form2" :model="form2" label-width="105px" label-position="left" size="mini" :rules="rules2">
-                                        <el-form-item label="报名科目" prop="subject">
-                                            <el-cascader
-                                                    :options="options"
-                                                    v-model="form2.subject"
-                                                    :props="{ expandTrigger: 'hover' }"
-                                                    style="width: 100%"
-                                                    placeholder="请选择报名科目"
-                                            ></el-cascader>
-                                        </el-form-item>
-                                        <el-form-item label="总课时">
-                                            <el-input v-model="form2.lessonCount" placeholder="请输入总课时数"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="报名日期" prop="registeredAt">
-                                            <el-date-picker
-                                                    v-model="form2.registeredAt"
-                                                    type="date"
-                                                    placeholder="请选择报名日期"
-                                                    value-format="yyyy-MM-dd"
-                                                    style="width: 100%"
-                                            ></el-date-picker>
-                                        </el-form-item>
-                                        <el-form-item label="预计结束日期">
-                                            <el-date-picker
-                                                    v-model="form2.endAt"
-                                                    type="date"
-                                                    placeholder="请选择预计结束日期"
-                                                    value-format="yyyy-MM-dd"
-                                                    style="width: 100%"
-                                            ></el-date-picker>
-                                        </el-form-item>
-                                        <el-form-item label="学费" prop="expense">
-                                            <el-input v-model="form2.expense" placeholder="请输入学费金额"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="减免情况">
-                                            <el-input v-model="form2.discount" placeholder="请输入减免金额（默认0）"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="退费">
-                                            <el-input v-model="form2.refund" placeholder="请输入退费金额（默认0）"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="备注">
-                                            <el-input v-model="form2.remark" placeholder="请输入备注信息"></el-input>
-                                        </el-form-item>
-                                    </el-form>
-                                    <span slot="footer" class="dialog-footer">
-                                    <el-button @click="addSignUpVisible = false">取 消</el-button>
-                                    <el-button type="primary" @click="saveSignUpInfo">确 定</el-button>
-                                </span>
-                                </el-dialog>
 
-                                <!-- 编辑报名信息弹出框 -->
-                                <el-dialog title="更新报名信息" :visible.sync="editSignUpVisible" width="30%" @close="clear2" top="10vh" append-to-body>
-                                    <el-form ref="form2" :model="form2" label-width="105px" label-position="left" size="mini" :rules="rules2">
-                                        <el-form-item label="报名科目" prop="option">
-                                            <el-cascader
-                                                    :options="options"
-                                                    v-model="form2.option"
-                                                    :props="{ expandTrigger: 'hover' }"
-                                                    style="width: 100%"
-                                                    placeholder="请选择报名科目"
-                                            ></el-cascader>
-                                        </el-form-item>
-                                        <el-form-item label="总课时">
-                                            <el-input v-model="form2.lessonCount" placeholder="请输入总课时数"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="报名日期" prop="registeredAt">
-                                            <el-date-picker
-                                                    v-model="form2.registeredAt"
-                                                    type="date"
-                                                    placeholder="请选择报名日期"
-                                                    value-format="yyyy-MM-dd"
-                                                    style="width: 100%"
-                                            ></el-date-picker>
-                                        </el-form-item>
-                                        <el-form-item label="预计结束日期">
-                                            <el-date-picker
-                                                    v-model="form2.endAt"
-                                                    type="date"
-                                                    placeholder="请选择预计结束日期"
-                                                    value-format="yyyy-MM-dd"
-                                                    style="width: 100%"
-                                            ></el-date-picker>
-                                        </el-form-item>
-                                        <el-form-item label="学费" prop="expense">
-                                            <el-input v-model="form2.expense" placeholder="请输入学费金额"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="减免情况">
-                                            <el-input v-model="form2.discount" placeholder="请输入减免金额（默认0）"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="退费">
-                                            <el-input v-model="form2.refund" placeholder="请输入退费金额（默认0）"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="备注">
-                                            <el-input v-model="form2.remark" placeholder="请输入备注信息"></el-input>
-                                        </el-form-item>
-                                    </el-form>
-                                    <span slot="footer" class="dialog-footer">
-                                    <el-button @click="editSignUpVisible = false">取 消</el-button>
-                                    <el-button type="primary" @click="saveEditSignUpInfo">确 定</el-button>
-                                </span>
-                                </el-dialog>
-                            </el-card>
-                        </el-col>
-                    </el-row>
+                        <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
+                        <el-table-column prop="name" label="姓名"></el-table-column>
+                        <el-table-column prop="gender" label="性别"></el-table-column>
+                        <el-table-column prop="school" label="学校"></el-table-column>
+                        <el-table-column prop="gradeAndClass" label="年级班级"></el-table-column>
+                        <el-table-column prop="parentName" label="家长姓名"></el-table-column>
+                        <el-table-column prop="telephone" label="联系方式"></el-table-column>
+                        <el-table-column prop="address" label="家庭住址"></el-table-column>
+                        <el-table-column prop="remark" label="备注"></el-table-column>
+                        <el-table-column label="操作" width="180" align="center">
+                            <template slot-scope="scope">
+                                <el-button
+                                        :disabled="active==0?false:true"
+                                        type="text"
+                                        icon="el-icon-edit"
+                                        @click="handleEdit(scope.$index, scope.row)"
+                                >编辑</el-button>
+                                <el-button
+                                        :disabled="active==0?false:true"
+                                        type="text"
+                                        icon="el-icon-delete"
+                                        class="red"
+                                        @click="handleDelete(scope.$index, scope.row)"
+                                >移除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
+                    <!-- 新增弹出框 -->
+                    <el-dialog title="新增学生" :visible.sync="addVisible" width="30%" @close="clear1" top="10vh" append-to-body>
+                        <el-form ref="form1" :model="form1" label-width="90px" label-position="left" size="mini" :rules="rules1">
+                            <el-form-item label="学生姓名" prop="name">
+                                <el-input v-model="form1.name" placeholder="请输入学生姓名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="性别" prop="gender">
+                                <el-radio v-model="form1.gender" label="男">男</el-radio>
+                                <el-radio v-model="form1.gender" label="女">女</el-radio>
+                            </el-form-item>
+                            <el-form-item label="学校">
+                                <el-input v-model="form1.school" placeholder="请输入学校名称"></el-input>
+                            </el-form-item>
+                            <el-form-item label="年级班级">
+                                <el-input v-model="form1.gradeAndClass" placeholder="请输入年级班级"></el-input>
+                            </el-form-item>
+                            <el-form-item label="家长姓名">
+                                <el-input v-model="form1.parentName" placeholder="请输入家长姓名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="联系方式" prop="telephone">
+                                <el-input v-model="form1.telephone" placeholder="请输入手机号码"></el-input>
+                            </el-form-item>
+                            <el-form-item label="家庭住址">
+                                <el-input v-model="form1.address" placeholder="请输入家庭住址"></el-input>
+                            </el-form-item>
+                            <el-form-item label="备注">
+                                <el-input v-model="form1.remark" placeholder="请输入备注信息"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <span slot="footer" class="dialog-footer">
+                                <el-button @click="addVisible = false">取 消</el-button>
+                                <el-button type="primary" @click="save">确 定</el-button>
+                            </span>
+                    </el-dialog>
+
+                    <!-- 编辑弹出框 -->
+                    <el-dialog title="编辑" :visible.sync="editVisible" width="30%" @close="clear1" top="10vh" append-to-body>
+                        <el-form ref="form1" :model="form1" label-width="90px" label-position="left"  size="mini" :rules="rules1">
+                            <el-form-item label="学生姓名" prop="name">
+                                <el-input v-model="form1.name" placeholder="请输入学生姓名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="性别" prop="gender">
+                                <el-radio v-model="form1.gender" label="男">男</el-radio>
+                                <el-radio v-model="form1.gender" label="女">女</el-radio>
+                            </el-form-item>
+                            <el-form-item label="学校">
+                                <el-input v-model="form1.school" placeholder="请输入学校名称"></el-input>
+                            </el-form-item>
+                            <el-form-item label="年级班级">
+                                <el-input v-model="form1.gradeAndClass" placeholder="请输入年级班级"></el-input>
+                            </el-form-item>
+                            <el-form-item label="家长姓名">
+                                <el-input v-model="form1.parentName" placeholder="请输入家长姓名"></el-input>
+                            </el-form-item>
+                            <el-form-item label="联系方式" prop="telephone">
+                                <el-input v-model="form1.telephone" placeholder="请输入手机号码"></el-input>
+                            </el-form-item>
+                            <el-form-item label="家庭住址">
+                                <el-input v-model="form1.address" placeholder="请输入家庭住址"></el-input>
+                            </el-form-item>
+                            <el-form-item label="备注">
+                                <el-input v-model="form1.remark" placeholder="请输入备注信息"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <span slot="footer" class="dialog-footer">
+                                <el-button @click="editVisible = false">取 消</el-button>
+                                <el-button type="primary" @click="saveEdit">确 定</el-button>
+                            </span>
+                    </el-dialog>
+
+                    <!-- 新增报名信息弹出框 -->
+                    <el-dialog title="新增报名信息" :visible.sync="addSignUpVisible" width="30%" @close="clear2" top="10vh" append-to-body>
+                        <el-form ref="form2" :model="form2" label-width="105px" label-position="left" size="mini" :rules="rules2">
+                            <el-form-item label="报名科目" prop="subject">
+                                <el-cascader
+                                        :options="options"
+                                        v-model="form2.subject"
+                                        :props="{ expandTrigger: 'hover' }"
+                                        style="width: 100%"
+                                        placeholder="请选择报名科目"
+                                ></el-cascader>
+                            </el-form-item>
+                            <el-form-item label="总课时">
+                                <el-input v-model="form2.lessonCount" placeholder="请输入总课时数"></el-input>
+                            </el-form-item>
+                            <el-form-item label="报名日期" prop="registeredAt">
+                                <el-date-picker
+                                        v-model="form2.registeredAt"
+                                        type="date"
+                                        placeholder="请选择报名日期"
+                                        value-format="yyyy-MM-dd"
+                                        style="width: 100%"
+                                ></el-date-picker>
+                            </el-form-item>
+                            <el-form-item label="预计结束日期">
+                                <el-date-picker
+                                        v-model="form2.endAt"
+                                        type="date"
+                                        placeholder="请选择预计结束日期"
+                                        value-format="yyyy-MM-dd"
+                                        style="width: 100%"
+                                ></el-date-picker>
+                            </el-form-item>
+                            <el-form-item label="学费" prop="expense">
+                                <el-input v-model="form2.expense" placeholder="请输入学费金额"></el-input>
+                            </el-form-item>
+                            <el-form-item label="减免情况">
+                                <el-input v-model="form2.discount" placeholder="请输入减免金额（默认0）"></el-input>
+                            </el-form-item>
+                            <el-form-item label="退费">
+                                <el-input v-model="form2.refund" placeholder="请输入退费金额（默认0）"></el-input>
+                            </el-form-item>
+                            <el-form-item label="备注">
+                                <el-input v-model="form2.remark" placeholder="请输入备注信息"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <span slot="footer" class="dialog-footer">
+                                <el-button @click="addSignUpVisible = false">取 消</el-button>
+                                <el-button type="primary" @click="saveSignUpInfo">确 定</el-button>
+                            </span>
+                    </el-dialog>
+
+                    <!-- 编辑报名信息弹出框 -->
+                    <el-dialog title="更新报名信息" :visible.sync="editSignUpVisible" width="30%" @close="clear2" top="10vh" append-to-body>
+                        <el-form ref="form2" :model="form2" label-width="105px" label-position="left" size="mini" :rules="rules2">
+                            <el-form-item label="报名科目" prop="option">
+                                <el-cascader
+                                        :options="options"
+                                        v-model="form2.option"
+                                        :props="{ expandTrigger: 'hover' }"
+                                        style="width: 100%"
+                                        placeholder="请选择报名科目"
+                                ></el-cascader>
+                            </el-form-item>
+                            <el-form-item label="总课时">
+                                <el-input v-model="form2.lessonCount" placeholder="请输入总课时数"></el-input>
+                            </el-form-item>
+                            <el-form-item label="报名日期" prop="registeredAt">
+                                <el-date-picker
+                                        v-model="form2.registeredAt"
+                                        type="date"
+                                        placeholder="请选择报名日期"
+                                        value-format="yyyy-MM-dd"
+                                        style="width: 100%"
+                                ></el-date-picker>
+                            </el-form-item>
+                            <el-form-item label="预计结束日期">
+                                <el-date-picker
+                                        v-model="form2.endAt"
+                                        type="date"
+                                        placeholder="请选择预计结束日期"
+                                        value-format="yyyy-MM-dd"
+                                        style="width: 100%"
+                                ></el-date-picker>
+                            </el-form-item>
+                            <el-form-item label="学费" prop="expense">
+                                <el-input v-model="form2.expense" placeholder="请输入学费金额"></el-input>
+                            </el-form-item>
+                            <el-form-item label="减免情况">
+                                <el-input v-model="form2.discount" placeholder="请输入减免金额（默认0）"></el-input>
+                            </el-form-item>
+                            <el-form-item label="退费">
+                                <el-input v-model="form2.refund" placeholder="请输入退费金额（默认0）"></el-input>
+                            </el-form-item>
+                            <el-form-item label="备注">
+                                <el-input v-model="form2.remark" placeholder="请输入备注信息"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <span slot="footer" class="dialog-footer">
+                                <el-button @click="editSignUpVisible = false">取 消</el-button>
+                                <el-button type="primary" @click="saveEditSignUpInfo">确 定</el-button>
+                            </span>
+                    </el-dialog>
+
                 </el-dialog>
-            </el-tabs>
-        </div>
 
+            </el-tabs>
+
+        </div>
     </div>
 </template>
 
 <script>
     export default {
-        name: 'signupmessage',
+        name: 'signupmessage1',
         data() {
             return {
                 pData: [],
@@ -419,26 +396,7 @@
                     expense: [
                         { required: true, message: '必填项', trigger: 'blur' }
                     ]
-                },
-                activities: [
-                    {
-                        name: 'admin',
-                        content: '活动按期开始',
-                        feedback: '请尽快输处理',
-                        timestamp: '2018-04-15 20:46'
-                    },
-                    {
-                        name: 'teacher1',
-                        content: '通过审核',
-                        timestamp: '2018-04-13 20:46'
-                    },
-                    {
-                        name: 'teacher2',
-                        content: '创建成功',
-                        feedback: '以按照指示修改完成',
-                        timestamp: '2018-04-11 20:46'
-                    }
-                ]
+                }
             }
         },
         methods: {
@@ -888,17 +846,5 @@
     width: 40px;
     height: 40px;
 }
-
-.timeline-content {
-    font-size: 13px;
-    color: rgba(0, 0, 0, 0.7);
-}
-.timeline-name {
-    color: rgba(0, 0, 0, 0.5);
-    font-size: 12px;
-    margin-top: 4px;
-}
-
-
 </style>
 

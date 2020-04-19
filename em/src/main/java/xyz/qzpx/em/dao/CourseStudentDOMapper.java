@@ -85,4 +85,7 @@ public interface CourseStudentDOMapper {
                                               @Param("courseId") Integer courseId);
 
     List<CourseStudentDO> selectBySignupId(Integer id);
+
+    void deleteBySignupIdAndStuId(@Param("signupId") Integer signupId,
+                                  @Param("studentId") Integer studentId);
 }
