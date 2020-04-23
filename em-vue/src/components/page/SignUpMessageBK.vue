@@ -50,7 +50,7 @@
 
                             <el-table-column  @click="toMessageData">
                                 <template slot-scope="scope">
-                                    <span class="message-title" @click="toMessageData2(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
+                                    <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="createdAt" width="180"></el-table-column>
@@ -58,7 +58,7 @@
                     </template>
                 </el-tab-pane>
 
-                <el-dialog :title="this.dTitle" :visible.sync="messageVisible" width="90%" top="3vh">
+                <el-dialog :title="this.dTitle" :visible.sync="messageVisible" width="90%" @close="clearOutter" top="3vh">
                     <el-row :gutter="10">
                         <el-col :span="4">
                             <el-card shadow="hover" class="mgb20" style="height:750px;">
@@ -140,7 +140,7 @@
                                     </el-table-column>
 
                                     <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                                    <el-table-column prop="name" label="姓名" ></el-table-column>
+                                    <el-table-column prop="name" label="姓名"></el-table-column>
                                     <el-table-column prop="gender" label="性别"></el-table-column>
                                     <el-table-column prop="school" label="学校"></el-table-column>
                                     <el-table-column prop="gradeAndClass" label="年级班级"></el-table-column>
@@ -344,83 +344,6 @@
                         </el-col>
                     </el-row>
                 </el-dialog>
-
-                <el-dialog :title="this.dTitle" :visible.sync="messageVisible2" width="90%" @close="clearOutter" top="3vh">
-
-                    <el-row :gutter="10">
-
-                        <el-col :span="4">
-                            <el-card shadow="hover" class="mgb20" style="height:730px;">
-
-                                <el-timeline :reverse=true>
-                                    <el-timeline-item
-                                            v-for="(activity, index) in activities"
-                                            :key="index"
-                                            :timestamp="activity.timestamp"
-                                            color="rgba(8, 151, 255, 1)"
-                                            :icon="activity.content==='完成'?'el-icon-more':''"
-                                            :size="activity.content==='完成'?'large':'normal'"
-                                    >
-                                        <p class="timeline-content">{{activity.content}}</p>
-                                        <p class="timeline-name" v-if="activity.name">
-                                            <span>操作者：{{activity.name}}</span>
-                                        </p>
-                                        <p class="timeline-name" v-if="activity.feedback">
-                                            <span>意见：{{activity.feedback}}</span>
-                                        </p>
-                                    </el-timeline-item>
-                                </el-timeline>
-
-                            </el-card>
-                        </el-col>
-
-                        <el-col :span="20">
-                            <el-card shadow="hover" class="mgb20" style="height:730px;">
-                                <el-table
-                                        :data="tableData"
-                                        :show-header="true"
-                                        height="666"
-                                        border
-                                        class="table"
-                                        header-cell-class-name="table-header"
-                                        :row-key="getRowKeys"
-                                        :expand-row-keys="expands"
-                                        @expand-change="expandChange2"
-                                >
-                                    <el-table-column type="expand" width="55" align="center">
-                                        <template slot-scope="props">
-                                            <el-table
-                                                    :data="innerTableData"
-                                                    height="400"
-                                                    border
-                                                    class="table"
-                                                    header-cell-class-name="table-header"
-                                            >
-                                                <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                                                <el-table-column prop="name" label="姓名"></el-table-column>
-                                                <el-table-column prop="gender" label="性别"></el-table-column>
-                                                <el-table-column prop="school" label="学校"></el-table-column>
-                                                <el-table-column prop="gradeAndClass" label="年级班级"></el-table-column>
-                                                <el-table-column prop="parentName" label="家长姓名"></el-table-column>
-                                                <el-table-column prop="telephone" label="联系方式"></el-table-column>
-                                                <el-table-column prop="address" label="家庭住址"></el-table-column>
-                                                <el-table-column prop="remark" label="备注"></el-table-column>
-                                            </el-table>
-                                        </template>
-                                    </el-table-column>
-
-                                    <el-table-column prop="courseName" label="课程名称"></el-table-column>
-                                    <el-table-column prop="teacherName" label="教师姓名"></el-table-column>
-                                    <el-table-column prop="telephone" label="联系电话"></el-table-column>
-                                    <el-table-column prop="lessonCount" label="课时安排"></el-table-column>
-                                    <el-table-column prop="period" label="上课日期区间"></el-table-column>
-                                    <el-table-column prop="remark" label="备注"></el-table-column>
-                                </el-table>
-                            </el-card>
-                        </el-col>
-                    </el-row>
-                </el-dialog>
-
             </el-tabs>
         </div>
 
@@ -451,7 +374,6 @@
                 addVisible: false,
                 addSignUpVisible: false,
                 editSignUpVisible: false,
-                messageVisible2: false,
                 form: {},
                 form1: {},
                 form2: {},
@@ -556,28 +478,10 @@
                 this.dTitle = row.title;
                 this.messageVisible = true;
             },
-            toMessageData2 (index, row) {
-                this.mid = row.id;
-                this.active = row.status;
-                this.getMessageData2();
-                this.dTitle = row.title;
-                this.messageVisible2 = true;
-            },
             getMessageData () {
                 let _this = this
                 this.$axios.post('/signup/getById', {
                     id: this.mid
-                }).then(resp => {
-                    if (resp && resp.status === 200) {
-                        _this.activities = resp.data.activities;
-                        _this.tableData = resp.data.tableData;
-                    }
-                })
-            },
-            getMessageData2 () {
-                let _this = this
-                this.$axios.post('/teachercourse/getByMid', {
-                    signupId: this.mid
                 }).then(resp => {
                     if (resp && resp.status === 200) {
                         _this.activities = resp.data.activities;
@@ -755,18 +659,6 @@
                     this.refreshInnerData(row.id);
                 }
             },
-            expandChange2 (row) {
-                this.tempRowId = row.id;
-                let _this = this;
-                let temp = this.expands;
-                this.expands = [];
-                this.expands.push(row.id);
-                if (temp.length === 1 && temp[0] === row.id) {
-                    this.expands = [];
-                } else {
-                    this.refreshInnerData2(row.courseId);
-                }
-            },
             handleAddSignInfo () {
                 this.$axios.get('/course/tree').then(resp => {
                     if (resp && resp.status === 200) {
@@ -807,17 +699,6 @@
                 this.$axios.post('/coursestudent/getCoursesByStuAndSignUpId', {
                     studentId: stuId,
                     signupId: this.mid
-                }).then(resp => {
-                    if (resp && resp.status === 200) {
-                        _this.innerTableData = resp.data;
-                    }
-                })
-            },
-            refreshInnerData2 (courId) {
-                let _this = this;
-                this.$axios.post('/student/getStuByCourseIdAndSignUpId', {
-                    signupId: this.mid,
-                    courseId: courId
                 }).then(resp => {
                     if (resp && resp.status === 200) {
                         _this.innerTableData = resp.data;

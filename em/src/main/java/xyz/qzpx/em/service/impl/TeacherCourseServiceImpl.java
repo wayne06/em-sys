@@ -102,6 +102,9 @@ public class TeacherCourseServiceImpl implements TeacherCourseService {
             } else {
                 teacherCourseVO.setTeacherName("");
                 teacherCourseVO.setTelephone("");
+                teacherCourseVO.setTeacherId(null);
+                teacherCourseVO.setLessonCount(null);
+                teacherCourseVO.setPeriod(null);
             }
 
             teacherCourseVOS.add(teacherCourseVO);

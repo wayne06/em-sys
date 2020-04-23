@@ -1,11 +1,14 @@
 package xyz.qzpx.em.service.impl;
 
-import com.fasterxml.jackson.databind.annotation.JsonAppend;
+import org.apache.logging.log4j.util.Strings;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.qzpx.em.dao.*;
-import xyz.qzpx.em.dataObject.*;
+import xyz.qzpx.em.dataObject.CourseStudentDO;
+import xyz.qzpx.em.dataObject.ScoreDO;
+import xyz.qzpx.em.dataObject.SignUpDO;
+import xyz.qzpx.em.dataObject.TeacherCourseDO;
 import xyz.qzpx.em.service.SignUpService;
 
 import java.text.SimpleDateFormat;
@@ -37,7 +40,11 @@ public class SignUpServiceImpl implements SignUpService {
         signUpDO.setTitle(title);
         signUpDO.setUsername(username);
         signUpDO.setStatus(0);
-        signUpDO.setCreatedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
+        //signUpDO.setCreatedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
+        String timeline = "{\"name\": \"" + username
+                + "\", \"content\": \"" + "创建报名信息"
+                + "\", \"timestamp\": \"" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())) + "\"}";
+        signUpDO.setTimeline(timeline);
         signUpDOMapper.insertSelective(signUpDO);
         return signUpDO;
     }
@@ -65,7 +72,7 @@ public class SignUpServiceImpl implements SignUpService {
         }
         List<Integer> noCourseList = new ArrayList<>();
         for (Map.Entry<Integer, List<Integer>> entry : studentCourseMap.entrySet()) {
-            if (entry.getValue().size() == 1) {
+            if (entry.getValue().size() == 1 && entry.getValue().contains(0)) {
                 noCourseList.add(entry.getKey());
             }
         }
@@ -73,7 +80,13 @@ public class SignUpServiceImpl implements SignUpService {
             // 提交
             SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
             signUpDO.setStatus(1);
-            signUpDO.setSubmit1At(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
+            //todo
+            StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
+            String username = SecurityUtils.getSubject().getPrincipal().toString();
+            stringBuffer.append("&{\"name\": \"" + username
+                    + "\", \"content\": \"" + "提交报名信息"
+                    + "\", \"timestamp\": \"" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())) + "\"}");
+            signUpDO.setTimeline(stringBuffer.toString());
             signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
         }
         return noCourseList;
@@ -91,47 +104,72 @@ public class SignUpServiceImpl implements SignUpService {
         signUpDo5.addAll(signUpDo1);
         signUpDo5.addAll(signUpDo2);
         signUpDo5.addAll(signUpDo3);
+        List<SignUpDO> signUpDo6 = new ArrayList<>();
+        signUpDo6.addAll(signUpDo3);
+        signUpDo6.addAll(signUpDo4);
         result.put("data0", signUpDo0);
         result.put("data1", signUpDo1);
         result.put("data2", signUpDo2);
         result.put("data3", signUpDo3);
         result.put("data4", signUpDo4);
         result.put("data5", signUpDo5);
+        result.put("data6", signUpDo6);
         return result;
     }
 
+    //@Override
+    //public void approve(Integer id) {
+    //    // 获取Signup id下的course id
+    //    List<Integer> courseIds = courseStudentDOMapper.selectCourseIdsBySignupId(id);
+    //    // 根据 course id 新建 teacherCourseDO
+    //    TeacherCourseDO teacherCourseDO = new TeacherCourseDO();
+    //    for (Integer courseId : courseIds) {
+    //        teacherCourseDO.setCreatedAt(new Date());
+    //        teacherCourseDO.setUpdatedAt(new Date());
+    //        teacherCourseDO.setCourseId(courseId);
+    //        teacherCourseDO.setSignupId(id);
+    //        teacherCourseDOMapper.insertSelective(teacherCourseDO);
+    //    }
+    //
+    //    SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+    //    signUpDO.setStatus(2);
+    //    //todo
+    //    //signUpDO.setApproved1At(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
+    //    signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
+    //}
+
     @Override
-    public void approve(Integer id) {
-        // 获取Signup id下的course id
-        List<Integer> courseIds = courseStudentDOMapper.selectCourseIdsBySignupId(id);
-        // 根据 course id 新建 teacherCourseDO
-        TeacherCourseDO teacherCourseDO = new TeacherCourseDO();
-        for (Integer courseId : courseIds) {
-            teacherCourseDO.setCreatedAt(new Date());
-            teacherCourseDO.setUpdatedAt(new Date());
-            teacherCourseDO.setCourseId(courseId);
-            teacherCourseDO.setSignupId(id);
-            teacherCourseDOMapper.insertSelective(teacherCourseDO);
+    public List<Integer> submit2(Integer id) {
+        // 提交前检查是否有课程还未添加教师信息
+        List<TeacherCourseDO> teacherCourseDOS = teacherCourseDOMapper.selectBySignupId(id);
+        List<Integer> noTeacherList = new ArrayList<>();
+        for (TeacherCourseDO teacherCourseDO : teacherCourseDOS) {
+            if (teacherCourseDO.getTeacherId() == 0) {
+                noTeacherList.add(teacherCourseDO.getId());
+            }
+        }
+        if (noTeacherList.size() == 0) {
+            SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+            signUpDO.setStatus(3);
+            StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
+            String username = SecurityUtils.getSubject().getPrincipal().toString();
+            stringBuffer.append("&{\"name\": \"" + username
+                    + "\", \"content\": \"" + "提交排课信息"
+                    + "\", \"timestamp\": \"" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())) + "\"}");
+            signUpDO.setTimeline(stringBuffer.toString());
+            signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
         }
 
-        SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
-        signUpDO.setStatus(2);
-        signUpDO.setApproved1At(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
-        signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
+        return noTeacherList;
     }
 
     @Override
-    public void submit2(Integer id) {
-        SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
-        signUpDO.setStatus(3);
-        signUpDO.setSubmit2At(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
-        signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
-    }
-
-    @Override
-    public void approve2(Integer id) {
+    public void approve2(Integer id, String feedback) {
         List<CourseStudentDO> courseStudentDOS = courseStudentDOMapper.selectBySignupId(id);
         for (CourseStudentDO courseStudentDO : courseStudentDOS) {
+            if (courseStudentDO.getCourseId() == 0) {
+                continue;
+            }
             ScoreDO scoreDO = new ScoreDO();
             scoreDO.setCreatedAt(new Date());
             scoreDO.setUpdatedAt(new Date());
@@ -143,7 +181,15 @@ public class SignUpServiceImpl implements SignUpService {
 
         SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
         signUpDO.setStatus(4);
-        signUpDO.setApproved2At(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
+        StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        stringBuffer.append("&{\"name\": \"" + username
+                + "\", \"content\": \"" + "排课信息过审"
+                + "\", \"feedback\": \"" + feedback
+                + "\", \"timestamp\": \"" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())) + "\"}");
+        stringBuffer.append("&{\"content\": \"" + "完成"
+                + "\", \"timestamp\": \"" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())) + "\"}");
+        signUpDO.setTimeline(stringBuffer.toString());
         signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
     }
 
@@ -152,10 +198,80 @@ public class SignUpServiceImpl implements SignUpService {
         signUpDOMapper.deleteByPrimaryKey(id);
     }
 
+    @Override
+    public String getTimelineById(Integer id) {
+        SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+        return signUpDO.getTimeline();
+    }
+
+    @Override
+    public void approve(Integer id, String feedback) {
+        // 获取Signup id下的course id
+        List<Integer> courseIds = courseStudentDOMapper.selectCourseIdsBySignupId(id);
+        // 根据 course id 新建 teacherCourseDO
+        TeacherCourseDO teacherCourseDO = new TeacherCourseDO();
+        for (Integer courseId : courseIds) {
+            if (courseId == 0) {
+                continue;
+            }
+            teacherCourseDO.setCreatedAt(new Date());
+            teacherCourseDO.setUpdatedAt(new Date());
+            teacherCourseDO.setCourseId(courseId);
+            teacherCourseDO.setSignupId(id);
+            teacherCourseDOMapper.insertSelective(teacherCourseDO);
+        }
+
+        SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+        signUpDO.setStatus(2);
+        StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        stringBuffer.append("&{\"name\": \"" + username
+                + "\", \"content\": \"" + "报名信息过审"
+                + "\", \"feedback\": \"" + feedback
+                + "\", \"timestamp\": \"" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())) + "\"}");
+        signUpDO.setTimeline(stringBuffer.toString());
+        signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
+    }
+
+    @Override
+    public void reject(Integer id, String feedback) {
+        SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+        signUpDO.setStatus(0);
+        StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        stringBuffer.append("&{\"name\": \"" + username
+                + "\", \"content\": \"" + "报名信息驳回"
+                + "\", \"feedback\": \"" + feedback
+                + "\", \"timestamp\": \"" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())) + "\"}");
+        signUpDO.setTimeline(stringBuffer.toString());
+        signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
+    }
+
+    @Override
+    public void reject2(Integer id, String feedback) {
+        SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+        signUpDO.setStatus(2);
+        StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        stringBuffer.append("&{\"name\": \"" + username
+                + "\", \"content\": \"" + "排课信息驳回"
+                + "\", \"feedback\": \"" + feedback
+                + "\", \"timestamp\": \"" + new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date(System.currentTimeMillis())) + "\"}");
+        signUpDO.setTimeline(stringBuffer.toString());
+        signUpDOMapper.updateByPrimaryKeySelective(signUpDO);
+    }
 
     public static void main(String[] args) {
-        String s = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()));
-        System.out.println(s);
+        String s = "{\"name\": \"admin\", \"content\": \"创建\", \"timestamp\": \"2020-04-20 09:40\"}";
+        String s1 = "{\"name\": \"admin\", \"content\": \"创建\", \"timestamp\": \"2020-04-20 09:40\"}&{\"name\": \"admin1\", \"content\": \"创建1\", \"timestamp\": \"2020-04-20 09:41\"}";
+        String[] ss = s.split("&");
+        String[] s1s = s1.split("&");
+        for (String sss : ss) {
+            System.out.println(s);
+        }
+        for (String sss1 : s1s) {
+            System.out.println(sss1);
+        }
     }
 
 }

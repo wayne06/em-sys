@@ -14,11 +14,18 @@ public interface SignUpService {
 
     Map<String, List<SignUpDO>> collectByStatus();
 
-    void approve(Integer id);
 
-    void submit2(Integer id);
+    List<Integer> submit2(Integer id);
 
-    void approve2(Integer id);
+    void approve2(Integer id, String feedback);
 
     void delMsg(Integer id);
+
+    String getTimelineById(Integer id);
+
+    void approve(Integer id, String feedback);
+
+    void reject(Integer id, String feedback);
+
+    void reject2(Integer id, String feedback);
 }

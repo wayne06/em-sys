@@ -14,6 +14,7 @@
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
             </div>
             <el-table
+                    fit="false"
                     :data="tableData"
                     height="650"
                     border
