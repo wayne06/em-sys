@@ -40,6 +40,10 @@
                     <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
                 </span>
             </el-dialog>
+
+            <el-card shadow="hover" class="mgb20" style="width: 450px;">
+                <el-calendar v-model="value"/>
+            </el-card>
         </div>
     </div>
 </template>
@@ -137,4 +141,8 @@
         opacity: 0;
         cursor: pointer;
     }
+    .el-calendar-table .el-calendar-day {
+        height: 35px
+    }
+
 </style>

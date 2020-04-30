@@ -28,6 +28,7 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(@RequestBody UserDO requestUser, HttpSession session) {
+        System.out.println("/login");
         String username = requestUser.getUsername();
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username, requestUser.getPassword());
@@ -37,6 +38,21 @@ public class UserController {
             return "Login success";
         } catch (AuthenticationException e) {
             return "Login failed";
+        }
+    }
+
+    @PostMapping("/changePass")
+    public String changePass(@RequestBody UserDO requestUser, HttpSession session) {
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        UserDO userDO = userService.getByName(username);
+        String passToBeChecked = new SimpleHash("md5", requestUser.getPassword(), userDO.getSalt(), 2).toString();
+        if (!passToBeChecked.equals(userDO.getPassword())) {
+            return "Incorrected Password";
+        } else {
+            String newPass = new SimpleHash("md5", requestUser.getName(), userDO.getSalt(), 2).toString();
+            userDO.setPassword(newPass);
+            userService.changePass(userDO);
+            return "success";
         }
     }
 
@@ -66,6 +82,13 @@ public class UserController {
         subject.logout();
         System.out.println("logout success");
         return "Logout success";
+    }
+
+    @GetMapping("/profile")
+    public UserDO profile() {
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        UserDO userDO = userService.getByName(username);
+        return userDO;
     }
 
     @GetMapping("/authentication")

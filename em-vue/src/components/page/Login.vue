@@ -48,6 +48,7 @@ export default {
     },
     methods: {
         login () {
+            console.log("login")
             let _this = this
             this.$axios
                 .post('/user/login', {

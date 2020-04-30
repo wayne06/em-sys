@@ -27,4 +27,11 @@ public class UserServiceImpl implements UserService {
     public void add(UserDO userDO) {
         userDOMapper.insertSelective(userDO);
     }
+
+    @Override
+    public void changePass(UserDO userDO) {
+        userDOMapper.updateByPrimaryKeySelective(userDO);
+    }
+
+
 }

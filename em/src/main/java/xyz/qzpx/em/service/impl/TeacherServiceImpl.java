@@ -65,7 +65,12 @@ public class TeacherServiceImpl implements TeacherService {
 
         for (TeacherDO teacherDO : teacherDOMapper.selectAll()) {
             Selection selection = new Selection();
-            selection.setLabel(teacherDO.getName() + " , " + teacherDO.getTelephone());
+            selection.setLabel(teacherDO.getName() + " , "
+                    + teacherDO.getGender() + " , "
+                    + teacherDO.getTelephone() + " , "
+                    + teacherDO.getType() + " , "
+                    + teacherDO.getProfession() + " , "
+                    + teacherDO.getLevel());
             selection.setValue(teacherDO.getId().toString());
             selections.add(selection);
         }

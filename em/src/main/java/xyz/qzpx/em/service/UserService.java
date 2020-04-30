@@ -8,4 +8,6 @@ public interface UserService {
     boolean isExist(String username);
 
     void add(UserDO userDO);
+
+    void changePass(UserDO userDO);
 }

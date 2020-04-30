@@ -1,12 +1,5 @@
 <template>
     <div>
-<!--        <div class="crumbs">-->
-<!--            <el-breadcrumb separator="/">-->
-<!--                <el-breadcrumb-item>-->
-<!--                    <i class="el-icon-lx-cascades"></i> 报名信息-->
-<!--                </el-breadcrumb-item>-->
-<!--            </el-breadcrumb>-->
-<!--        </div>-->
         <div class="container">
 
             <div class="handle-box">
@@ -26,12 +19,9 @@
             >
                 <el-table-column type="expand" width="55" align="center">
                     <template slot-scope="props">
-<!--                        <div class="handle-box">-->
-<!--                            <el-button type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAddSignInfo" plain>添加报名信息</el-button>-->
-<!--                        </div>-->
                         <el-table
                                 :data="innerTableData"
-                                height="200"
+                                height="window.innerHeight"
                                 border
                                 class="table"
                                 header-cell-class-name="table-header"

@@ -1,11 +1,8 @@
 <template>
     <div>
-        <el-row :gutter="20">
+        <el-row :gutter="20" style="margin-bottom: 1px">
             <el-col :span="8">
-                <el-card shadow="hover" class="mgb20" style="height:400px;">
-                    <div slot="header" class="clearfix">
-                        <span>欢迎回来</span>
-                    </div>
+                <el-card shadow="hover" class="mgb20" style="height:370px;">
                     <div class="user-info">
                         <img src="../../assets/img/img.jpg" class="user-avator" alt />
                         <div class="user-info-cont">
@@ -15,36 +12,32 @@
                     </div>
                     <div class="user-info-list">{{one}}</div>
                 </el-card>
-
-                <el-card shadow="hover" style="height:325px;">
-                    <div slot="header" class="clearfix">
-                        <span>登录情况</span>
-                    </div>
-                    Vue
-                    <el-progress :percentage="71.3" color="#42b983"></el-progress>JavaScript
-                    <el-progress :percentage="24.1" color="#f1e05a"></el-progress>CSS
-                    <el-progress :percentage="13.7"></el-progress>HTML
-                    <el-progress :percentage="5.9" color="#f56c6c"></el-progress>
+            </el-col>
+            <el-col :span="8">
+                <el-card shadow="hover" class="mgb20" style="height:370px;">
+                        <el-calendar v-model="value"/>
                 </el-card>
             </el-col>
             <el-col :span="8">
-                <el-card shadow="hover" class="mgb20" style="height:750px;">
-                    <el-calendar v-model="value"/>
+                <el-card shadow="hover" class="mgb20" style="height:370px;">
+<!--                    <div id="he-plugin-standard"></div>-->
+<!--                    <iframe width="280" scrolling="no" height="25" frameborder="0" allowtransparency="true" src="http://i.tianqi.com/index.php?c=code&id=34&icon=1&num=3"></iframe>-->
+                    <iframe width="420" scrolling="no" height="60" frameborder="0" allowtransparency="true" src="//i.tianqi.com/index.php?c=code&id=12&bdc=%23&icon=1&num=5&site=12"></iframe>
                 </el-card>
             </el-col>
-            <el-col :span="8">
-                <el-card shadow="hover" class="mgb20" style="height:195px;">
-                    <div id="he-plugin-standard"></div>
-                </el-card>
+        </el-row>
 
-                <el-card shadow="hover" style="height:535px;">
+
+        <el-row :gutter="20">
+
+            <el-col :span="12">
+                <el-card shadow="hover" style="height:400px;">
                     <div slot="header" class="clearfix">
                         <span>新闻通知</span>
                     </div>
                     <el-table :data="unread" :show-header="false" style="width: 100%">
                         <el-table-column>
                             <template slot-scope="scope">
-<!--                                <span class="message-title">{{scope.row.title}}</span>-->
                                 <el-link class="message-title"
                                          target="_blank"
                                          href="https://mp.weixin.qq.com/s/nSW9AfNa0YkAEyF5NiFDfw">疫情“打破”家庭教育舒适区：你如何履行责任，直接决定孩子的成长空间！</el-link>
@@ -53,7 +46,51 @@
                     </el-table>
                 </el-card>
             </el-col>
+
+            <el-col :span="12">
+                <el-card shadow="hover" style="height:400px;">
+                    <div slot="header" class="clearfix">
+                        <span>待办事项</span>
+                        <el-button style="float: right; padding: 3px 0" type="text" @click="handleAdd()">添加</el-button>
+                    </div>
+                    <el-table :show-header="false" :data="todoList" style="width:100%;">
+                        <el-table-column width="40">
+                            <template slot-scope="scope">
+                                <el-checkbox v-model="scope.row.status" @change="update(scope.$index, scope.row)"></el-checkbox>
+                            </template>
+                        </el-table-column>
+                        <el-table-column>
+                            <template slot-scope="scope">
+                                <div class="todo-item" :class="{'todo-item-del': scope.row.status}">{{scope.row.title}}</div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column width="143">
+                            <template slot-scope="scope">
+                                <div class="todo-item" :class="{'todo-item-del': scope.row.status}">{{scope.row.time}}</div>
+                            </template>
+                        </el-table-column>
+                        <el-table-column width="60">
+                            <template slot-scope="scope">
+                                <i class="el-icon-delete" @click="del(scope.$index, scope.row)"></i>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-card>
+            </el-col>
+
         </el-row>
+
+        <el-dialog title="添加代办事项" :visible.sync="addVisible" width="28%" @close="clear" top="10vh">
+            <el-form ref="form" :model="form" label-width="90px" label-position="left" size="mini" :rules="rules">
+                <el-form-item label="代办事项" prop="title">
+                    <el-input placeholder="请输入要添加的代办事项" v-model="form.title"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="addVisible = false">取 消</el-button>
+                <el-button type="primary" @click="save">确 定</el-button>
+            </span>
+        </el-dialog>
 
     </div>
 </template>
@@ -89,7 +126,15 @@ export default {
             unread: [{
                 date: '2018-04-19 20:00:00',
                 title: '',
-            }]
+            }],
+            todoList: [],
+            addVisible: false,
+            form: {},
+            rules: {
+                title: [
+                    {required: true, message: '不能为空', trigger: 'blur'},
+                ]
+            }
         };
     },
     components: {
@@ -129,9 +174,10 @@ export default {
         // this.changeDate();
         this.$axios.get('/user/one').then(resp => {
             if (resp && resp.status === 200) {
-                this.one = resp.data
+                this.one = resp.data;
             }
-        })
+        });
+        this.getTodoList();
     },
     // activated() {
     //     this.handleListener();
@@ -147,7 +193,60 @@ export default {
                 const date = new Date(now - (6 - index) * 86400000);
                 item.name = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
             });
-        }
+        },
+        getTodoList () {
+            this.$axios.get('/todo/all').then(resp => {
+                if (resp && resp.status === 200) {
+                    this.todoList = resp.data;
+                }
+            });
+        },
+        handleAdd () {
+            this.addVisible = true;
+        },
+        save () {
+            this.$refs['form'].validate((valid) => {
+                if (valid) {
+                    this.$axios.post('/todo/add', {
+                        title: this.form.title
+                    }).then(resp => {
+                        if (resp && resp.status === 200) {
+                            this.getTodoList();
+                            this.addVisible = false;
+                        }
+                    })
+                } else {
+                    return true;
+                }
+            })
+
+        },
+        clear () {
+            this.$refs['form'].resetFields();
+            this.form.title = '';
+        },
+        del (index, row) {
+            this.$axios.post('/todo/del', {
+                id: row.id
+            }).then(resp => {
+                if (resp && resp.status === 200) {
+                    this.getTodoList();
+                }
+            })
+        },
+        update (index, row) {
+            console.log("@change")
+            this.$axios.post('/todo/update', {
+                id: row.id
+            }).then(resp => {
+                if (resp && resp.status === 200) {
+                    this.getTodoList();
+                }
+            })
+        },
+        // update () {
+        //     console.log("@change")
+        // }
         // handleListener() {
         //     bus.$on('collapse', this.handleBus);
         //     // 调用renderChart方法对图表进行重新渲染

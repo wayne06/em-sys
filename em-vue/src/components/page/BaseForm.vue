@@ -10,15 +10,21 @@
         </div>
         <div class="container">
             <div class="form-box">
-                <el-form ref="form" :model="form" label-width="80px">
-                    <el-form-item label="表单名称">
+                <el-form ref="form" :model="form" label-width="80px" :rules="rules">
+                    <el-form-item label="表单名称" prop="name">
                         <el-input v-model="form.name"></el-input>
                     </el-form-item>
-                    <el-form-item label="选择器">
+                    <el-form-item label="选择器" prop="region">
                         <el-select v-model="form.region" placeholder="请选择">
-                            <el-option key="bbk" label="步步高" value="bbk"></el-option>
-                            <el-option key="xtc" label="小天才" value="xtc"></el-option>
-                            <el-option key="imoo" label="imoo" value="imoo"></el-option>
+                            <el-option
+                                    v-for="item in form.options"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+<!--                            <el-option key="bbk" label="步步高" value="bbk"></el-option>-->
+<!--                            <el-option key="xtc" label="小天才" value="xtc"></el-option>-->
+<!--                            <el-option key="imoo" label="imoo" value="imoo"></el-option>-->
                         </el-select>
                     </el-form-item>
                     <el-form-item label="日期时间">
@@ -140,12 +146,33 @@
                     resource: '小天才',
                     desc: '',
                     options: []
-                }
+                },
+                rules: {
+                    name: [
+                        { required: true, message: '必填项', trigger: 'blur' },
+                    ],
+                    region: [
+                        { required: true, message: '必填项', trigger: 'change' },
+                    ]
+                },
             };
+        },
+        created() {
+            this.$axios.get('/teacher/selection').then(resp => {
+                if (resp && resp.status === 200) {
+                    this.form.options = resp.data;
+                }
+            });
         },
         methods: {
             onSubmit() {
-                this.$message.success('提交成功！');
+                this.$refs['form'].validate((valid) => {
+                    if (valid) {
+                        this.$message.success('提交成功！');
+                    } else {
+                        return false;
+                    }
+                });
             }
         }
     };

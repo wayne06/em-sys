@@ -103,7 +103,8 @@
                                                     class="table"
                                                     header-cell-class-name="table-header"
                                             >
-                                                <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
+                                                <el-table-column prop="id" label="ID" width="55"
+                                                                 align="center"></el-table-column>
                                                 <el-table-column prop="name" label="姓名"></el-table-column>
                                                 <el-table-column prop="gender" label="性别"></el-table-column>
                                                 <el-table-column prop="school" label="学校"></el-table-column>
@@ -135,17 +136,28 @@
                                         </template>
                                     </el-table-column>
                                 </el-table>
+                                <div class="pagination">
+                                    <el-pagination
+                                            background
+                                            layout="total"
+                                            :total="pageTotal"
+                                    ></el-pagination>
+                                </div>
 
                                 <!-- 编辑弹出框 -->
-                                <el-dialog title="编辑" :visible.sync="editVisible" width="32%" @close="clear" top="10vh" append-to-body>
-                                    <el-form ref="form" :model="form" label-width="130px" label-position="left" size="mini" :rules="rules">
+                                <el-dialog title="编辑" :visible.sync="editVisible" width="32%" @close="clear" top="10vh"
+                                           append-to-body>
+                                    <el-form ref="form" :model="form" label-width="130px" label-position="left"
+                                             size="mini" :rules="rules">
                                         <el-form-item label="选择教师" prop="option">
-                                            <el-select v-model="form.option" placeholder="请选择教师" style="width: 100%" @change="select_status">
+                                            <el-select v-model="form.option" placeholder="请选择教师" style="width: 100%"
+                                                       @change="select_status">
                                                 <el-option
                                                         v-for="item in form.options"
                                                         :key="item.value"
                                                         :label="item.label"
-                                                        :value="item.value">
+                                                        :value="item.value"
+                                                >
                                                 </el-option>
                                             </el-select>
                                         </el-form-item>
@@ -210,13 +222,14 @@
                 form: {},
                 idx: -1,
                 pageTotal: 0,
+                options: [],
                 tempRowId: -1,
                 dTitle: '',
                 mid: -1,
                 activities: [],
                 rules: {
                     option: [
-                        {required: true, message: '必填项', trigger: 'blur'},
+                        {required: true, message: '必填项', trigger: 'change'},
                     ],
                     lessonCount: [
                         {required: true, message: '必填项', trigger: 'blur'},
@@ -264,32 +277,30 @@
                 }).then(resp => {
                     if (resp && resp.status === 200) {
                         _this.activities = resp.data.activities;
+                        console.log(resp.data.tableData)
                         _this.tableData = resp.data.tableData;
                     }
                 })
             },
             // 编辑操作
             handleEdit(index, row) {
+                // console.log("row")
+                // console.log(row)
                 this.idx = index;
                 this.form = row;
                 this.tempRowId = row.id;
                 this.tempCourseId = row.courseId;
 
-
                 this.$axios.get('/teacher/selection').then(resp => {
                     if (resp && resp.status === 200) {
-                        // this.options = resp.data;
+                        this.options = resp.data;
                         this.form.options = resp.data;
 
-                        // if (row.teacherId === null) {
-                        //     this.form.option = null;
-                        // } else {
-                        //     this.form.option = row.teacherId.toString();
-                        //     console.log(this.form.option)
-                        // }
-
-                        if (row.teacherId != null) {
+                        if (row.teacherId === null) {
+                            this.form.option = null;
+                        } else {
                             this.form.option = row.teacherId.toString();
+                            console.log(this.form.option)
                         }
 
                         if (row.period === null) {
@@ -305,6 +316,9 @@
             },
             // 保存新增
             save() {
+                console.log(111)
+                console.log(this.form.option)
+                console.log(111)
                 this.$refs['form'].validate((valid) => {
                     if (valid) {
                         this.$axios.post('/teachercourse/update', {
@@ -317,15 +331,14 @@
                         }).then(resp => {
                             if (resp && resp.status === 200) {
                                 this.$message.success('添加成功');
-                                this.$refs['form'].resetFields();
                                 this.editVisible = false;
                                 this.getMessageData();
                             }
                         })
                     } else {
-                        // console.log(222)
-                        // console.log(this.form)
-                        // console.log(222)
+                        console.log(222)
+                        console.log(this.form)
+                        console.log(222)
                         return false;
                     }
                 });
@@ -336,13 +349,13 @@
                 this.getData();
             },
             clear() {
+                this.$refs['form'].resetFields();
                 this.form = {
                     option: '',
                     lessonCount: '',
                     period: '',
                     remark: ''
                 };
-                this.$refs['form'].resetFields();
                 this.getMessageData();
             },
             clearInner(row) {
@@ -418,18 +431,9 @@
             select_status() {
                 this.$forceUpdate();
             },
-            getSelection() {
-                this.$axios.get('/teacher/selection').then(resp => {
-                    if (resp && resp.status === 200) {
-                        console.log(resp.data)
-                        this.form.options = resp.data;
-                    }
-                });
-            }
         },
         created() {
             this.getData();
-            this.getSelection();
         },
         computed: {
             unreadNum() {

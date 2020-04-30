@@ -24,6 +24,14 @@ export default new Router({
                     }
                 },
                 {
+                    path: '/dashboardbk',
+                    component: () => import(/* webpackChunkName: "dashboard" */ '../components/page/DashboardBK.vue'),
+                    meta: {
+                        title: '系统首页',
+                        requireAuth: true
+                    }
+                },
+                {
                     path: '/icon',
                     component: () => import(/* webpackChunkName: "icon" */ '../components/page/Icon.vue'),
                     meta: { title: '自定义图标' }

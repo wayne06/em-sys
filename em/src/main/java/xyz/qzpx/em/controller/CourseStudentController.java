@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import xyz.qzpx.em.dataObject.CourseDO;
 import xyz.qzpx.em.dataObject.CourseStudentDO;
 import xyz.qzpx.em.dataObject.CourseStudentVO;
 import xyz.qzpx.em.dataObject.StudentDO;

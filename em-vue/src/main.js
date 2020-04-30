@@ -4,8 +4,8 @@ import router from './router';
 import ElementUI from 'element-ui';
 import VueI18n from 'vue-i18n';
 import { messages } from './components/common/i18n';
-import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
-// import './assets/css/theme-green/index.css'; // 浅绿色主题
+// import 'element-ui/lib/theme-chalk/index.css'; // 默认主题
+import './assets/css/theme-green/index.css'; // 浅绿色主题
 import './assets/css/icon.css';
 import './components/common/directives';
 import 'babel-polyfill';
@@ -20,6 +20,7 @@ ElementUI.Dialog.props.closeOnClickModal.default = false;
 
 // 设置反向代理：前端请求默认发送到http://localhost:8443/api
 var axios = require('axios')
+// axios.defaults.baseURL = 'http://139.159.183.141:8443/api'
 axios.defaults.baseURL = 'http://localhost:8443/api'
 axios.defaults.withCredentials = true
 

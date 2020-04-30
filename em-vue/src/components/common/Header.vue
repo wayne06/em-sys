@@ -14,39 +14,65 @@
                         <i class="el-icon-rank"></i>
                     </el-tooltip>
                 </div>
-                <!-- 消息中心 -->
-                <div class="btn-bell">
-                    <el-tooltip
-                        effect="dark"
-                        :content="message?`有${message}条未读消息`:`消息中心`"
-                        placement="bottom"
-                    >
-                        <router-link to="/messagecenter">
-                            <i class="el-icon-bell"></i>
-                        </router-link>
-                    </el-tooltip>
-                    <span class="btn-bell-badge" v-if="message"></span>
-                </div>
+
                 <!-- 用户头像 -->
                 <div class="user-avator">
                     <img src="../../assets/img/img.jpg" />
                 </div>
-                <!-- 用户名下拉菜单 -->
+
                 <el-dropdown class="user-name" trigger="click" @command="handleCommand">
                     <span class="el-dropdown-link">
                         {{username}}
                         <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item divided command="loginout">修改密码</el-dropdown-item>
-                        <el-dropdown-item divided command="loginout">个人信息</el-dropdown-item>
-                        <el-dropdown-item divided command="loginout">风格设置</el-dropdown-item>
+                        <el-dropdown-item divided command="changepass">修改密码</el-dropdown-item>
+                        <el-dropdown-item divided command="profile">个人信息</el-dropdown-item>
                         <el-dropdown-item divided command="loginout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
         </div>
+        <div>
+            <el-dialog title="修改密码" :visible.sync="changepassVisible" width="32%" top="10vh" @close="clear1">
+                <el-form ref="form1" :model="form1" label-width="130px" label-position="left" size="mini" :rules="rules1">
+                    <el-form-item label="原始密码" prop="old">
+                        <el-input type="password" placeholder="请输入原始密码" v-model="form1.old"></el-input>
+                    </el-form-item>
+                    <el-form-item label="新密码" prop="new1">
+                        <el-input type="password" placeholder="请输入新的密码" v-model="form1.new1"></el-input>
+                    </el-form-item>
+                    <el-form-item label="确认新密码" prop="new2">
+                        <el-input type="password" placeholder="请再次输入新的密码" v-model="form1.new2"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="changepassVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="savePass">确 定</el-button>
+                </span>
+            </el-dialog>
+        </div>
+        <div>
+            <el-dialog title="个人信息" :visible.sync="profileVisible" width="32%" top="10vh" @close="clear2">
+                <el-form ref="form2" :model="form2" label-width="130px" label-position="left" size="mini">
+                    <el-form-item label="用户名" prop="username">
+                        <el-input placeholder="请输入用户名" v-model="form2.username"></el-input>
+                    </el-form-item>
+                    <el-form-item label="姓名" prop="name">
+                        <el-input placeholder="请输入姓名" v-model="form2.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="电话" prop="phone">
+                        <el-input placeholder="请再次输入联系电话" v-model="form2.phone"></el-input>
+                    </el-form-item>
+                </el-form>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="profileVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="saveProfile">确 定</el-button>
+                </span>
+            </el-dialog>
+        </div>
     </div>
+
 </template>
 <script>
 import bus from '../common/bus';
@@ -57,7 +83,22 @@ export default {
             collapse: false,
             fullscreen: false,
             name: 'unknown',
-            message: 2
+            message: 2,
+            changepassVisible: false,
+            profileVisible: false,
+            form1: {},
+            form2: {},
+            rules1: {
+                old: [
+                    { required: true, message: '必填项', trigger: 'blur' },
+                ],
+                new1: [
+                    { required: true, message: '必填项', trigger: 'blur' },
+                ],
+                new2: [
+                    { required: true, message: '必填项', trigger: 'blur' }
+                ]
+            }
         };
     },
     computed: {
@@ -82,7 +123,56 @@ export default {
                         _this.$router.matcher = newRouter.matcher
                     }
                 }).catch(failResponse => {})
+            };
+            if (command == 'changepass') {
+                this.changepassVisible = true;
+            };
+            if (command == 'profile') {
+                this.$axios.get('/user/profile').then(resp => {
+                    if (resp && resp.status === 200) {
+                        this.form2 = resp.data;
+                    }
+                })
+
+                this.profileVisible = true;
+            };
+        },
+        savePass() {
+            this.$refs['form1'].validate((valid) => {
+                if (valid) {
+                    if (this.form1.new1 != this.form1.new2) {
+                        this.$message.error('两次密码不一致');
+                        return;
+                    }
+                    this.$axios.post('/user/changePass', {
+                        password: this.form1.old,
+                        name: this.form1.new1
+                    }).then(resp => {
+                        if (resp && resp.status === 200) {
+                            if (resp.data === "success") {
+                                this.$message.success('密码修改成功');
+                                this.changepassVisible = false;
+                            } else {
+                                this.$message.error('原密码不正确');
+                                return;
+                            }
+                        }
+                    })
+                }
+            })
+        },
+        saveProfile() {
+
+        },
+        clear1() {
+            this.form1 = {
+                old : '',
+                new1 : '',
+                new2 : ''
             }
+        },
+        clear2() {
+
         },
         // 侧边栏折叠
         collapseChage() {

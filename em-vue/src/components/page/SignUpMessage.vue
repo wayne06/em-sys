@@ -104,8 +104,9 @@
                                                 <el-button :disabled="active==0?false:true" type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAddSignInfo" plain>添加报名信息</el-button>
                                             </div>
                                             <el-table
+                                                    ref="innerTable"
                                                     :data="innerTableData"
-                                                    height="200"
+                                                    height="window.innerHeight"
                                                     border
                                                     class="table"
                                                     header-cell-class-name="table-header"
@@ -385,7 +386,6 @@
                                         header-cell-class-name="table-header"
                                         :row-key="getRowKeys"
                                         :expand-row-keys="expands"
-                                        @expand-change="expandChange2"
                                 >
                                     <el-table-column type="expand" width="55" align="center">
                                         <template slot-scope="props">
@@ -777,6 +777,7 @@
                 })
             },
             saveSignUpInfo (index, row) {
+                console.log(this.expands)
                 this.$refs['form2'].validate((valid) => {
                     if (valid) {
                         this.$axios.post('/coursestudent/add', {
@@ -792,6 +793,13 @@
                             remark: this.form2.remark
                         }).then(resp => {
                             if (resp && resp.status === 200) {
+
+                                this.expands.pop(this.tempRowId);
+                                console.log(this.expands);
+                                this.sleep(5000)
+                                this.expands.push(this.tempRowId);
+                                console.log(this.expands);
+
                                 this.$message.success('新增成功');
                                 this.addSignUpVisible = false;
                                 this.refreshInnerData(this.tempRowId);
@@ -802,6 +810,16 @@
                     }
                 })
             },
+            sleep(numberMillis) {
+                var now = new Date();
+                var exitTime = now.getTime() + numberMillis;
+                while (true) {
+                    now = new Date();
+                    if (now.getTime() > exitTime) {
+                        return;
+                    }
+                }
+            },
             refreshInnerData (stuId) {
                 let _this = this;
                 this.$axios.post('/coursestudent/getCoursesByStuAndSignUpId', {
@@ -811,7 +829,7 @@
                     if (resp && resp.status === 200) {
                         _this.innerTableData = resp.data;
                     }
-                })
+                });
             },
             refreshInnerData2 (courId) {
                 let _this = this;
@@ -882,7 +900,7 @@
                     type: 'warning'
                 }).then(() => {
                     this.$axios.post('/coursestudent/del', {
-                        id: this.innerTableData[this.idx].id
+                        id: row.id
                     }).then(resp => {
                         if (resp && resp.status === 200) {
                             this.$message.success('删除成功');
@@ -890,6 +908,7 @@
                         }
                     })
                 }).catch(() => {
+                    console.log("fail")
                     this.$message({
                         type: 'info',
                         message: '已取消删除'
