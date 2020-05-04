@@ -6,6 +6,8 @@ import xyz.qzpx.em.dao.UserDOMapper;
 import xyz.qzpx.em.dataObject.UserDO;
 import xyz.qzpx.em.service.UserService;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -31,6 +33,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePass(UserDO userDO) {
         userDOMapper.updateByPrimaryKeySelective(userDO);
+    }
+
+    @Override
+    public List<UserDO> getAll() {
+        return userDOMapper.selectAll();
     }
 
 

@@ -18,6 +18,7 @@ import xyz.qzpx.em.service.UserService;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
@@ -108,6 +109,11 @@ public class UserController {
             e.printStackTrace();
         }
         return result;
+    }
+
+    @GetMapping("/all")
+    public List<UserDO> all() {
+        return userService.getAll();
     }
 
 }

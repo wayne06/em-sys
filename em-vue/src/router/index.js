@@ -194,6 +194,22 @@ export default new Router({
                         requireAuth: true
                     }
                 },
+                {
+                    path: '/news',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/News.vue'),
+                    meta: {
+                        title: '新闻管理',
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/authorize',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/Authorize.vue'),
+                    meta: {
+                        title: '授权',
+                        requireAuth: true
+                    }
+                },
             ]
         },
         {
@@ -394,6 +410,22 @@ export const createRouter = routes => new Router({
                     component: () => import(/* webpackChunkName: "login" */ '../components/page/Schedule.vue'),
                     meta: {
                         title: '排课中心',
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/news',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/News.vue'),
+                    meta: {
+                        title: '通知管理',
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: '/authorize',
+                    component: () => import(/* webpackChunkName: "table" */ '../components/page/Authorize.vue'),
+                    meta: {
+                        title: '用户管理',
                         requireAuth: true
                     }
                 },
