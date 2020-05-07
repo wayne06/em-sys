@@ -206,7 +206,7 @@ export default new Router({
                     path: '/authorize',
                     component: () => import(/* webpackChunkName: "table" */ '../components/page/Authorize.vue'),
                     meta: {
-                        title: '授权',
+                        title: '用户管理',
                         requireAuth: true
                     }
                 },

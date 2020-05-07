@@ -54,4 +54,6 @@ public interface UserRoleDOMapper {
     int updateByPrimaryKey(UserRoleDO record);
 
     List<UserRoleDO> selectByUid(Integer id);
+
+    Integer selectRidByUid(Integer id);
 }

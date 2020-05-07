@@ -1,6 +1,7 @@
 package xyz.qzpx.em.service;
 
 import xyz.qzpx.em.dataObject.UserDO;
+import xyz.qzpx.em.dataObject.UserVO;
 
 import java.util.List;
 
@@ -13,5 +14,7 @@ public interface UserService {
 
     void changePass(UserDO userDO);
 
-    List<UserDO> getAll();
+    List<UserVO> getAll();
+
+    void update(UserDO userDO);
 }

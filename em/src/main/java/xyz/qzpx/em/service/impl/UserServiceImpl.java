@@ -1,11 +1,18 @@
 package xyz.qzpx.em.service.impl;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import xyz.qzpx.em.dao.RoleDOMapper;
 import xyz.qzpx.em.dao.UserDOMapper;
+import xyz.qzpx.em.dao.UserRoleDOMapper;
 import xyz.qzpx.em.dataObject.UserDO;
+import xyz.qzpx.em.dataObject.UserVO;
 import xyz.qzpx.em.service.UserService;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -13,6 +20,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserDOMapper userDOMapper;
+
+    @Autowired
+    private UserRoleDOMapper userRoleDOMapper;
+
+    @Autowired
+    private RoleDOMapper roleDOMapper;
 
     @Override
     public UserDO getByName(String username) {
@@ -36,8 +49,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDO> getAll() {
-        return userDOMapper.selectAll();
+    public List<UserVO> getAll() {
+        List<UserVO> result = new ArrayList<>();
+        List<UserDO> userDOS = userDOMapper.selectAll();
+        for (UserDO userDO : userDOS) {
+            UserVO userVO = new UserVO();
+            BeanUtils.copyProperties(userDO, userVO);
+            if (userDO.getRoleId() != null) {
+                userVO.setRole(roleDOMapper.selectByPrimaryKey(userDO.getRoleId()).getNameZh());
+            }
+            userVO.setCreatedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm").format(userDO.getCreatedAt()));
+            result.add(userVO);
+        }
+        return result;
+    }
+
+    @Override
+    public void update(UserDO userDO) {
+        userDOMapper.updateByPrimaryKeySelective(userDO);
     }
 
 

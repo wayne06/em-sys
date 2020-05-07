@@ -113,4 +113,10 @@
      from user_role
      where uid = #{id,jdbcType=INTEGER}
   </select>
+
+  <select id="selectRidByUid" resultType="java.lang.Integer">
+    select rid
+    from user_role
+    where uid = #{id,jdbcType=INTEGER}
+  </select>
 </mapper>

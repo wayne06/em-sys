@@ -35,12 +35,21 @@
                     <div slot="header" class="clearfix">
                         <span>新闻通知</span>
                     </div>
-                    <el-table :data="unread" :show-header="false" style="width: 100%">
+                    <el-table :data="news" :show-header="false" style="width: 100%">
                         <el-table-column>
                             <template slot-scope="scope">
                                 <el-link class="message-title"
                                          target="_blank"
-                                         href="https://mp.weixin.qq.com/s/nSW9AfNa0YkAEyF5NiFDfw">疫情“打破”家庭教育舒适区：你如何履行责任，直接决定孩子的成长空间！</el-link>
+                                         :href="scope.row.link">
+                                        <span v-if="scope.row.priority === '重要'">【{{scope.row.priority}}】{{scope.row.title}}</span>
+                                        <span v-else > {{scope.row.title}}</span>
+                                </el-link>
+
+                            </template>
+                        </el-table-column>
+                        <el-table-column width="60">
+                            <template slot-scope="scope">
+                                <div>{{scope.row.enabledAt.substring(5,10)}}</div>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -128,6 +137,7 @@ export default {
                 title: '',
             }],
             todoList: [],
+            news: [],
             addVisible: false,
             form: {},
             rules: {
@@ -178,6 +188,7 @@ export default {
             }
         });
         this.getTodoList();
+        this.getNews();
     },
     // activated() {
     //     this.handleListener();
@@ -200,6 +211,13 @@ export default {
                     this.todoList = resp.data;
                 }
             });
+        },
+        getNews () {
+            this.$axios.get('/news/allForHomepage').then(resp => {
+                if (resp && resp.status === 200) {
+                    this.news = resp.data;
+                }
+            })
         },
         handleAdd () {
             this.addVisible = true;

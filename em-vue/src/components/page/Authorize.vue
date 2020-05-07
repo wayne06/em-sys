@@ -6,19 +6,24 @@
                 <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
             </div>
             <el-table
-                    fit="false"
                     :data="tableData"
                     height="650"
                     border
                     class="table"
                     header-cell-class-name="table-header"
             >
-                <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                <el-table-column prop="name" label="姓名"></el-table-column>
+<!--                <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>-->
                 <el-table-column prop="username" label="用户名"></el-table-column>
-                <el-table-column prop="telephone" label="电话"></el-table-column>
+                <el-table-column prop="name" label="姓名"></el-table-column>
+                <el-table-column prop="phone" label="电话"></el-table-column>
                 <el-table-column prop="role" label="职能"></el-table-column>
-                <el-table-column prop="enabled" label="状态"></el-table-column>
+                <el-table-column prop="createdAt" label="注册日期"></el-table-column>
+                <el-table-column prop="enabled" label="状态">
+                    <template slot-scope="scope">
+                        <span v-if="scope.row.enabled" style="color: #13ce66">已激活</span>
+                        <span v-else style="color: red">禁用中</span>
+                    </template>
+                </el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button
@@ -32,32 +37,38 @@
         </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="编辑用户" :visible.sync="editVisible" width="30%" @close="clear" top="10vh">
+        <el-dialog title="编辑用户" :visible.sync="editVisible" width="39%" @close="clear" top="10vh">
             <el-form ref="form" :model="form" label-width="90px" label-position="left" size="mini">
-                <el-form-item label="教师姓名">
-                    <el-input v-model="form.name"></el-input>
+                <el-form-item label="用户名">
+                    <el-input v-model="form.username" disabled></el-input>
                 </el-form-item>
-                <el-form-item label="性别">
-                    <el-radio v-model="form.gender" label="男">男</el-radio>
-                    <el-radio v-model="form.gender" label="女">女</el-radio>
+                <el-form-item label="姓名">
+                    <el-input v-model="form.name" disabled></el-input>
                 </el-form-item>
-                <el-form-item label="联系方式">
-                    <el-input v-model="form.telephone"></el-input>
+                <el-form-item label="电话">
+                    <el-input v-model="form.phone" disabled></el-input>
                 </el-form-item>
-                <el-form-item label="类型">
-                    <el-radio v-model="form.type" label="全职">全职</el-radio>
-                    <el-radio v-model="form.type" label="兼职">兼职</el-radio>
+                <el-form-item label="注册日期">
+                    <el-input v-model="form.createdAt" disabled></el-input>
                 </el-form-item>
-                <el-form-item label="专业">
-                    <el-input v-model="form.profession"></el-input>
+                <el-form-item label="职能">
+                    <el-radio-group v-model="form.roleId">
+                        <el-radio :label="2">课程顾问</el-radio>
+                        <el-radio :label="3">学管师</el-radio>
+                        <el-radio :label="4">教师</el-radio>
+                        <el-radio :label="5">校长</el-radio>
+                        <el-radio :label="6">财务</el-radio>
+                    </el-radio-group>
                 </el-form-item>
-                <el-form-item label="级别">
-                    <el-radio v-model="form.level" label="A">A</el-radio>
-                    <el-radio v-model="form.level" label="B">B</el-radio>
-                    <el-radio v-model="form.level" label="C">C</el-radio>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input v-model="form.remark"></el-input>
+                <el-form-item label="状态">
+                    <el-switch
+                            style="display: block"
+                            v-model="form.enabled"
+                            active-color="#13ce66"
+                            inactive-color="#ff4949"
+                            active-text="激活"
+                            inactive-text="禁用">
+                    </el-switch>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -134,26 +145,21 @@
             handleEdit(index, row) {
                 this.idx = index;
                 this.form = row;
+                console.log(this.form)
                 this.editVisible = true;
             },
             // 保存编辑
             saveEdit() {
-                let _this = this;
-                let id = _this.tableData[this.idx].id;
-                this.$axios.post('/teacher/update', {
-                    id: id,
-                    name: _this.form.name,
-                    gender: _this.form.gender,
-                    telephone: _this.form.telephone,
-                    type: _this.form.type,
-                    profession: _this.form.profession,
-                    level: _this.form.level,
-                    remark: _this.form.remark
+                console.log(this.form);
+
+                this.$axios.post('/user/update', {
+                    id: this.form.id,
+                    roleId: this.form.roleId,
+                    enabled: this.form.enabled
                 }).then(resp => {
                     if (resp && resp.status === 200) {
                         this.$message.success('修改成功');
                         this.editVisible = false;
-                        this.$set(this.tableData, this.idx, this.form)
                         this.getData();
                     }
                 })
@@ -169,35 +175,6 @@
                     remark: ''
                 }
                 this.getData();
-            },
-            // 新增操作
-            handleAdd() {
-                this.addVisible = true;
-            },
-
-            // 保存新增
-            save() {
-                let _this = this;
-                this.$axios.post('/teacher/add', {
-                    name: _this.form.name,
-                    gender: _this.form.gender,
-                    telephone: _this.form.telephone,
-                    type: _this.form.type,
-                    profession: _this.form.profession,
-                    level: _this.form.level,
-                    remark: _this.form.remark
-                }).then(resp => {
-                    if (resp && resp.status === 200) {
-                        this.$notify({
-                            title: '添加成功',
-                            type: 'success',
-                            offset: 100
-                        });
-                        // this.$message.success('新增成功');
-                        this.addVisible = false;
-                        this.getData();
-                    }
-                })
             },
             handleSearch () {
                 let _this = this;

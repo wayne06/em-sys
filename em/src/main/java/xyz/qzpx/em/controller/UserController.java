@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
 import xyz.qzpx.em.dataObject.UserDO;
+import xyz.qzpx.em.dataObject.UserVO;
 import xyz.qzpx.em.service.UserService;
 
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -73,6 +75,8 @@ public class UserController {
         String encodedPassword = new SimpleHash("md5", password, salt, 2).toString();
         userDO.setSalt(salt);
         userDO.setPassword(encodedPassword);
+        userDO.setEnabled(false);
+        userDO.setCreatedAt(new Date());
         userService.add(userDO);
         return "Register success";
     }
@@ -112,8 +116,13 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public List<UserDO> all() {
+    public List<UserVO> all() {
         return userService.getAll();
+    }
+
+    @PostMapping("/update")
+    public void update(@RequestBody UserDO userDO) {
+        userService.update(userDO);
     }
 
 }
