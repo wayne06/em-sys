@@ -1,15 +1,14 @@
 package xyz.qzpx.em.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.qzpx.em.dao.*;
-import xyz.qzpx.em.dataObject.CourseStudentDO;
-import xyz.qzpx.em.dataObject.ScoreDO;
-import xyz.qzpx.em.dataObject.SignUpDO;
-import xyz.qzpx.em.dataObject.TeacherCourseDO;
+import xyz.qzpx.em.dataObject.*;
 import xyz.qzpx.em.service.SignUpService;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -33,11 +32,12 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Override
     public SignUpDO add() {
-        String title = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date(System.currentTimeMillis()));
+        String title = new SimpleDateFormat("yyyy-MMdd-HHmm-ss").format(new Date(System.currentTimeMillis()));
         String username = SecurityUtils.getSubject().getPrincipal().toString();
         SignUpDO signUpDO = new SignUpDO();
         signUpDO.setTitle(title);
-        signUpDO.setUsername(username);
+        signUpDO.setCreatedBy(username);
+        signUpDO.setProcessingBy(username);
         signUpDO.setStatus(0);
         //signUpDO.setCreatedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis())));
         String timeline = "{\"name\": \"" + username
@@ -50,8 +50,7 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Override
     public List<SignUpDO> getByStatus(Integer status) {
-        String username = SecurityUtils.getSubject().getPrincipal().toString();
-        List<SignUpDO> signUpDOS = signUpDOMapper.selectByStatus(username, status);
+        List<SignUpDO> signUpDOS = signUpDOMapper.selectByStatus(status);
         return signUpDOS;
     }
 
@@ -78,6 +77,7 @@ public class SignUpServiceImpl implements SignUpService {
         if (noCourseList.size() == 0) {
             // 提交
             SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+            signUpDO.setProcessingBy("pri");
             signUpDO.setStatus(1);
             //todo
             StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
@@ -94,25 +94,79 @@ public class SignUpServiceImpl implements SignUpService {
     @Override
     public Map<String, List<SignUpDO>> collectByStatus() {
         Map<String, List<SignUpDO>> result = new HashMap<>();
-        List<SignUpDO> signUpDo0 = getByStatus(0);
-        List<SignUpDO> signUpDo1 = getByStatus(1);
-        List<SignUpDO> signUpDo2 = getByStatus(2);
-        List<SignUpDO> signUpDo3 = getByStatus(3);
-        List<SignUpDO> signUpDo4 = getByStatus(4);
-        List<SignUpDO> signUpDo5 = new ArrayList<>();
-        signUpDo5.addAll(signUpDo1);
-        signUpDo5.addAll(signUpDo2);
-        signUpDo5.addAll(signUpDo3);
-        List<SignUpDO> signUpDo6 = new ArrayList<>();
-        signUpDo6.addAll(signUpDo3);
-        signUpDo6.addAll(signUpDo4);
-        result.put("data0", signUpDo0);
-        result.put("data1", signUpDo1);
-        result.put("data2", signUpDo2);
-        result.put("data3", signUpDo3);
-        result.put("data4", signUpDo4);
-        result.put("data5", signUpDo5);
-        result.put("data6", signUpDo6);
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+
+        List<SignUpDO> allSignup = signUpDOMapper.selectAll();
+        List<SignUpDO> allSignupButUnsubmitted = new ArrayList<>();
+        List<SignUpDO> signProcessing = new ArrayList<>();
+        List<SignUpDO> signSubmitted = new ArrayList<>();
+        List<SignUpDO> scheduleProcessing = new ArrayList<>();
+        List<SignUpDO> scheduleSubmitted = new ArrayList<>();
+        List<SignUpDO> approveSign = new ArrayList<>();
+        List<SignUpDO> approveSchedule = new ArrayList<>();
+        List<SignUpDO> approveDone = new ArrayList<>();
+        for (SignUpDO signUpDO : allSignup) {
+            if (signUpDO.getStatus() == 0 && username.equals(signUpDO.getProcessingBy())) {
+                signProcessing.add(signUpDO);
+            }
+            if (signUpDO.getStatus() != 0 && username.equals(signUpDO.getCreatedBy())) {
+                signSubmitted.add(signUpDO);
+            }
+            if (signUpDO.getStatus() == 1) {
+                approveSign.add(signUpDO);
+            }
+            if (signUpDO.getStatus() == 3) {
+                approveSchedule.add(signUpDO);
+            }
+            if (signUpDO.getStatus() == 4) {
+                approveDone.add(signUpDO);
+            }
+            if (signUpDO.getStatus() == 2 && username.equals(signUpDO.getProcessingBy())) {
+                scheduleProcessing.add(signUpDO);
+            }
+            if (signUpDO.getStatus() != 0) {
+                allSignupButUnsubmitted.add(signUpDO);
+            }
+        }
+        result.put("allSignup", allSignupButUnsubmitted);
+        result.put("signProcessing", signProcessing);
+        result.put("signSubmitted", signSubmitted);
+        result.put("scheduleProcessing", scheduleProcessing);
+        result.put("approveSign", approveSign);
+        result.put("approveSchedule", approveSchedule);
+        result.put("approveDone", approveDone);
+
+        //// signup中状态为0(编辑报名信息)，且processingBy为当前登录用户 => 报名中心：处理中
+        //List<SignUpDO> signUpDo0 = signUpDOMapper.selectByStatusAndProcessor(username, 0);
+        //
+        //// signup中状态不为0(已提交报名信息)，且createdBy为当前登录用户 => 报名中心：已提交
+        //List<SignUpDO> signUpDo1 = signUpDOMapper.selectByStatusAndCreator(username, 1);
+        //
+        //// signup中所有 => 报名中心：全部
+        //List<SignUpDO> signUpDo2 = signUpDOMapper.selectAll();
+        //
+        //
+        //
+        //// 状态为1的 => 审批中心：待审报名信息
+        //List<SignUpDO> signUpDo3 = getByStatus(1);
+        //
+        //// 状态为3的 => 审批中心：待审排课信息
+        //List<SignUpDO> signUpDo4 = getByStatus(3);
+        //
+        //// 状态为4的 => 审批中心：已完成
+        //List<SignUpDO> signUpDo5 = getByStatus(4);
+        //
+        //// signup中所有 => 审批中心：全部  signUpDo2
+        //
+        //
+        //
+        //// signup中状态为2(报名信息审核通过)，且processingBy为当前登录用户 => 排课中心：处理中
+        //List<SignUpDO> signUpDo6 = signUpDOMapper.selectByStatusAndProcessor(username, 2);
+        //
+        //// => 排课中心：已提交 todo
+        //
+        //
+        //// => 排课中心：全部  signUpDo2
         return result;
     }
 
@@ -149,6 +203,7 @@ public class SignUpServiceImpl implements SignUpService {
         }
         if (noTeacherList.size() == 0) {
             SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+            signUpDO.setProcessingBy("pri");
             signUpDO.setStatus(3);
             StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
             String username = SecurityUtils.getSubject().getPrincipal().toString();
@@ -180,6 +235,7 @@ public class SignUpServiceImpl implements SignUpService {
 
         SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
         signUpDO.setStatus(4);
+        signUpDO.setProcessingBy("done");
         StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
         String username = SecurityUtils.getSubject().getPrincipal().toString();
         stringBuffer.append("&{\"name\": \"" + username
@@ -204,7 +260,7 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     @Override
-    public void approve(Integer id, String feedback) {
+    public void approve(Integer id, String feedback, String nextProcessor) {
         // 获取Signup id下的course id
         List<Integer> courseIds = courseStudentDOMapper.selectCourseIdsBySignupId(id);
         // 根据 course id 新建 teacherCourseDO
@@ -221,6 +277,7 @@ public class SignUpServiceImpl implements SignUpService {
         }
 
         SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+        signUpDO.setProcessingBy(nextProcessor);
         signUpDO.setStatus(2);
         StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
         String username = SecurityUtils.getSubject().getPrincipal().toString();
@@ -233,8 +290,19 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     @Override
-    public void reject(Integer id, String feedback) {
+    public void reject(Integer id, String feedback) throws IOException {
         SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+
+        String activitiesStr = signUpDO.getTimeline();
+        String[] actArr = activitiesStr.split("&");
+        List<AcitivityDO> activities = new LinkedList<>();
+        for (String s : actArr) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            AcitivityDO acitivityDO = objectMapper.readValue(s, AcitivityDO.class);
+            activities.add(acitivityDO);
+        }
+
+        signUpDO.setProcessingBy(activities.get(activities.size() - 1).getName());
         signUpDO.setStatus(0);
         StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
         String username = SecurityUtils.getSubject().getPrincipal().toString();
@@ -247,8 +315,20 @@ public class SignUpServiceImpl implements SignUpService {
     }
 
     @Override
-    public void reject2(Integer id, String feedback) {
+    public void reject2(Integer id, String feedback) throws IOException {
         SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
+
+        String activitiesStr = signUpDO.getTimeline();
+        String[] actArr = activitiesStr.split("&");
+        List<AcitivityDO> activities = new LinkedList<>();
+        for (String s : actArr) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            AcitivityDO acitivityDO = objectMapper.readValue(s, AcitivityDO.class);
+            activities.add(acitivityDO);
+        }
+
+        signUpDO.setProcessingBy(activities.get(activities.size() - 1).getName());
+
         signUpDO.setStatus(2);
         StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
         String username = SecurityUtils.getSubject().getPrincipal().toString();

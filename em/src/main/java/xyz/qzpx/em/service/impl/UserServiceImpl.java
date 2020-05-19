@@ -6,13 +6,13 @@ import org.springframework.stereotype.Service;
 import xyz.qzpx.em.dao.RoleDOMapper;
 import xyz.qzpx.em.dao.UserDOMapper;
 import xyz.qzpx.em.dao.UserRoleDOMapper;
+import xyz.qzpx.em.dataObject.Selection;
 import xyz.qzpx.em.dataObject.UserDO;
 import xyz.qzpx.em.dataObject.UserVO;
 import xyz.qzpx.em.service.UserService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -69,5 +69,27 @@ public class UserServiceImpl implements UserService {
         userDOMapper.updateByPrimaryKeySelective(userDO);
     }
 
+    @Override
+    public List<Selection> getSchedulers() {
+        List<Selection> selections = new ArrayList<>();
+
+        for (UserDO userDO : userDOMapper.selectSchedulers()) {
+            Selection selection = new Selection();
+            selection.setLabel(userDO.getUsername());
+            selection.setValue(userDO.getUsername());
+            selections.add(selection);
+        }
+        return selections;
+    }
+
+    @Override
+    public String getRoleByName(String username) {
+        Integer roleId = userDOMapper.selectByUsername(username).getRoleId();
+        if (roleId == null) {
+            return "";
+        } else {
+            return roleDOMapper.selectByPrimaryKey(roleId).getNameZh();
+        }
+    }
 
 }

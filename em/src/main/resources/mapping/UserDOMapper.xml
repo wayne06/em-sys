@@ -189,4 +189,10 @@
     <include refid="Base_Column_List"></include>
     from user where id != 2
   </select>
+
+  <select id="selectSchedulers" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"></include>
+    from user where role_id = 3
+  </select>
 </mapper>

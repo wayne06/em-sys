@@ -1,5 +1,6 @@
 package xyz.qzpx.em.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -9,6 +10,9 @@ import xyz.qzpx.em.interceptor.LoginInterceptor;
 
 @SpringBootConfiguration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Value("${webconfig.allowedOrigins}")
+    private String allowedOrigin;
 
     @Bean
     public LoginInterceptor getLoginInterceptor() {
@@ -31,7 +35,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowCredentials(true)
                 //.allowedOrigins("http://139.159.183.141")
-                .allowedOrigins("http://localhost:8080")
+                //.allowedOrigins("http://localhost:8080")
+                .allowedOrigins(this.allowedOrigin)
                 .allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE")
                 .allowedHeaders("*");
     }

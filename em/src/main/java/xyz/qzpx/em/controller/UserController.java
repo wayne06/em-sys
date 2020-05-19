@@ -1,5 +1,6 @@
 package xyz.qzpx.em.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -13,6 +14,7 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.HtmlUtils;
+import xyz.qzpx.em.dataObject.Selection;
 import xyz.qzpx.em.dataObject.UserDO;
 import xyz.qzpx.em.dataObject.UserVO;
 import xyz.qzpx.em.service.UserService;
@@ -57,6 +59,18 @@ public class UserController {
             userService.changePass(userDO);
             return "success";
         }
+    }
+
+    @GetMapping("/role")
+    public String role() {
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        String role = userService.getRoleByName(username);
+        if (StringUtils.isEmpty(role)) {
+            return "";
+        } else {
+            return role;
+        }
+
     }
 
     @PostMapping("/register")
@@ -123,6 +137,11 @@ public class UserController {
     @PostMapping("/update")
     public void update(@RequestBody UserDO userDO) {
         userService.update(userDO);
+    }
+
+    @GetMapping("/schSelection")
+    public List<Selection> getSchedulers() {
+        return userService.getSchedulers();
     }
 
 }

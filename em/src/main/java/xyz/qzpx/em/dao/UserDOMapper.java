@@ -56,4 +56,6 @@ public interface UserDOMapper {
     UserDO selectByUsername(String username);
 
     List<UserDO> selectAll();
+
+    List<UserDO> selectSchedulers();
 }

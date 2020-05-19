@@ -110,11 +110,11 @@ public class SignUpController {
 
     @PostMapping("/approve")
     public void approve(@RequestBody SignUpDO signUpDO) {
-        signUpService.approve(signUpDO.getId(), signUpDO.getTimeline());
+        signUpService.approve(signUpDO.getId(), signUpDO.getTimeline(), signUpDO.getProcessingBy());
     }
 
     @PostMapping("/reject")
-    public void reject(@RequestBody SignUpDO signUpDO) {
+    public void reject(@RequestBody SignUpDO signUpDO) throws IOException {
         signUpService.reject(signUpDO.getId(), signUpDO.getTimeline());
     }
 
@@ -124,7 +124,7 @@ public class SignUpController {
     }
 
     @PostMapping("/reject2")
-    public void reject2(@RequestBody SignUpDO signUpDO) {
+    public void reject2(@RequestBody SignUpDO signUpDO) throws IOException {
         signUpService.reject2(signUpDO.getId(), signUpDO.getTimeline());
     }
 

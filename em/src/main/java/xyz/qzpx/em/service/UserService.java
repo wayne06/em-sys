@@ -1,5 +1,6 @@
 package xyz.qzpx.em.service;
 
+import xyz.qzpx.em.dataObject.Selection;
 import xyz.qzpx.em.dataObject.UserDO;
 import xyz.qzpx.em.dataObject.UserVO;
 
@@ -17,4 +18,8 @@ public interface UserService {
     List<UserVO> getAll();
 
     void update(UserDO userDO);
+
+    List<Selection> getSchedulers();
+
+    String getRoleByName(String username);
 }

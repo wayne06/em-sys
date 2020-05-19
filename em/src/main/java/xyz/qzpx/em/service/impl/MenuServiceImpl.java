@@ -36,19 +36,14 @@ public class MenuServiceImpl implements MenuService {
     public List<MenuDO> getMenusByCurrentUser() {
         String username = SecurityUtils.getSubject().getPrincipal().toString();
         UserDO userDO = userDOMapper.selectByUsername(username);
-
-        List<UserRoleDO> userRoleDOS = userRoleDOMapper.selectByUid(userDO.getId());
-
         List<MenuDO> menuDOS = new ArrayList<>();
-        for (UserRoleDO userRoleDO : userRoleDOS) {
-            List<RoleMenuDO> roleMenuDOS = roleMenuDOMapper.selectByRid(userRoleDO.getRid());
+        List<RoleMenuDO> roleMenuDOS = roleMenuDOMapper.selectByRid(userDO.getRoleId());
             for (RoleMenuDO roleMenuDO : roleMenuDOS) {
                 MenuDO menuDO = menuDOMapper.selectByPrimaryKey(roleMenuDO.getMid());
                 if (!menuDOS.contains(menuDO)) {
                     menuDOS.add(menuDO);
                 }
             }
-        }
         handleMenus(menuDOS);
         return menuDOS;
     }
