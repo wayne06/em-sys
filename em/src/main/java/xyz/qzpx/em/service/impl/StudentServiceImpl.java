@@ -3,6 +3,7 @@ package xyz.qzpx.em.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import xyz.qzpx.em.dao.CourseStudentDOMapper;
+import xyz.qzpx.em.dao.SignDetailDOMapper;
 import xyz.qzpx.em.dao.StudentDOMapper;
 import xyz.qzpx.em.dao.TeacherCourseDOMapper;
 import xyz.qzpx.em.dataObject.StudentDO;
@@ -24,6 +25,9 @@ public class StudentServiceImpl implements StudentService {
 
     @Autowired
     private TeacherCourseDOMapper teacherCourseDOMapper;
+
+    @Autowired
+    private SignDetailDOMapper signDetailDOMapper;
 
     @Override
     public StudentDO addStudent(StudentDO studentDO) {
@@ -89,7 +93,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public List<StudentDO> getByMid(Integer signupId) {
-        List<Integer> stuIds = courseStudentDOMapper.selectStuIdBySignupId(signupId);
+        List<Integer> stuIds = signDetailDOMapper.selectStuIdBySignupId(signupId);
         List<StudentDO> studentDOS = new ArrayList<>();
         if (stuIds.size() == 0) {
             return studentDOS;

@@ -16,7 +16,7 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="register">注册</el-button>
                 </div>
-                <p class="login-tips">Tips : 用户名和密码随便填。
+                <p class="login-tips">Tips : 注册成功后请联系管理员开通权限。
                     <el-link href="/login" style="float: right">返回登录</el-link>
                 </p>
             </el-form>

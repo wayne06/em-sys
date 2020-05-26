@@ -35,7 +35,7 @@
                     <div slot="header" class="clearfix">
                         <span>新闻通知</span>
                     </div>
-                    <el-table :data="news" :show-header="false" style="width: 100%">
+                    <el-table :data="news" height="300" :show-header="false" style="width: 100%">
                         <el-table-column>
                             <template slot-scope="scope">
                                 <el-link class="message-title"
@@ -62,7 +62,7 @@
                         <span>待办事项</span>
                         <el-button style="float: right; padding: 3px 0" type="text" @click="handleAdd()">添加</el-button>
                     </div>
-                    <el-table :show-header="false" :data="todoList" style="width:100%;">
+                    <el-table :show-header="false" height="300" :data="todoList" style="width:100%;">
                         <el-table-column width="40">
                             <template slot-scope="scope">
                                 <el-checkbox v-model="scope.row.status" @change="update(scope.$index, scope.row)"></el-checkbox>
@@ -129,6 +129,7 @@ export default {
         return {
             value: new Date(),
             name: this.$store.state.username,
+            role: '',
             one: '',
             message: 'first',
             showHeader: false,
@@ -175,9 +176,9 @@ export default {
         })(document)
     },
     computed: {
-        role() {
-            return this.name === 'admin' ? '管理员' : '普通用户';
-        }
+        // role() {
+        //     return this.name === 'admin' ? '管理员' : '普通用户';
+        // }
     },
     created() {
         // this.handleListener();
@@ -187,6 +188,7 @@ export default {
                 this.one = resp.data;
             }
         });
+        this.getRole();
         this.getTodoList();
         this.getNews();
     },
@@ -203,6 +205,13 @@ export default {
             this.data.forEach((item, index) => {
                 const date = new Date(now - (6 - index) * 86400000);
                 item.name = `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()}`;
+            });
+        },
+        getRole() {
+            this.$axios.get('/user/role').then(resp => {
+                if (resp && resp.status === 200) {
+                    this.role = resp.data;
+                }
             });
         },
         getTodoList () {
@@ -398,8 +407,6 @@ export default {
 /*#he-plugin-standard {*/
 /*    width: 150%;*/
 /*}*/
-
-
 
 
 </style>

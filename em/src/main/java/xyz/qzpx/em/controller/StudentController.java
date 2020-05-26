@@ -2,10 +2,7 @@ package xyz.qzpx.em.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import xyz.qzpx.em.dataObject.CourseDO;
-import xyz.qzpx.em.dataObject.CourseStudentDO;
-import xyz.qzpx.em.dataObject.StudentDO;
-import xyz.qzpx.em.dataObject.TeacherCourseDO;
+import xyz.qzpx.em.dataObject.*;
 import xyz.qzpx.em.service.StudentService;
 
 import java.util.List;
@@ -58,29 +55,29 @@ public class StudentController {
     /**
      * 搜索学生：从当前报名message中的学生中所搜
      * 用于：1. 已提交的报名信息
-     * @param courseStudentDO
+     * @param signDetailDO
      * @return
      */
     @PostMapping("/bymidandnameorphone")
-    public List<StudentDO> bymidandnameorphone(@RequestBody CourseStudentDO courseStudentDO) {
-        if ("".equals(courseStudentDO.getRemark())) {
-            return studentService.getByMid(courseStudentDO.getSignupId());
+    public List<StudentDO> bymidandnameorphone(@RequestBody SignDetailDO signDetailDO) {
+        if ("".equals(signDetailDO.getRemark())) {
+            return studentService.getByMid(signDetailDO.getSignupId());
         }
-        return studentService.getStudentByMidAndNameOrPhone(courseStudentDO.getSignupId(), courseStudentDO.getRemark());
+        return studentService.getStudentByMidAndNameOrPhone(signDetailDO.getSignupId(), signDetailDO.getRemark());
     }
 
     /**
      * 搜索学生：有关键字则从所有学生中搜索，无关键字则展示当前报名message中的学生
      * 用于：1. 处理中的报名信息
-     * @param courseStudentDO
+     * @param signDetailDO
      * @return
      */
     @PostMapping("/bynameorphone")
-    public List<StudentDO> getByNameOrPhone(@RequestBody CourseStudentDO courseStudentDO) {
-        if ("".equals(courseStudentDO.getRemark())) {
-            return studentService.getByMid(courseStudentDO.getSignupId());
+    public List<StudentDO> getByNameOrPhone(@RequestBody SignDetailDO signDetailDO) {
+        if ("".equals(signDetailDO.getRemark())) {
+            return studentService.getByMid(signDetailDO.getSignupId());
         }
-        return studentService.getStudentByName(courseStudentDO.getRemark());
+        return studentService.getStudentByName(signDetailDO.getRemark());
     }
 
     @GetMapping("/byid")

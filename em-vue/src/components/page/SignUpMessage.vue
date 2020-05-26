@@ -3,15 +3,14 @@
         <div class="container">
 
             <el-tabs v-model="message">
-                <el-tab-pane :label="`处理中(${this.pData.length})`" name="processing">
+                <el-tab-pane :label="`待处理(${this.pData.length})`" name="processing">
                     <el-table :data="pData" :show-header="false" style="width: 100%">
 
                         <el-table-column  @click="toMessageData">
                             <template slot-scope="scope">
-                                <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
+                                <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.createdBy}}-创建的报名信息： {{scope.row.title}}</span>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="createdAt" width="180"></el-table-column>
                         <el-table-column width="180" align="center">
                             <template slot-scope="scope">
                                 <el-button
@@ -36,7 +35,7 @@
 
                             <el-table-column  @click="toMessageData">
                                 <template slot-scope="scope">
-                                    <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
+                                    <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.createdBy}}-创建的报名信息： {{scope.row.title}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="createdAt" width="180"></el-table-column>
@@ -44,21 +43,29 @@
                     </template>
                 </el-tab-pane>
 
-                <el-tab-pane :label="`已完成(${this.fData.length})`" name="finished">
+                <el-tab-pane :label="`全部(${this.fData.length})`" name="finished">
                     <template v-if="message === 'finished'">
                         <el-table :data="fData" :show-header="false" style="width: 100%">
 
                             <el-table-column  @click="toMessageData">
                                 <template slot-scope="scope">
-                                    <span class="message-title" @click="toMessageData2(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
+                                    <span class="message-title" @click="toMessageData2(scope.$index, scope.row)">{{scope.row.createdBy}}-创建的报名信息： {{scope.row.title}}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="createdAt" width="180"></el-table-column>
+                            <el-table-column>
+                                <template slot-scope="scope">
+                                    <span v-if="scope.row.status === 0" style="color: #13ce66">报名信息 - 待提交</span>
+                                    <span v-else-if="scope.row.status === 1" style="color: #13ce66">报名信息 - 待审核</span>
+                                    <span v-else-if="scope.row.status === 2" style="color: #13ce66">排课信息 - 待提交</span>
+                                    <span v-else-if="scope.row.status === 3" style="color: #13ce66">排课信息 - 待审核</span>
+                                    <span v-else style="color: red">完 成</span>
+                                </template>
+                            </el-table-column>
                         </el-table>
                     </template>
                 </el-tab-pane>
 
-                <el-dialog :title="this.dTitle" :visible.sync="messageVisible" width="90%" top="3vh">
+                <el-dialog :title="this.dTitle" :visible.sync="messageVisible" width="90%" top="3vh" @close="getData">
                     <el-row :gutter="10">
                         <el-col :span="4">
                             <el-card shadow="hover" class="mgb20" style="height:750px;">
@@ -106,20 +113,24 @@
                                             <el-table
                                                     ref="innerTable"
                                                     :data="innerTableData"
-                                                    height="window.innerHeight"
+                                                    height="500"
                                                     border
                                                     class="table"
                                                     header-cell-class-name="table-header"
                                             >
-                                                <el-table-column prop="courseName" label="报名课程"></el-table-column>
-                                                <el-table-column prop="lessonCount" label="总课时"></el-table-column>
-                                                <el-table-column prop="registeredAt" label="报名日期"></el-table-column>
-                                                <el-table-column prop="endAt" label="预计结束日期"></el-table-column>
-                                                <el-table-column prop="expense" label="学费"></el-table-column>
-                                                <el-table-column prop="discount" label="减免"></el-table-column>
-                                                <el-table-column prop="refund" label="退费"></el-table-column>
-                                                <el-table-column prop="remark" label="备注"></el-table-column>
-                                                <el-table-column label="操作" width="180" align="center">
+                                                <el-table-column label="报名课程" min-width="10">
+                                                    <template slot-scope="scope">
+                                                        <div v-html="scope.row.courses"></div>
+                                                    </template>
+                                                </el-table-column>
+                                                <el-table-column prop="lessonCount" label="总课时" min-width="3"></el-table-column>
+                                                <el-table-column prop="registeredAt" label="报名日期" min-width="5"></el-table-column>
+                                                <el-table-column prop="endAt" label="预计结束日期" min-width="5"></el-table-column>
+                                                <el-table-column prop="expense" label="学费" min-width="3"></el-table-column>
+                                                <el-table-column prop="discount" label="减免" min-width="3"></el-table-column>
+                                                <el-table-column prop="refund" label="退费" min-width="3"></el-table-column>
+                                                <el-table-column prop="remark" label="备注" min-width="5"></el-table-column>
+                                                <el-table-column label="操作" width="180" align="center" min-width="3">
                                                     <template slot-scope="scope">
                                                         <el-button
                                                                 :disabled="active==0?false:true"
@@ -140,16 +151,16 @@
                                         </template>
                                     </el-table-column>
 
-                                    <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
-                                    <el-table-column prop="name" label="姓名" ></el-table-column>
-                                    <el-table-column prop="gender" label="性别"></el-table-column>
-                                    <el-table-column prop="school" label="学校"></el-table-column>
-                                    <el-table-column prop="gradeAndClass" label="年级班级"></el-table-column>
-                                    <el-table-column prop="parentName" label="家长姓名"></el-table-column>
-                                    <el-table-column prop="telephone" label="联系方式"></el-table-column>
-                                    <el-table-column prop="address" label="家庭住址"></el-table-column>
-                                    <el-table-column prop="remark" label="备注"></el-table-column>
-                                    <el-table-column label="操作" width="180" align="center">
+                                    <el-table-column prop="id" label="ID" align="center" min-width="3"></el-table-column>
+                                    <el-table-column prop="name" label="姓名" min-width="4"></el-table-column>
+                                    <el-table-column prop="gender" label="性别" min-width="3"></el-table-column>
+                                    <el-table-column prop="school" label="学校" min-width="7"></el-table-column>
+                                    <el-table-column prop="gradeAndClass" label="年级班级" min-width="5"></el-table-column>
+                                    <el-table-column prop="parentName" label="家长姓名" min-width="4"></el-table-column>
+                                    <el-table-column prop="telephone" label="联系方式" min-width="6"></el-table-column>
+                                    <el-table-column prop="address" label="家庭住址" min-width="10"></el-table-column>
+                                    <el-table-column prop="remark" label="备注" min-width="8"></el-table-column>
+                                    <el-table-column label="操作" align="center" min-width="8">
                                         <template slot-scope="scope">
                                             <el-button
                                                     :disabled="active==0?false:true"
@@ -239,23 +250,23 @@
                                 </el-dialog>
 
                                 <!-- 新增报名信息弹出框 -->
-                                <el-dialog title="新增报名信息" :visible.sync="addSignUpVisible" width="30%" @close="clear2" top="10vh" append-to-body>
-                                    <el-form ref="form2" :model="form2" label-width="105px" label-position="left" size="mini" :rules="rules2">
-                                        <el-form-item label="报名科目" prop="subject">
+                                <el-dialog title="新增报名信息" :visible.sync="addSignUpVisible" width="30%" @close="clear21" top="10vh" append-to-body>
+                                    <el-form ref="form21" :model="form21" label-width="105px" label-position="left" size="mini" :rules="rules2">
+                                        <el-form-item label="报名科目" prop="option">
                                             <el-cascader
                                                     :options="options"
-                                                    v-model="form2.subject"
-                                                    :props="{ expandTrigger: 'hover' }"
+                                                    v-model="form21.option"
+                                                    :props="{ expandTrigger: 'hover', multiple: true}"
                                                     style="width: 100%"
                                                     placeholder="请选择报名科目"
                                             ></el-cascader>
                                         </el-form-item>
                                         <el-form-item label="总课时">
-                                            <el-input v-model="form2.lessonCount" placeholder="请输入总课时数"></el-input>
+                                            <el-input v-model="form21.lessonCount" placeholder="请输入总课时数"></el-input>
                                         </el-form-item>
                                         <el-form-item label="报名日期" prop="registeredAt">
                                             <el-date-picker
-                                                    v-model="form2.registeredAt"
+                                                    v-model="form21.registeredAt"
                                                     type="date"
                                                     placeholder="请选择报名日期"
                                                     value-format="yyyy-MM-dd"
@@ -264,7 +275,7 @@
                                         </el-form-item>
                                         <el-form-item label="预计结束日期">
                                             <el-date-picker
-                                                    v-model="form2.endAt"
+                                                    v-model="form21.endAt"
                                                     type="date"
                                                     placeholder="请选择预计结束日期"
                                                     value-format="yyyy-MM-dd"
@@ -272,16 +283,16 @@
                                             ></el-date-picker>
                                         </el-form-item>
                                         <el-form-item label="学费" prop="expense">
-                                            <el-input v-model="form2.expense" placeholder="请输入学费金额"></el-input>
+                                            <el-input v-model="form21.expense" placeholder="请输入学费金额"></el-input>
                                         </el-form-item>
                                         <el-form-item label="减免情况">
-                                            <el-input v-model="form2.discount" placeholder="请输入减免金额（默认0）"></el-input>
+                                            <el-input v-model="form21.discount" placeholder="请输入减免金额（默认0）"></el-input>
                                         </el-form-item>
                                         <el-form-item label="退费">
-                                            <el-input v-model="form2.refund" placeholder="请输入退费金额（默认0）"></el-input>
+                                            <el-input v-model="form21.refund" placeholder="请输入退费金额（默认0）"></el-input>
                                         </el-form-item>
                                         <el-form-item label="备注">
-                                            <el-input v-model="form2.remark" placeholder="请输入备注信息"></el-input>
+                                            <el-input v-model="form21.remark" placeholder="请输入备注信息"></el-input>
                                         </el-form-item>
                                     </el-form>
                                     <span slot="footer" class="dialog-footer">
@@ -291,23 +302,23 @@
                                 </el-dialog>
 
                                 <!-- 编辑报名信息弹出框 -->
-                                <el-dialog title="更新报名信息" :visible.sync="editSignUpVisible" width="30%" @close="clear2" top="10vh" append-to-body>
-                                    <el-form ref="form2" :model="form2" label-width="105px" label-position="left" size="mini" :rules="rules2">
+                                <el-dialog title="更新报名信息" :visible.sync="editSignUpVisible" width="30%" @close="clear22" top="10vh" append-to-body>
+                                    <el-form ref="form22" :model="form22" label-width="105px" label-position="left" size="mini" :rules="rules2">
                                         <el-form-item label="报名科目" prop="option">
                                             <el-cascader
                                                     :options="options"
-                                                    v-model="form2.option"
-                                                    :props="{ expandTrigger: 'hover' }"
+                                                    v-model="form22.option"
+                                                    :props="{ expandTrigger: 'hover', multiple: true }"
                                                     style="width: 100%"
                                                     placeholder="请选择报名科目"
                                             ></el-cascader>
                                         </el-form-item>
                                         <el-form-item label="总课时">
-                                            <el-input v-model="form2.lessonCount" placeholder="请输入总课时数"></el-input>
+                                            <el-input v-model="form22.lessonCount" placeholder="请输入总课时数"></el-input>
                                         </el-form-item>
                                         <el-form-item label="报名日期" prop="registeredAt">
                                             <el-date-picker
-                                                    v-model="form2.registeredAt"
+                                                    v-model="form22.registeredAt"
                                                     type="date"
                                                     placeholder="请选择报名日期"
                                                     value-format="yyyy-MM-dd"
@@ -316,7 +327,7 @@
                                         </el-form-item>
                                         <el-form-item label="预计结束日期">
                                             <el-date-picker
-                                                    v-model="form2.endAt"
+                                                    v-model="form22.endAt"
                                                     type="date"
                                                     placeholder="请选择预计结束日期"
                                                     value-format="yyyy-MM-dd"
@@ -324,16 +335,16 @@
                                             ></el-date-picker>
                                         </el-form-item>
                                         <el-form-item label="学费" prop="expense">
-                                            <el-input v-model="form2.expense" placeholder="请输入学费金额"></el-input>
+                                            <el-input v-model="form22.expense" placeholder="请输入学费金额"></el-input>
                                         </el-form-item>
                                         <el-form-item label="减免情况">
-                                            <el-input v-model="form2.discount" placeholder="请输入减免金额（默认0）"></el-input>
+                                            <el-input v-model="form22.discount" placeholder="请输入减免金额（默认0）"></el-input>
                                         </el-form-item>
                                         <el-form-item label="退费">
-                                            <el-input v-model="form2.refund" placeholder="请输入退费金额（默认0）"></el-input>
+                                            <el-input v-model="form22.refund" placeholder="请输入退费金额（默认0）"></el-input>
                                         </el-form-item>
                                         <el-form-item label="备注">
-                                            <el-input v-model="form2.remark" placeholder="请输入备注信息"></el-input>
+                                            <el-input v-model="form22.remark" placeholder="请输入备注信息"></el-input>
                                         </el-form-item>
                                     </el-form>
                                     <span slot="footer" class="dialog-footer">
@@ -454,7 +465,8 @@
                 messageVisible2: false,
                 form: {},
                 form1: {},
-                form2: {},
+                form21: {},
+                form22: {},
                 idx: -1,
                 pageTotal: 0,
                 options: [],
@@ -474,10 +486,10 @@
                     ]
                 },
                 rules2: {
+                    // option: [
+                    //     { type: 'array', required: true, message: '必填项', trigger: 'blur' },
+                    // ],
                     option: [
-                        { type: 'array', required: true, message: '必填项', trigger: 'blur' },
-                    ],
-                    subject: [
                         { required: true, message: '必填项', trigger: 'blur' },
                     ],
                     registeredAt: [
@@ -507,9 +519,9 @@
                 let _this = this
                 this.$axios.get('/signup/collectByStatus').then(resp => {
                     if (resp && resp.status === 200) {
-                        _this.pData = resp.data.data0;
-                        _this.cData = resp.data.data5;
-                        _this.fData = resp.data.data4;
+                        _this.pData = resp.data.signProcessing;
+                        _this.cData = resp.data.signSubmitted;
+                        _this.fData = resp.data.allSignup;
                     }
                 })
             },
@@ -535,10 +547,24 @@
                 };
                 this.getMessageData();
             },
-            clear2() {
-                this.$refs['form2'].resetFields();
-                this.form2 = {
-                    subject: '',
+            clear21() {
+                this.$refs['form21'].resetFields();
+                this.form21 = {
+                    option: '',
+                    lessonCount: '',
+                    registeredAt: '',
+                    endAt: '',
+                    expense: '',
+                    discount: '',
+                    refund: '',
+                    remark: ''
+                };
+                this.refreshInnerData(this.tempRowId);
+            },
+            clear22() {
+                this.$refs['form22'].resetFields();
+                this.form22 = {
+                    option: '',
                     lessonCount: '',
                     registeredAt: '',
                     endAt: '',
@@ -714,9 +740,9 @@
                             remark: this.form1.remark
                         }).then(resp => {
                             if (resp && resp.status === 200) {
-                                this.$axios.post('/coursestudent/add', {
+                                this.$axios.post('/signdetail/add', {
                                     signupId: this.mid,
-                                    courseId: 0,
+                                    courses: "0",
                                     studentId: resp.data.id,
                                 }).then(resp => {
                                     if (resp && resp.status === 200) {
@@ -771,38 +797,47 @@
                 this.$axios.get('/course/tree').then(resp => {
                     if (resp && resp.status === 200) {
                         this.options = resp.data;
-                        this.form.options = resp.data;
+                        this.form21.options = resp.data;
                         this.addSignUpVisible = true;
                     }
                 })
             },
             saveSignUpInfo (index, row) {
-                console.log(this.expands)
-                this.$refs['form2'].validate((valid) => {
+                // console.log(this.expands)
+
+                this.$refs['form21'].validate((valid) => {
                     if (valid) {
-                        this.$axios.post('/coursestudent/add', {
+                        console.log(this.form21)
+                        let courses = "";
+                        let ids = "";
+                        for (let i=0; i<this.form21.option.length; i++) {
+                            courses = courses + this.form21.option[i] + ";";
+                            ids = ids + this.form21.option[i][3].split(":")[1] + ",";
+                        }
+                        this.$axios.post('/signdetail/add', {
                             signupId: this.mid,
-                            courseId: this.form2.subject[3],
+                            courses: courses,
                             studentId: this.tempRowId,
-                            lessonCount: this.form2.lessonCount,
-                            registeredAt: this.form2.registeredAt,
-                            endAt: this.form2.endAt,
-                            expense: this.form2.expense,
-                            discount: this.form2.discount,
-                            refund: this.form2.refund,
-                            remark: this.form2.remark
+                            lessonCount: this.form21.lessonCount,
+                            registeredAt: this.form21.registeredAt,
+                            endAt: this.form21.endAt,
+                            expense: this.form21.expense,
+                            discount: this.form21.discount,
+                            refund: this.form21.refund,
+                            remark: this.form21.remark
                         }).then(resp => {
                             if (resp && resp.status === 200) {
-
-                                this.expands.pop(this.tempRowId);
-                                console.log(this.expands);
-                                this.sleep(5000)
-                                this.expands.push(this.tempRowId);
-                                console.log(this.expands);
-
-                                this.$message.success('新增成功');
-                                this.addSignUpVisible = false;
-                                this.refreshInnerData(this.tempRowId);
+                                let signdetail = resp.data;
+                                this.$axios.post('/coursestudent/add', {
+                                    signdetailId: signdetail,
+                                    signupId: this.mid,
+                                    studentId: this.tempRowId,
+                                    courseIds: ids
+                                }).then(resp => {
+                                    this.$message.success('新增成功');
+                                    this.addSignUpVisible = false;
+                                    this.refreshInnerData(this.tempRowId);
+                                })
                             }
                         })
                     } else {
@@ -822,7 +857,7 @@
             },
             refreshInnerData (stuId) {
                 let _this = this;
-                this.$axios.post('/coursestudent/getCoursesByStuAndSignUpId', {
+                this.$axios.post('/signdetail/getCoursesByStuAndSignUpId', {
                     studentId: stuId,
                     signupId: this.mid
                 }).then(resp => {
@@ -843,21 +878,21 @@
                 })
             },
             handleEditSignInfo (index, row) {
-                console.log(row)
-                this.idx = index;
-                this.form2 = row;
-                let courseArr = this.form2.courseName.split('/');
-                this.$axios.post('/course/getId', {
-                    term: courseArr[0],
-                    type: courseArr[1],
-                    grade: courseArr[2],
-                    subject: courseArr[3]
+                this.$axios.post('/signdetail/getById', {
+                    id: row.id
                 }).then(resp => {
                     if (resp && resp.status === 200) {
-                        courseArr[3] = resp.data+"";
-                        this.form2.option = courseArr;
+                        let courses = resp.data.courses;
+                        courses = courses.substring(0, courses.length - 1);
+                        let courseArr = courses.split(";");
+                        for (let i=0; i<courseArr.length; i++) {
+                            courseArr[i] = courseArr[i].split(",");
+                        }
+                        this.form22 = row;
+                        this.form22.option = courseArr;
+                        console.log(courseArr)
                     }
-                });
+                })
                 this.$axios.get('/course/tree').then(resp => {
                     if (resp && resp.status === 200) {
                         this.options = resp.data;
@@ -866,25 +901,42 @@
                 })
             },
             saveEditSignUpInfo () {
-                this.$refs['form2'].validate((valid) => {
+                console.log(this.form22)
+                this.$refs['form22'].validate((valid) => {
                     if (valid) {
-                        let id = this.innerTableData[this.idx].id;
-                        this.$axios.post('/coursestudent/update', {
-                            id: id,
-                            courseId: this.form2.option[3],
+                        console.log(this.form22)
+                        let courses = "";
+                        let ids = "";
+                        for (let i=0; i<this.form22.option.length; i++) {
+                            courses = courses + this.form22.option[i] + ";";
+
+                            console.log(ids)
+                            console.log(this.form22.option[i][3])
+                            ids = ids + this.form22.option[i][3].split(":")[1] + ",";
+                        }
+                        this.$axios.post('/signdetail/update', {
+                            id: this.form22.id,
+                            courses: courses,
                             studentId: this.tempRowId,
-                            lessonCount: this.form2.lessonCount,
-                            registeredAt: this.form2.registeredAt,
-                            endAt: this.form2.endAt,
-                            expense: this.form2.expense,
-                            discount: this.form2.discount,
-                            refund: this.form2.refund,
-                            remark: this.form2.remark
+                            lessonCount: this.form22.lessonCount,
+                            registeredAt: this.form22.registeredAt,
+                            endAt: this.form22.endAt,
+                            expense: this.form22.expense,
+                            discount: this.form22.discount,
+                            refund: this.form22.refund,
+                            remark: this.form22.remark
                         }).then(resp => {
                             if (resp && resp.status === 200) {
-                                this.$message.success('修改成功');
-                                this.editSignUpVisible = false;
-                                this.refreshInnerData(this.tempRowId);
+                                this.$axios.post('/coursestudent/update', {
+                                    signdetailId: this.form22.id,
+                                    signupId: this.mid,
+                                    studentId: this.tempRowId,
+                                    courseIds: ids
+                                }).then(resp => {
+                                    this.$message.success('修改成功');
+                                    this.editSignUpVisible = false;
+                                    this.refreshInnerData(this.tempRowId);
+                                })
                             }
                         })
                     } else {
@@ -899,7 +951,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.$axios.post('/coursestudent/del', {
+                    this.$axios.post('/signdetail/del', {
                         id: row.id
                     }).then(resp => {
                         if (resp && resp.status === 200) {
@@ -926,7 +978,18 @@
                         id: this.mid
                     }).then(resp => {
                         if (resp && resp.status === 200) {
-                            if (resp.data.length == 0) {
+                            console.log(111)
+                            console.log(resp.data)
+                            if (resp.data === "") {
+                                console.log(222)
+                                this.$message({
+                                    showClose: true,
+                                    type: 'error',
+                                    message: '提交失败：还未添加报名信息，不能提交',
+                                    duration: 3000
+                                });
+                                this.fullscreenLoading = false;
+                            } else if (resp.data.length == 0) {
                                 this.$message.success('提交成功');
                                 this.fullscreenLoading = false;
                                 this.active = 1;
@@ -936,7 +999,7 @@
                                     showClose: true,
                                     type: 'error',
                                     message: '提交失败：编号为 [ '+resp.data+' ] 的学生未添加报名课程',
-                                    duration: 0
+                                    duration: 3000
                                 });
                                 this.fullscreenLoading = false;
                             }

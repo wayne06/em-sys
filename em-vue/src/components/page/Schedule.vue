@@ -3,12 +3,12 @@
         <div class="container">
 
             <el-tabs v-model="message">
-                <el-tab-pane :label="`处理中(${this.pData.length})`" name="processing">
+                <el-tab-pane :label="`待处理(${this.pData.length})`" name="processing">
                     <el-table :data="pData" :show-header="false" style="width: 100%">
 
                         <el-table-column @click="toMessageData">
                             <template slot-scope="scope">
-                                <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
+                                <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.createdBy}}-创建的报名信息： {{scope.row.title}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="createdAt" width="180"></el-table-column>
@@ -19,30 +19,38 @@
 
                 </el-tab-pane>
 
-                <el-tab-pane :label="`已提交(${this.cData.length})`" name="committed">
-                    <template v-if="message === 'committed'">
-                        <el-table :data="cData" :show-header="false" style="width: 100%">
+<!--                <el-tab-pane :label="`已提交(${this.cData.length})`" name="committed">-->
+<!--                    <template v-if="message === 'committed'">-->
+<!--                        <el-table :data="cData" :show-header="false" style="width: 100%">-->
 
-                            <el-table-column @click="toMessageData">
-                                <template slot-scope="scope">
-                                    <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="createdAt" width="180"></el-table-column>
-                        </el-table>
-                    </template>
-                </el-tab-pane>
+<!--                            <el-table-column @click="toMessageData">-->
+<!--                                <template slot-scope="scope">-->
+<!--                                    <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>-->
+<!--                                </template>-->
+<!--                            </el-table-column>-->
+<!--                            <el-table-column prop="createdAt" width="180"></el-table-column>-->
+<!--                        </el-table>-->
+<!--                    </template>-->
+<!--                </el-tab-pane>-->
 
-                <el-tab-pane :label="`已完成(${this.fData.length})`" name="finished">
+                <el-tab-pane :label="`全部(${this.fData.length})`" name="finished">
                     <template v-if="message === 'finished'">
                         <el-table :data="fData" :show-header="false" style="width: 100%">
 
                             <el-table-column @click="toMessageData">
                                 <template slot-scope="scope">
-                                    <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
+                                    <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.createdBy}}-创建的报名信息： {{scope.row.title}}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="createdAt" width="180"></el-table-column>
+                            <el-table-column>
+                                <template slot-scope="scope">
+                                    <span v-if="scope.row.status === 0" style="color: #13ce66">报名信息 - 待提交</span>
+                                    <span v-else-if="scope.row.status === 1" style="color: #13ce66">报名信息 - 待审核</span>
+                                    <span v-else-if="scope.row.status === 2" style="color: #13ce66">排课信息 - 待提交</span>
+                                    <span v-else-if="scope.row.status === 3" style="color: #13ce66">排课信息 - 待审核</span>
+                                    <span v-else style="color: red">完 成</span>
+                                </template>
+                            </el-table-column>
                         </el-table>
                     </template>
                 </el-tab-pane>
@@ -53,21 +61,27 @@
                     <el-row :gutter="10">
                         <el-col :span="4">
                             <el-card shadow="hover" class="mgb20" style="height:750px;">
-                                <el-timeline :reverse=true>
-                                    <el-timeline-item
-                                            v-for="(activity, index) in activities"
-                                            :key="index"
-                                            :timestamp="activity.timestamp"
-                                            color="rgba(8, 151, 255, 1)">
-                                        <p class="timeline-content">{{activity.content}}</p>
-                                        <p class="timeline-name" v-if="activity.name">
-                                            <span>操作者：{{activity.name}}</span>
-                                        </p>
-                                        <p class="timeline-name" v-if="activity.feedback">
-                                            <span>意见：{{activity.feedback}}</span>
-                                        </p>
-                                    </el-timeline-item>
-                                </el-timeline>
+                                <div style="height:750px;">
+                                    <el-scrollbar style="height:100%">
+                                        <el-timeline :reverse=true>
+                                            <el-timeline-item
+                                                    v-for="(activity, index) in activities"
+                                                    :key="index"
+                                                    :timestamp="activity.timestamp"
+                                                    color="rgba(8, 151, 255, 1)">
+                                                <p class="timeline-content">{{activity.content}}</p>
+                                                <p class="timeline-name" v-if="activity.name">
+                                                    <span>操作者：{{activity.name}}</span>
+                                                </p>
+                                                <p class="timeline-name" v-if="activity.feedback">
+                                                    <span>意见：{{activity.feedback}}</span>
+                                                </p>
+                                            </el-timeline-item>
+                                        </el-timeline>
+                                    </el-scrollbar>
+                                </div>
+
+
                             </el-card>
                         </el-col>
 
@@ -244,9 +258,10 @@
                 let _this = this
                 this.$axios.get('/signup/collectByStatus').then(resp => {
                     if (resp && resp.status === 200) {
-                        _this.pData = resp.data.data2;
-                        _this.cData = resp.data.data6;
-                        _this.fData = resp.data.data4;
+                        _this.pData = resp.data.scheduleProcessing;
+                        // _this.cData = resp.data.data6;
+                        _this.fData = resp.data.allSignup;
+                        console.log(_this.fData)
                     }
                 })
             },
@@ -296,7 +311,6 @@
                             this.form.period = null;
                         } else {
                             this.form.period = row.period.split(' : ');
-                            console.log(this.form.period)
                         }
 
                         this.editVisible = true;
@@ -402,7 +416,7 @@
                                     showClose: true,
                                     type: 'error',
                                     message: '提交失败：编号为 [ ' + resp.data + ' ] 的课程未添加排课信息',
-                                    duration: 0
+                                    duration: 6000
                                 });
                                 this.fullscreenLoading = false;
                             }
@@ -421,7 +435,6 @@
             getSelection() {
                 this.$axios.get('/teacher/selection').then(resp => {
                     if (resp && resp.status === 200) {
-                        console.log(resp.data)
                         this.form.options = resp.data;
                     }
                 });

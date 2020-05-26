@@ -12,16 +12,20 @@ import 'babel-polyfill';
 
 import 'xe-utils'
 import VXETable from "vxe-table";
-import 'vxe-table/lib/index.css'
+import 'vxe-table/lib/index.css';
 
-import store from './store'
+import store from './store';
+
+import vueConfig from '../vue.config.js'
 
 ElementUI.Dialog.props.closeOnClickModal.default = false;
 
 // 设置反向代理：前端请求默认发送到http://localhost:8443/api
 var axios = require('axios')
 // axios.defaults.baseURL = 'http://139.159.183.141:8443/api'
-axios.defaults.baseURL = 'http://localhost:8443/api'
+// axios.defaults.baseURL = 'http://localhost:8443/api'
+axios.defaults.baseURL = vueConfig.devServer.proxy["/api"].target + '/api';
+
 axios.defaults.withCredentials = true
 
 // 全局注册：之后可在其他组件中通过 this.$axios 发送数据
@@ -40,6 +44,8 @@ const i18n = new VueI18n({
 
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
+    console.log(vueConfig.devServer.proxy["/api"].target)
+    console.log(axios.defaults.baseURL)
     document.title = `${to.meta.title} | 启智培训中心`;
     if (store.state.username) {
         initAdminMenu(router, store)

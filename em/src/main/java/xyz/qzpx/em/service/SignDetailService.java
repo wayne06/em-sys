@@ -1,14 +1,14 @@
 package xyz.qzpx.em.service;
 
 import xyz.qzpx.em.dataObject.CourseStudentDO;
-import xyz.qzpx.em.dataObject.CourseStudentVO;
 import xyz.qzpx.em.dataObject.GraphDO;
+import xyz.qzpx.em.dataObject.SignDetailDO;
 import xyz.qzpx.em.dataObject.StatisticsDO;
 
 import java.util.List;
 import java.util.Map;
 
-public interface CourseStudentService {
+public interface SignDetailService {
 
     List<String> getStudentIdsByCourseId(Integer id);
 
@@ -20,11 +20,11 @@ public interface CourseStudentService {
 
     void rmStuToCourse(Integer id, Integer valueOf);
 
-    List<CourseStudentDO> getCoursesByStuId(Integer id);
+    List<SignDetailDO> getCoursesByStuId(Integer id);
 
-    void add(CourseStudentDO courseStudentDO);
+    Integer add(SignDetailDO signDetailDO);
 
-    void update(CourseStudentDO courseStudentDO);
+    void update(SignDetailDO signDetailDO);
 
     void deleteCourseById(Integer id);
 
@@ -32,9 +32,7 @@ public interface CourseStudentService {
 
     Map<String, GraphDO> getGraph();
 
-    List<CourseStudentDO> getCoursesByStuAndSignUpId(Integer studentId, Integer signupId);
+    List<SignDetailDO> getCoursesByStuAndSignUpId(Integer studentId, Integer signupId);
 
-    void delOriginalCourStu(CourseStudentVO courseStudentVO);
-
-    void delBySigndetailId(Integer id);
+    SignDetailDO getById(Integer id);
 }

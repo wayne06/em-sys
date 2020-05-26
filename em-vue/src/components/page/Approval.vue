@@ -8,7 +8,7 @@
 
                         <el-table-column  @click="toMessageData">
                             <template slot-scope="scope">
-                                <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
+                                <span class="message-title" @click="toMessageData(scope.$index, scope.row)">{{scope.row.createdBy}}-创建的报名信息： {{scope.row.title}}</span>
                             </template>
                         </el-table-column>
                         <el-table-column prop="createdAt" width="180"></el-table-column>
@@ -21,7 +21,7 @@
 
                             <el-table-column  @click="toMessageData2">
                                 <template slot-scope="scope">
-                                    <span class="message-title" @click="toMessageData2(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
+                                    <span class="message-title" @click="toMessageData2(scope.$index, scope.row)">{{scope.row.createdBy}}-创建的报名信息： {{scope.row.title}}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column prop="createdAt" width="180"></el-table-column>
@@ -29,15 +29,23 @@
                     </template>
                 </el-tab-pane>
 
-                <el-tab-pane :label="`已完成(${this.fData.length})`" name="finished">
+                <el-tab-pane :label="`全部(${this.fData.length})`" name="finished">
                     <template v-if="message === 'finished'">
                         <el-table :data="fData" :show-header="false" style="width: 100%">
                             <el-table-column  @click="toMessageData2">
                                 <template slot-scope="scope">
-                                    <span class="message-title" @click="toMessageData2(scope.$index, scope.row)">{{scope.row.username}}-创建的报名信息： {{scope.row.title}}</span>
+                                    <span class="message-title" @click="toMessageData2(scope.$index, scope.row)">{{scope.row.createdBy}}-创建的报名信息： {{scope.row.title}}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="createdAt" width="180"></el-table-column>
+                            <el-table-column>
+                                <template slot-scope="scope">
+                                    <span v-if="scope.row.status === 0" style="color: #13ce66">报名信息 - 待提交</span>
+                                    <span v-else-if="scope.row.status === 1" style="color: #13ce66">报名信息 - 待审核</span>
+                                    <span v-else-if="scope.row.status === 2" style="color: #13ce66">排课信息 - 待提交</span>
+                                    <span v-else-if="scope.row.status === 3" style="color: #13ce66">排课信息 - 待审核</span>
+                                    <span v-else style="color: red">完 成</span>
+                                </template>
+                            </el-table-column>
                         </el-table>
                     </template>
                 </el-tab-pane>
@@ -49,19 +57,27 @@
 
                         <el-col :span="4">
                             <el-card shadow="hover" class="mgb20" style="height:750px;">
-                                <el-timeline :reverse=true>
-                                    <el-timeline-item
-                                            v-for="(activity, index) in activities"
-                                            :key="index"
-                                            :timestamp="activity.timestamp"
-                                            color="rgba(8, 151, 255, 1)">
-                                        <p class="timeline-content">{{activity.content}}</p>
-                                        <p class="timeline-name">操作者：{{activity.name}}</p>
-                                        <p class="timeline-name" v-if="activity.feedback">
-                                            <span>意见：{{activity.feedback}}</span>
-                                        </p>
-                                    </el-timeline-item>
-                                </el-timeline>
+                                <div style="height:750px;">
+                                    <el-scrollbar style="height:100%">
+                                        <el-timeline :reverse=true>
+                                            <el-timeline-item
+                                                    v-for="(activity, index) in activities"
+                                                    :key="index"
+                                                    :timestamp="activity.timestamp"
+                                                    color="rgba(8, 151, 255, 1)">
+                                                <p class="timeline-content">{{activity.content}}</p>
+                                                <p class="timeline-name" v-if="activity.name">
+                                                    <span>操作者：{{activity.name}}</span>
+                                                </p>
+                                                <p class="timeline-name" v-if="activity.feedback">
+                                                    <span>意见：{{activity.feedback}}</span>
+                                                </p>
+                                            </el-timeline-item>
+                                        </el-timeline>
+                                    </el-scrollbar>
+                                </div>
+
+
                             </el-card>
                         </el-col>
 
@@ -72,14 +88,14 @@
 <!--                                    <el-button :disabled="true" type="primary" icon="el-icon-circle-plus-outline" class="handle-del mr10" @click="handleAdd">新增学生</el-button>-->
                                     <el-input v-model="keyword" placeholder="学生姓名 或 手机号码" class="handle-input mr10"></el-input>
                                     <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
-                                    <el-button :disabled="active==1?false:true" type="warning" icon="el-icon-close" @click="rejectCourseStu" style="float:right" v-loading.fullscreen.lock="fullscreenLoading">驳回</el-button>
-                                    <el-button :disabled="active==1?false:true" type="success" icon="el-icon-check" @click="approveCourseStu" style="float:right" v-loading.fullscreen.lock="fullscreenLoading">同意</el-button>
-                                    <el-input :disabled="active==1?false:true" v-model="feedback" placeholder="请填写反馈意见后，点击同意或驳回" class="handle-input1 mr10" style="float:right"></el-input>
+                                    <el-button :disabled="active==1?false:true" type="warning" icon="el-icon-close" @click="handleReject" style="float:right" v-loading.fullscreen.lock="fullscreenLoading">驳回</el-button>
+                                    <el-button :disabled="active==1?false:true" type="success" icon="el-icon-check" @click="handleApprove" style="float:right" v-loading.fullscreen.lock="fullscreenLoading">同意</el-button>
+<!--                                    <el-input :disabled="active==1?false:true" v-model="feedback" placeholder="请填写反馈意见后，点击同意或驳回" class="handle-input1 mr10" style="float:right"></el-input>-->
                                 </div>
 
                                 <el-table
                                         :data="tableData"
-                                        height="550"
+                                        height="666"
                                         border
                                         class="table"
                                         ref="moviesTable"
@@ -95,8 +111,7 @@
                                                     height="200"
                                                     border
                                                     class="table"
-                                                    header-cell-class-name="table-header"
-                                            >
+                                                    header-cell-class-name="table-header">
                                                 <el-table-column prop="courseName" label="报名课程"></el-table-column>
                                                 <el-table-column prop="lessonCount" label="总课时"></el-table-column>
                                                 <el-table-column prop="registeredAt" label="报名日期"></el-table-column>
@@ -107,11 +122,7 @@
                                                 <el-table-column prop="remark" label="备注"></el-table-column>
                                             </el-table>
                                         </template>
-
-
                                     </el-table-column>
-
-
                                     <el-table-column prop="id" label="ID" width="55" align="center"></el-table-column>
                                     <el-table-column prop="name" label="姓名"></el-table-column>
                                     <el-table-column prop="gender" label="性别"></el-table-column>
@@ -123,185 +134,40 @@
                                     <el-table-column prop="remark" label="备注"></el-table-column>
                                 </el-table>
 
-                                <div class="pagination">
-                                    <el-pagination
-                                            background
-                                            layout="total"
-                                            :total="pageTotal"
-                                    ></el-pagination>
-                                </div>
-
-                                <!-- 新增弹出框 -->
-                                <el-dialog title="新增学生" :visible.sync="addVisible" width="30%" @close="clear" top="10vh" append-to-body>
-                                    <el-form ref="form" :model="form" label-width="90px" label-position="left" size="mini">
-                                        <el-form-item label="学生姓名">
-                                            <el-input v-model="form.name"></el-input>
+                                <el-dialog title="审批通过" :visible.sync="approveVisible" width="30%" @close="clear1" top="10vh" append-to-body>
+                                    <el-form ref="form1" :model="form1" label-width="90px" label-position="left" size="mini">
+                                        <el-form-item label="选择学管师" prop="option">
+                                            <el-select v-model="form1.option" placeholder="请选择学管师" style="width: 100%" @change="select_status">
+                                                <el-option
+                                                        v-for="item in form1.options"
+                                                        :key="item.value"
+                                                        :label="item.label"
+                                                        :value="item.value">
+                                                </el-option>
+                                            </el-select>
                                         </el-form-item>
-                                        <el-form-item label="性别">
-                                            <el-radio v-model="form.gender" label="男">男</el-radio>
-                                            <el-radio v-model="form.gender" label="女">女</el-radio>
-                                        </el-form-item>
-                                        <el-form-item label="学校">
-                                            <el-input v-model="form.school"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="年级班级">
-                                            <el-input v-model="form.gradeAndClass"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="家长姓名">
-                                            <el-input v-model="form.parentName"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="联系方式">
-                                            <el-input v-model="form.telephone"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="家庭住址">
-                                            <el-input v-model="form.address"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="备注">
-                                            <el-input v-model="form.remark"></el-input>
+                                        <el-form-item label="意见" prop="feedback">
+                                            <el-input type="textarea" rows="5" v-model="form1.feedback"></el-input>
                                         </el-form-item>
                                     </el-form>
                                     <span slot="footer" class="dialog-footer">
-                                            <el-button @click="addVisible = false">取 消</el-button>
-                                            <el-button type="primary" @click="save">确 定</el-button>
-                                        </span>
+                                        <el-button @click="approveVisible = false">取 消</el-button>
+                                        <el-button type="primary" @click="approveCourseStu">确 定</el-button>
+                                    </span>
                                 </el-dialog>
 
-                                <!-- 编辑弹出框 -->
-                                <el-dialog title="编辑" :visible.sync="editVisible" width="30%" @close="clear" top="10vh" append-to-body>
-                                    <el-form ref="form" :model="form" label-width="90px" label-position="left">
-                                        <el-form-item label="学生姓名">
-                                            <el-input v-model="form.name"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="性别">
-                                            <el-radio v-model="form.gender" label="男">男</el-radio>
-                                            <el-radio v-model="form.gender" label="女">女</el-radio>
-                                        </el-form-item>
-                                        <el-form-item label="学校">
-                                            <el-input v-model="form.school"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="年级班级">
-                                            <el-input v-model="form.gradeAndClass"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="家长姓名">
-                                            <el-input v-model="form.parentName"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="联系方式">
-                                            <el-input v-model="form.telephone"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="家庭住址">
-                                            <el-input v-model="form.address"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="备注">
-                                            <el-input v-model="form.remark"></el-input>
+                                <el-dialog title="审批驳回" :visible.sync="rejectVisible" width="30%" @close="clear2" top="10vh" append-to-body>
+                                    <el-form ref="form2" :model="form2" label-width="90px" label-position="left" size="mini">
+                                        <el-form-item label="意见" prop="feedback">
+                                            <el-input type="textarea" rows="5" v-model="form2.feedback"></el-input>
                                         </el-form-item>
                                     </el-form>
                                     <span slot="footer" class="dialog-footer">
-                                            <el-button @click="editVisible = false">取 消</el-button>
-                                            <el-button type="primary" @click="saveEdit">确 定</el-button>
-                                        </span>
+                                        <el-button @click="rejectVisible = false">取 消</el-button>
+                                        <el-button type="primary" @click="rejectCourseStu">驳 回</el-button>
+                                    </span>
                                 </el-dialog>
 
-                                <!-- 新增报名信息弹出框 -->
-                                <el-dialog title="新增报名信息" :visible.sync="addSignUpVisible" width="30%" @close="clearInner" top="10vh" append-to-body>
-                                    <el-form ref="form" :model="form" label-width="105px" label-position="left" size="mini">
-                                        <el-form-item label="报名科目">
-                                            <el-cascader
-                                                    :options="options"
-                                                    v-model="form.subject"
-                                                    :props="{ expandTrigger: 'hover' }"
-                                                    style="width: 100%"
-                                            ></el-cascader>
-                                        </el-form-item>
-                                        <el-form-item label="总课时">
-                                            <el-input v-model="form.lessonCount"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="报名日期">
-                                            <el-date-picker
-                                                    v-model="form.registeredAt"
-                                                    type="date"
-                                                    placeholder="选择日期"
-                                                    value-format="yyyy-MM-dd"
-                                                    style="width: 100%"
-                                            ></el-date-picker>
-                                        </el-form-item>
-                                        <el-form-item label="预计结束日期">
-                                            <el-date-picker
-                                                    v-model="form.endAt"
-                                                    type="date"
-                                                    placeholder="选择日期"
-                                                    value-format="yyyy-MM-dd"
-                                                    style="width: 100%"
-                                            ></el-date-picker>
-                                        </el-form-item>
-                                        <el-form-item label="学费">
-                                            <el-input v-model="form.expense"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="减免情况">
-                                            <el-input v-model="form.discount"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="退费">
-                                            <el-input v-model="form.refund"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="备注">
-                                            <el-input v-model="form.remark"></el-input>
-                                        </el-form-item>
-                                    </el-form>
-                                    <span slot="footer" class="dialog-footer">
-                                            <el-button @click="addSignUpVisible = false">取 消</el-button>
-                                            <el-button type="primary" @click="saveSignUpInfo">确 定</el-button>
-                                        </span>
-                                </el-dialog>
-
-                                <!-- 编辑报名信息弹出框 -->
-                                <el-dialog title="更新报名信息" :visible.sync="editSignUpVisible" width="30%" @close="clearInner" top="10vh" append-to-body>
-                                    <el-form ref="form" :model="form" label-width="105px" label-position="left" size="mini">
-                                        <el-form-item label="报名科目">
-                                            <el-cascader
-                                                    :options="options"
-                                                    v-model="form.option"
-                                                    :props="{ expandTrigger: 'hover' }"
-                                                    style="width: 100%"
-                                            ></el-cascader>
-                                        </el-form-item>
-                                        <el-form-item label="总课时">
-                                            <el-input v-model="form.lessonCount"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="报名日期">
-                                            <el-date-picker
-                                                    v-model="form.registeredAt"
-                                                    type="date"
-                                                    placeholder="选择日期"
-                                                    value-format="yyyy-MM-dd"
-                                                    style="width: 100%"
-                                            ></el-date-picker>
-                                        </el-form-item>
-                                        <el-form-item label="预计结束日期">
-                                            <el-date-picker
-                                                    v-model="form.endAt"
-                                                    type="date"
-                                                    placeholder="选择日期"
-                                                    value-format="yyyy-MM-dd"
-                                                    style="width: 100%"
-                                            ></el-date-picker>
-                                        </el-form-item>
-                                        <el-form-item label="学费">
-                                            <el-input v-model="form.expense"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="减免情况">
-                                            <el-input v-model="form.discount"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="退费">
-                                            <el-input v-model="form.refund"></el-input>
-                                        </el-form-item>
-                                        <el-form-item label="备注">
-                                            <el-input v-model="form.remark"></el-input>
-                                        </el-form-item>
-                                    </el-form>
-                                    <span slot="footer" class="dialog-footer">
-                                            <el-button @click="editSignUpVisible = false">取 消</el-button>
-                                            <el-button type="primary" @click="saveEditSignUpInfo">确 定</el-button>
-                                        </span>
-                                </el-dialog>
                             </el-card>
                         </el-col>
                     </el-row>
@@ -315,30 +181,33 @@
                     <el-row :gutter="10">
 
                         <el-col :span="4">
-                            <el-card shadow="hover" class="mgb20" style="height:730px;">
+                            <el-card shadow="hover" class="mgb20" style="height:750px;">
+                                <div style="height:750px;">
+                                    <el-scrollbar style="height:100%">
+                                        <el-timeline :reverse=true>
+                                            <el-timeline-item
+                                                    v-for="(activity, index) in activities"
+                                                    :key="index"
+                                                    :timestamp="activity.timestamp"
+                                                    color="rgba(8, 151, 255, 1)">
+                                                <p class="timeline-content">{{activity.content}}</p>
+                                                <p class="timeline-name" v-if="activity.name">
+                                                    <span>操作者：{{activity.name}}</span>
+                                                </p>
+                                                <p class="timeline-name" v-if="activity.feedback">
+                                                    <span>意见：{{activity.feedback}}</span>
+                                                </p>
+                                            </el-timeline-item>
+                                        </el-timeline>
+                                    </el-scrollbar>
+                                </div>
 
-                                <el-timeline :reverse=true>
-                                    <el-timeline-item
-                                            v-for="(activity, index) in activities"
-                                            :key="index"
-                                            :timestamp="activity.timestamp"
-                                            :color="activity.content==='完成'?'RED':'rgba(8, 151, 255, 1)'"
-                                            >
-                                        <p class="timeline-content">{{activity.content}}</p>
-                                        <p class="timeline-name" v-if="activity.name">
-                                            <span>操作者：{{activity.name}}</span>
-                                        </p>
-                                        <p class="timeline-name" v-if="activity.feedback">
-                                            <span>意见：{{activity.feedback}}</span>
-                                        </p>
-                                    </el-timeline-item>
-                                </el-timeline>
 
                             </el-card>
                         </el-col>
 
                         <el-col :span="20">
-                            <el-card shadow="hover" class="mgb20" style="height:730px;">
+                            <el-card shadow="hover" class="mgb20" style="height:750px;">
 
                             <div class="handle-box">
                                 <el-button :disabled="active==3?false:true" type="warning" icon="el-icon-close" @click="rejectTeacherCour" style="float:right" v-loading.fullscreen.lock="fullscreenLoading">驳回</el-button>
@@ -459,7 +328,11 @@
                 addVisible: false,
                 addSignUpVisible: false,
                 editSignUpVisible: false,
+                approveVisible: false,
+                rejectVisible: false,
                 form: {},
+                form1: {},
+                form2: {},
                 idx: -1,
                 pageTotal: 0,
                 options: [],
@@ -487,9 +360,10 @@
                 let _this = this
                 this.$axios.get('/signup/collectByStatus').then(resp => {
                     if (resp && resp.status === 200) {
-                        _this.pData = resp.data.data1;
-                        _this.cData = resp.data.data3;
-                        _this.fData = resp.data.data4;
+                        _this.pData = resp.data.approveSign;
+                        _this.cData = resp.data.approveSchedule;
+                        _this.fData = resp.data.allSignup;
+                        console.log(_this.pData)
                     }
                 })
             },
@@ -534,6 +408,66 @@
                     if (resp && resp.status === 200) {
                         _this.activities = resp.data.activities;
                         _this.tableData = resp.data.tableData;
+                    }
+                })
+            },
+            clear1 () {
+
+            },
+            clear2 () {
+
+            },
+            handleReject () {
+                this.rejectVisible = true;
+            },
+            handleApprove () {
+                this.$axios.get('/user/schSelection').then(resp => {
+                    if (resp && resp.status === 200) {
+                        this.form1.options = resp.data;
+                        console.log(resp.data)
+                        this.approveVisible = true;
+                    }
+                });
+            },
+            rejectCourseStu () {
+                this.fullscreenLoading = true;
+                this.$axios.post('/signup/reject', {
+                    id: this.mid,
+                    timeline: this.form2.feedback
+                }).then(resp => {
+                    if (resp && resp.status === 200) {
+                        this.$message.success({
+                            message: '已驳回',
+                            offset: 116,
+                            duration: 3000
+                        });
+                        this.active = 0;
+                        this.getMessageData();
+                        this.fullscreenLoading = false;
+                        this.rejectVisible = false;
+                    }
+                })
+            },
+            approveCourseStu () {
+                this.fullscreenLoading = true;
+                console.log(this.mid)
+                console.log(this.form1.feedback)
+                console.log(this.form1.option)
+                this.$axios.post('/signup/approve', {
+                    id: this.mid,
+                    processingBy: this.form1.option,
+                    timeline: this.feedback
+                }).then(resp => {
+                    if (resp && resp.status === 200) {
+                        this.$message.success({
+                            message: '已通过',
+                            offset: 116,
+                            duration: 3000
+                        });
+                        this.active = 2;
+                        this.getMessageData();
+                        this.fullscreenLoading = false;
+                        this.approveVisible = false;
                     }
                 })
             },
@@ -821,24 +755,6 @@
                 });
 
             },
-            rejectCourseStu () {
-                this.fullscreenLoading = true;
-                this.$axios.post('/signup/reject', {
-                    id: this.mid,
-                    timeline: this.feedback
-                }).then(resp => {
-                    if (resp && resp.status === 200) {
-                        this.$message.success({
-                            message: '已驳回',
-                            offset: 116,
-                            duration: 3000
-                        });
-                        this.active = 0;
-                        this.getMessageData();
-                        this.fullscreenLoading = false;
-                    }
-                })
-            },
             rejectTeacherCour () {
                 this.fullscreenLoading = true;
                 this.$axios.post('/signup/reject2', {
@@ -851,26 +767,8 @@
                             offset: 116,
                             duration: 3000
                         });
-                        this.fullscreenLoading = false;
                         this.active = 2;
                         this.getMessageData2();
-                    }
-                })
-            },
-            approveCourseStu () {
-                this.fullscreenLoading = true;
-                this.$axios.post('/signup/approve', {
-                    id: this.mid,
-                    timeline: this.feedback
-                }).then(resp => {
-                    if (resp && resp.status === 200) {
-                        this.$message.success({
-                            message: '已通过',
-                            offset: 116,
-                            duration: 3000
-                        });
-                        this.active = 2;
-                        this.getMessageData();
                         this.fullscreenLoading = false;
                     }
                 })

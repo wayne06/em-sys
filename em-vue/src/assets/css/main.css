@@ -47,6 +47,7 @@ a {
 
 .container {
     padding: 30px;
+    alignment: center;
     background: #fff;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -202,4 +203,8 @@ a {
     box-sizing: border-box;
     padding: 8px;
     height: 35px;
+}
+
+.el-scrollbar__wrap{
+    overflow-x: hidden;
 }

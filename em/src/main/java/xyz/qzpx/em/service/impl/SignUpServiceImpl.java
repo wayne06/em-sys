@@ -19,6 +19,9 @@ public class SignUpServiceImpl implements SignUpService {
     private SignUpDOMapper signUpDOMapper;
 
     @Autowired
+    private SignDetailDOMapper signDetailDOMapper;
+
+    @Autowired
     private CourseStudentDOMapper courseStudentDOMapper;
 
     @Autowired
@@ -56,28 +59,49 @@ public class SignUpServiceImpl implements SignUpService {
 
     @Override
     public List<Integer> submit(Integer id) {
-        // 提交前检查是否有学生还未添加报名信息
-        List<CourseStudentDO> courseStudentDOS = courseStudentDOMapper.selectBySignupId(id);
-        Map<Integer, List<Integer>> studentCourseMap = new HashMap<>();
-        for (CourseStudentDO courseStudentDO : courseStudentDOS) {
-            if (!studentCourseMap.containsKey(courseStudentDO.getStudentId())) {
-                List<Integer> courseIds = new ArrayList<>();
-                courseIds.add(courseStudentDO.getCourseId());
-                studentCourseMap.put(courseStudentDO.getStudentId(), courseIds);
+        List<SignDetailDO> signDetailDOS = signDetailDOMapper.selectBySignupId(id);
+        if (signDetailDOS.size() == 0) {
+            return null;
+        }
+        Map<Integer, List<String>> studentCourseMap = new HashMap<>();
+        for (SignDetailDO signDetailDO : signDetailDOS) {
+            if (!studentCourseMap.containsKey(signDetailDO.getStudentId())) {
+                List<String> courses = new ArrayList<>();
+                courses.add(signDetailDO.getCourses());
+                studentCourseMap.put(signDetailDO.getStudentId(), courses);
             } else {
-                studentCourseMap.get(courseStudentDO.getStudentId()).add(courseStudentDO.getCourseId());
+                studentCourseMap.get(signDetailDO.getStudentId()).add(signDetailDO.getCourses());
             }
         }
         List<Integer> noCourseList = new ArrayList<>();
-        for (Map.Entry<Integer, List<Integer>> entry : studentCourseMap.entrySet()) {
-            if (entry.getValue().size() == 1 && entry.getValue().contains(0)) {
+        for (Map.Entry<Integer, List<String>> entry : studentCourseMap.entrySet()) {
+            if (entry.getValue().size() == 1 && entry.getValue().contains("0")) {
                 noCourseList.add(entry.getKey());
             }
         }
+        //// 提交前检查是否有学生还未添加报名信息
+        //List<CourseStudentDO> courseStudentDOS = courseStudentDOMapper.selectBySignupId(id);
+        //
+        //for (CourseStudentDO courseStudentDO : courseStudentDOS) {
+        //    if (!studentCourseMap.containsKey(courseStudentDO.getStudentId())) {
+        //        List<Integer> courseIds = new ArrayList<>();
+        //        courseIds.add(courseStudentDO.getCourseId());
+        //        studentCourseMap.put(courseStudentDO.getStudentId(), courseIds);
+        //    } else {
+        //        studentCourseMap.get(courseStudentDO.getStudentId()).add(courseStudentDO.getCourseId());
+        //    }
+        //}
+        //List<Integer> noCourseList = new ArrayList<>();
+        //for (Map.Entry<Integer, List<Integer>> entry : studentCourseMap.entrySet()) {
+        //    if (entry.getValue().size() == 1 && entry.getValue().contains(0)) {
+        //        noCourseList.add(entry.getKey());
+        //    }
+        //}
+
         if (noCourseList.size() == 0) {
             // 提交
             SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
-            signUpDO.setProcessingBy("pri");
+            signUpDO.setProcessingBy("liujiang");
             signUpDO.setStatus(1);
             //todo
             StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
@@ -203,7 +227,7 @@ public class SignUpServiceImpl implements SignUpService {
         }
         if (noTeacherList.size() == 0) {
             SignUpDO signUpDO = signUpDOMapper.selectByPrimaryKey(id);
-            signUpDO.setProcessingBy("pri");
+            signUpDO.setProcessingBy("liujiang");
             signUpDO.setStatus(3);
             StringBuffer stringBuffer = new StringBuffer(signUpDO.getTimeline());
             String username = SecurityUtils.getSubject().getPrincipal().toString();

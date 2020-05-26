@@ -21,8 +21,8 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="login">登录</el-button>
                 </div>
-                <p class="login-tips">Tips : 用户名和密码随便填。
-                    <el-link href="/register" style="float: right">点我注册</el-link>
+                <p class="login-tips">Tips : 新用户请点击右边注册按钮。
+                    <el-link href="/register" style="float: right;">点我注册</el-link>
                 </p>
 
 

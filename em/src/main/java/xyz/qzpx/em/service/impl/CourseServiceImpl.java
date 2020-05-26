@@ -128,7 +128,8 @@ public class CourseServiceImpl implements CourseService {
                     List<TreeItem> child2 = new ArrayList<>();
                     for (CourseDO courseDO : courseDOMapper.selectSubjectByTermAndTypeAndGrade(term, type, grade)) {
                         TreeItem item3 = new TreeItem();
-                        item3.setValue(courseDO.getId().toString());
+                        //item3.setValue(courseDO.getId().toString());
+                        item3.setValue(courseDO.getSubject()+ ":" + courseDO.getId());
                         item3.setLabel(courseDO.getSubject());
                         child2.add(item3);
                     }
